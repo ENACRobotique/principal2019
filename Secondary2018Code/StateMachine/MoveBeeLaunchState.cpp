@@ -34,10 +34,10 @@ MoveBeeLaunchState::~MoveBeeLaunchState() {
 void MoveBeeLaunchState::enter() {
 	Serial.println("Etat rotation vers l'abeille");
 	if(tiretteState.get_color() == GREEN){
-		navigator.move_to(1830,300);
+		navigator.move_to(1830,350);
 	}
 	else{
-		navigator.move_to(1830,2700);
+		navigator.move_to(1830,2650);
 	}
 	if(navigator.moveForward()){
 		Serial.println("Forward");

@@ -8,9 +8,9 @@
 #ifndef STATEMACHINE_TIRETTESTATE_H_
 #define STATEMACHINE_TIRETTESTATE_H_
 
-#define POS_X_WATER			850
-#define POS_Y_WATER_GREEN	160
-#define POS_Y_WATER_ORANGE 	2840
+#define POS_X_WATER			840
+#define POS_Y_WATER_GREEN	150
+#define POS_Y_WATER_ORANGE 	2850
 
 #include "AbstractState.h"
 #include "Servo.h"

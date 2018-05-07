@@ -115,7 +115,7 @@ void MoveToBeeState::doIt() {
 
 				if(navigator.moveForward()){
 					Serial.println("Forward");
-					if(trajectory_index==4){
+					if(trajectory_index==3){
 						usDistances.front_left = 0;
 						usDistances.front_right = 0;
 						usDistances.rear_left = 0;

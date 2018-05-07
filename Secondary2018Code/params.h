@@ -67,7 +67,7 @@ const unsigned long SERVO_MOVEMENT_DURATION = 1000;
 const unsigned long DETECTION_STOP_TIME = 1500;
 
 const int RETRACTED_ARM = 45;
-const int EXTENDED_ARM = 130;
+const int EXTENDED_ARM = 105;
 
 const int GREEN = 1;
 const int ORANGE = !GREEN;
