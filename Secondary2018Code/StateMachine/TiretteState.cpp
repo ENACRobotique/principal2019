@@ -6,8 +6,8 @@
  */
 
 #include "TiretteState.h"
-#include "TurnToButtonState.h"
 #include "MoveToWaterState.h"
+#include "MoveToBeeState.h"
 #include "Arduino.h"
 #include "../params.h"
 #include "FSMSupervisor.h"
@@ -36,7 +36,7 @@ void TiretteState::enter() {
 	Serial.println("Etat tirette");
 	Dynamixel.begin(1000000, DYNAMIXEL_CONTROL);
 	arm.attach(SERVO3);
-	arm.write(160);
+	arm.write(RETRACTED_ARM);
 
 	pinMode(TIRETTE,INPUT_PULLUP);
 	pinMode(COLOR,INPUT_PULLUP);
@@ -49,18 +49,18 @@ void TiretteState::enter() {
 
 void TiretteState::leave() {
 	if(digitalRead(COLOR) == GREEN){
-		Odometry::set_pos(550, 170, 0);
+		Odometry::set_pos(550, 185, 0);
 		COLOR_BEGIN = GREEN;
 	}
 	else{
-		Odometry::set_pos(550,2830,0);
+		Odometry::set_pos(550,2815,0);
 		COLOR_BEGIN = ORANGE;
 	}
 }
 
 void TiretteState::doIt() {
 	time_start = millis();
-	USDistances distances =usManager.getRanges();
+//	USDistances distances =usManager.getRanges();
 //	Serial.print("front left:");
 //	Serial.print(distances.front_left);
 //	Serial.print("\t");
@@ -75,7 +75,7 @@ void TiretteState::doIt() {
 	if (!digitalRead(TIRETTE)) {
 		Serial.println("On change d'etat : gooooo!!");
 		time_start = millis();
-		fsmSupervisor.setNextState(&moveToWaterState);
+		fsmSupervisor.setNextState(&moveToBeeState);
 	}
 //	if(digitalRead(COLOR) == GREEN){
 //		Serial.println("GREEN");

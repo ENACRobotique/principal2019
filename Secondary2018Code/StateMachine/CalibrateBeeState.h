@@ -1,20 +1,20 @@
 /*
- * MoveToButtonState.h
+ * CalibrateBeeState.h
  *
- *  Created on: 20 avr. 2018
+ *  Created on: 18 avr. 2018
  *      Author: Maxime
  */
 
-#ifndef STATEMACHINE_MOVETOBUTTONSTATE_H_
-#define STATEMACHINE_MOVETOBUTTONSTATE_H_
+#ifndef STATEMACHINE_CALIBRATEBEESTATE_H_
+#define STATEMACHINE_CALIBRATEBEESTATE_H_
 
 #include "AbstractState.h"
 #include "../lib/USManager.h"
 
-class MoveToButtonState : public AbstractState {
+class CalibrateBeeState : public AbstractState {
 public:
-	MoveToButtonState();
-	virtual ~MoveToButtonState();
+	CalibrateBeeState();
+	virtual ~CalibrateBeeState();
 
 	void doIt();
 	void leave();
@@ -29,10 +29,9 @@ private:
 
 	unsigned long time_start;
 	int trajectory_index;
-	unsigned long time_servo;
 	USDistances usDistances;
 };
 
-extern MoveToButtonState moveToButtonState;
+extern CalibrateBeeState calibrateBeeState;
 
-#endif /* STATEMACHINE_MOVETOBUTTONSTATE_H_ */
+#endif /* STATEMACHINE_CALIBRATEBEESTATE_H_ */

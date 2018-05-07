@@ -6,7 +6,7 @@
  */
 
 #include "ThrowState.h"
-#include "MoveToBeeState.h"
+#include "TiretteState.h"
 #include "DeadState.h"
 #include "Arduino.h"
 #include "../params.h"
@@ -14,7 +14,7 @@
 #include "Servo.h"
 #include "DynamixelSerial4.h"
 #include "../Navigator.h"
-#include "MoveToWaterState.h"
+#include "MoveToCubeState.h"
 
 ThrowState throwState = ThrowState();
 
@@ -45,7 +45,7 @@ void ThrowState::leave() {
 
 void ThrowState::doIt() {
 	if (millis() - time_start > THROW_DURATION) {
-		fsmSupervisor.setNextState(&moveToBeeState);
+		fsmSupervisor.setNextState(&moveToCubeState);
 	}
 
 	if((millis() - time_start > MOTOR_START_DURATION)&& dynamixel_not_started){
@@ -56,7 +56,7 @@ void ThrowState::doIt() {
 
 	if(millis() - time_last_vibration > VIBRATION_DURATION ){
 			time_last_vibration = millis();
-			float vibration[] = {POS_X_WATER -40, POS_X_WATER +10};
+			float vibration[] = {POS_X_WATER +40, POS_X_WATER -10};
 			if(digitalRead(COLOR) == GREEN){
 				navigator.throw_to(vibration[vibration_index],POS_Y_WATER_GREEN,0.04);
 			}

@@ -11,11 +11,6 @@
 #include "AbstractState.h"
 #include "../lib/USManager.h"
 
-#define POS_X_CUBE_GREEN
-#define POS_X_CUBE_ORANGE
-#define POS_Y_CUBE_GREEN
-#define POS_Y_CUBE_ORANGE
-
 class MoveToCubeState : public AbstractState {
 public:
 	MoveToCubeState();

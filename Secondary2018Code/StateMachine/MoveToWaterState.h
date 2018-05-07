@@ -11,10 +11,6 @@
 #include "AbstractState.h"
 #include "../lib/USManager.h"
 
-#define POS_X_WATER			850
-#define POS_Y_WATER_GREEN	170
-#define POS_Y_WATER_ORANGE 	2830
-
 class MoveToWaterState : public AbstractState {
 public:
 	MoveToWaterState();

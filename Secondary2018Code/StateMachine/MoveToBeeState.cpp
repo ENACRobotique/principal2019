@@ -18,16 +18,16 @@
 MoveToBeeState moveToBeeState = MoveToBeeState();
 
 
-float traj_bee_green[][2] = { 	{600,200},
-								{600,600},
+float traj_bee_green[][2] = { 	{550,185},
+								{550,600},
 								{1550,600},
 								{1830,400},
 								{-90,0},
 								{1830,50}
 };
 
-float traj_bee_orange[][2] = {	{600, 2800},
-								{600, 2400},
+float traj_bee_orange[][2] = {	{550, 2815},
+								{550, 2400},
 								{1550,2400},
 								{1830,2600},
 								{-90,0},
@@ -154,7 +154,12 @@ void MoveToBeeState::doIt() {
 void MoveToBeeState::reEnter(unsigned long interruptTime){
 	time_start+=interruptTime;
 	if(trajectory_index == 4){
-		navigator.turn_to(-90);
+		if(tiretteState.get_color() == GREEN){
+			navigator.turn_to(traj_bee_green[trajectory_index][0]);
+		}
+		else{
+			navigator.turn_to(traj_bee_orange[trajectory_index][0]);
+		}
 	}
 	else{
 		if(tiretteState.get_color() == GREEN){

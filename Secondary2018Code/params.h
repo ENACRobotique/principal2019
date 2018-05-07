@@ -66,8 +66,8 @@ const unsigned long THROW_DURATION = 20000;
 const unsigned long SERVO_MOVEMENT_DURATION = 1000;
 const unsigned long DETECTION_STOP_TIME = 1500;
 
-const int RETRACTED_ARM = 170;
-const int EXTENDED_ARM = 70;
+const int RETRACTED_ARM = 45;
+const int EXTENDED_ARM = 130;
 
 const int GREEN = 1;
 const int ORANGE = !GREEN;

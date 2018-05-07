@@ -7,7 +7,7 @@
 
 #include "MoveBeeLaunchState.h"
 
-#include "MoveToCubeState.h"
+#include "CalibrateBeeState.h"
 #include "DeadState.h"
 #include "RetractArmBeeState.h"
 #include "../Navigator.h"
@@ -68,7 +68,7 @@ void MoveBeeLaunchState::doIt() {
 			arm.write(RETRACTED_ARM);
 		}
 		if(millis() - time_servo > SERVO_MOVEMENT_DURATION){
-			fsmSupervisor.setNextState(&moveToCubeState);
+			fsmSupervisor.setNextState(&calibrateBeeState);
 		}
 	}
 }
@@ -80,10 +80,10 @@ void MoveBeeLaunchState::reEnter(unsigned long interruptTime){
 	}
 	else{
 		if(tiretteState.get_color() == GREEN){
-			navigator.move_to(1800,300);
+			navigator.move_to(1830,300);
 		}
 		else{
-			navigator.move_to(1800,2700);
+			navigator.move_to(1830,2700);
 		}
 		if(navigator.moveForward()){
 			Serial.println("Forward");

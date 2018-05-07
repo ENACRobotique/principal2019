@@ -6,7 +6,6 @@
  */
 
 #include "MoveToCubeState.h"
-#include "MoveToButtonState.h"
 #include "MoveToCubeState2.h"
 #include "DeadState.h"
 #include "TiretteState.h"
@@ -19,13 +18,13 @@
 
 MoveToCubeState moveToCubeState = MoveToCubeState();
 
-float traj_cube_green[][2] = { 	{1550,300},
+float traj_cube_green[][2] = { 	{1550,POS_Y_WATER_GREEN},
 								{1550,860},
 								{0,0},
 								{200,860}
 };
 
-float traj_cube_orange[][2] = {	{1550, 2700},
+float traj_cube_orange[][2] = {	{1550, POS_Y_WATER_ORANGE},
 								{1550,2140},
 								{0,0},
 								{200,2140}
