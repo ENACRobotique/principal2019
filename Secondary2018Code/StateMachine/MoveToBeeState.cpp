@@ -22,15 +22,15 @@ MoveToBeeState moveToBeeState = MoveToBeeState();
 float traj_bee_green[][2] = {	{550,600},
 								{1550,600},
 								{1830,400},
-								{-90,0},
-								{1830,50}
+								{0,0},
+								{1950,400}
 };
 
 float traj_bee_orange[][2] = {	{550, 2400},
 								{1550,2400},
 								{1830,2600},
-								{-90,0},
-								{1830,2950}
+								{0,0},
+								{1950,2600}
 };
 
 MoveToBeeState::MoveToBeeState() {
@@ -86,10 +86,10 @@ void MoveToBeeState::doIt() {
 		Serial.println(trajectory_index);
 		if(trajectory_index == 4){
 			if(tiretteState.get_color() == GREEN){
-				Odometry::set_pos(1830,110,-90);
+				Odometry::set_pos(1890,400,0);
 			}
 			else{
-				Odometry::set_pos(1830,2890,-90);
+				Odometry::set_pos(1890,2600,0);
 			}
 			fsmSupervisor.setNextState(&calibrateBeeState);
 		}

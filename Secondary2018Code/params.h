@@ -49,9 +49,9 @@ const float ACCEL_OMEGA_MAX = 1;
 const float OMEGA_MAX = 1.5;
 
 const float ADMITTED_OMEGA_ERROR = 0.03;
-const float ADMITTED_SPEED_ERROR = 7;
+const float ADMITTED_SPEED_ERROR = 5;
 
-const float ADMITTED_POSITION_ERROR = 7;
+const float ADMITTED_POSITION_ERROR = 5;
 const float ADMITTED_ANGLE_ERROR = 0.01;
 
 const float MAX_DRIFT = 0.1;

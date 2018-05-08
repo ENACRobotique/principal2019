@@ -19,18 +19,12 @@
 CalibrateBeeState calibrateBeeState = CalibrateBeeState();
 
 
-float traj_calibrate_green[][2] = { {1830,170},
-									{0,0},
-									{1950,170},
-									{1850,170},
+float traj_calibrate_green[][2] = { {1850,400},
 									{-90,0},
 									{1850,50}
 };
 
-float traj_calibrate_orange[][2] = {{1830,2830},
-									{0,0},
-									{1950,2830},
-									{1850,2830},
+float traj_calibrate_orange[][2] = {{1850,2600},
 									{-90,0},
 									{1850,2950}
 };
@@ -86,9 +80,9 @@ void CalibrateBeeState::doIt() {
 	if(navigator.isTrajectoryFinished()){
 		Serial.print("trajectory:");
 		Serial.println(trajectory_index);
-		if(trajectory_index == 5){
+		if(trajectory_index == 2){
 			fsmSupervisor.setNextState(&extendArmBeeState);
-			if(tiretteState.get_color() == GREEN){
+			if(tiretteState.get_color() == ORANGE){
 				Odometry::set_pos(1850,110,-90);
 			}
 			else{
@@ -97,15 +91,7 @@ void CalibrateBeeState::doIt() {
 		}
 		else{
 			trajectory_index+=1;
-			if(trajectory_index == 3){
-				if(tiretteState.get_color() == GREEN){
-					Odometry::set_pos(1890,170,0);
-				}
-				else{
-					Odometry::set_pos(1890,2830,0);
-				}
-			}
-			if(trajectory_index == 1 or trajectory_index == 4){
+			if(trajectory_index == 1){
 				navigator.turn_to(traj_calibrate_green[trajectory_index][0]);
 				usDistances.front_left = 0;
 				usDistances.front_right = 0;
@@ -160,7 +146,7 @@ void CalibrateBeeState::doIt() {
 
 void CalibrateBeeState::reEnter(unsigned long interruptTime){
 	time_start+=interruptTime;
-	if(trajectory_index == 1 or trajectory_index == 4){
+	if(trajectory_index == 2){
 		if(tiretteState.get_color() == GREEN){
 			navigator.turn_to(traj_calibrate_green[trajectory_index][0]);
 		}

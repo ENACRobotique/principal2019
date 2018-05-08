@@ -19,9 +19,9 @@
 MoveToCubeState moveToCubeState = MoveToCubeState();
 
 float traj_cube_green[][2] = { 	{1400,POS_Y_WATER_GREEN},
-								{1400,830},
+								{1400,840},
 								{0,0},
-								{150,830}
+								{150,840}
 };
 
 float traj_cube_orange[][2] = {	{1400, POS_Y_WATER_ORANGE},

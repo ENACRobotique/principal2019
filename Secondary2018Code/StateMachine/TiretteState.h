@@ -9,7 +9,7 @@
 #define STATEMACHINE_TIRETTESTATE_H_
 
 #define POS_X_WATER			810
-#define POS_Y_WATER_GREEN	210
+#define POS_Y_WATER_GREEN	208
 #define POS_Y_WATER_ORANGE 	2832
 
 #include "AbstractState.h"
