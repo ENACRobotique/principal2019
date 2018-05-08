@@ -56,12 +56,12 @@ void ThrowState::doIt() {
 
 	if(millis() - time_last_vibration > VIBRATION_DURATION ){
 			time_last_vibration = millis();
-			float vibration[] = {POS_X_WATER +40, POS_X_WATER -10};
+			float vibration[] = {POS_X_WATER +20, POS_X_WATER -20};
 			if(digitalRead(COLOR) == GREEN){
-				navigator.throw_to(vibration[vibration_index],POS_Y_WATER_GREEN,0.04);
+				navigator.throw_to(vibration[vibration_index],POS_Y_WATER_GREEN,0.06);
 			}
 			else{
-				navigator.throw_to(vibration[vibration_index],POS_Y_WATER_ORANGE,-0.04);
+				navigator.throw_to(vibration[vibration_index],POS_Y_WATER_ORANGE,-0.06);
 			}
 			vibration_index = (vibration_index+1)%2;
 	}

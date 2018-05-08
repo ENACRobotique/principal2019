@@ -8,6 +8,7 @@
 #include "MoveBeeLaunchState.h"
 
 #include "CalibrateBeeState.h"
+#include "MoveToWaterState.h"
 #include "DeadState.h"
 #include "RetractArmBeeState.h"
 #include "../Navigator.h"
@@ -34,15 +35,15 @@ MoveBeeLaunchState::~MoveBeeLaunchState() {
 void MoveBeeLaunchState::enter() {
 	Serial.println("Etat rotation vers l'abeille");
 	if(tiretteState.get_color() == GREEN){
-		navigator.move_to(1830,350);
+		navigator.move_to(1850,500);
 	}
 	else{
-		navigator.move_to(1830,2650);
+		navigator.move_to(1850,2500);
 	}
 	if(navigator.moveForward()){
 		Serial.println("Forward");
-		usDistances.front_left = 0;
-		usDistances.front_right = 0;
+		usDistances.front_left = US_RANGE;
+		usDistances.front_right = US_RANGE;
 		usDistances.rear_left = 0;
 		usDistances.rear_right = 0;
 	}
@@ -50,8 +51,8 @@ void MoveBeeLaunchState::enter() {
 		Serial.println("Backwards");
 		usDistances.front_left = 0;
 		usDistances.front_right = 0;
-		usDistances.rear_left = 0;
-		usDistances.rear_right = 0;
+		usDistances.rear_left = US_RANGE;
+		usDistances.rear_right = US_RANGE;
 	}
 	usManager.setMinRange(&usDistances);
 	time_start = millis();
@@ -68,7 +69,7 @@ void MoveBeeLaunchState::doIt() {
 			arm.write(RETRACTED_ARM);
 		}
 		if(millis() - time_servo > SERVO_MOVEMENT_DURATION){
-			fsmSupervisor.setNextState(&calibrateBeeState);
+			fsmSupervisor.setNextState(&moveToWaterState);
 		}
 	}
 }
@@ -80,26 +81,11 @@ void MoveBeeLaunchState::reEnter(unsigned long interruptTime){
 	}
 	else{
 		if(tiretteState.get_color() == GREEN){
-			navigator.move_to(1830,300);
+			navigator.move_to(1850,300);
 		}
 		else{
-			navigator.move_to(1830,2700);
+			navigator.move_to(1850,2700);
 		}
-		if(navigator.moveForward()){
-			Serial.println("Forward");
-			usDistances.front_left = 0;
-			usDistances.front_right = 0;
-			usDistances.rear_left = 0;
-			usDistances.rear_right = 0;
-		}
-		else{
-			Serial.println("Backwards");
-			usDistances.front_left = 0;
-			usDistances.front_right = 0;
-			usDistances.rear_left = 0;
-			usDistances.rear_right = 0;
-		}
-		usManager.setMinRange(&usDistances);
 	}
 }
 

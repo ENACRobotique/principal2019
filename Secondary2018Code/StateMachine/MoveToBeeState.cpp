@@ -6,6 +6,7 @@
  */
 
 #include "MoveToBeeState.h"
+#include "CalibrateBeeState.h"
 #include "TiretteState.h"
 #include "../Navigator.h"
 #include "Arduino.h"
@@ -18,16 +19,14 @@
 MoveToBeeState moveToBeeState = MoveToBeeState();
 
 
-float traj_bee_green[][2] = { 	{550,185},
-								{550,600},
+float traj_bee_green[][2] = {	{550,600},
 								{1550,600},
 								{1830,400},
 								{-90,0},
 								{1830,50}
 };
 
-float traj_bee_orange[][2] = {	{550, 2815},
-								{550, 2400},
+float traj_bee_orange[][2] = {	{550, 2400},
 								{1550,2400},
 								{1830,2600},
 								{-90,0},
@@ -60,8 +59,8 @@ void MoveToBeeState::enter() {
 
 	if(navigator.moveForward()){
 		Serial.println("Forward");
-		usDistances.front_left = 30;
-		usDistances.front_right = 30;
+		usDistances.front_left = US_RANGE;
+		usDistances.front_right = US_RANGE;
 		usDistances.rear_left = 0;
 		usDistances.rear_right = 0;
 	}
@@ -69,8 +68,8 @@ void MoveToBeeState::enter() {
 		Serial.println("Backwards");
 		usDistances.front_left = 0;
 		usDistances.front_right = 0;
-		usDistances.rear_left = 30;
-		usDistances.rear_right = 30;
+		usDistances.rear_left = US_RANGE;
+		usDistances.rear_right = US_RANGE;
 	}
 	usManager.setMinRange(&usDistances);
 
@@ -85,18 +84,18 @@ void MoveToBeeState::doIt() {
 	if(navigator.isTrajectoryFinished()){
 		Serial.print("trajectory:");
 		Serial.println(trajectory_index);
-		if(trajectory_index == 5){
+		if(trajectory_index == 4){
 			if(tiretteState.get_color() == GREEN){
-				Odometry::set_pos(1830,90,-90);
+				Odometry::set_pos(1830,110,-90);
 			}
 			else{
-				Odometry::set_pos(1830,2910,-90);
+				Odometry::set_pos(1830,2890,-90);
 			}
-			fsmSupervisor.setNextState(&extendArmBeeState);
+			fsmSupervisor.setNextState(&calibrateBeeState);
 		}
 		else{
 			trajectory_index+=1;
-			if(trajectory_index == 4){
+			if(trajectory_index == 3){
 				navigator.turn_to(traj_bee_green[trajectory_index][0]);
 				usDistances.front_left = 0;
 				usDistances.front_right = 0;
@@ -115,15 +114,15 @@ void MoveToBeeState::doIt() {
 
 				if(navigator.moveForward()){
 					Serial.println("Forward");
-					if(trajectory_index==3){
+					if(trajectory_index==4 or trajectory_index == 2){
 						usDistances.front_left = 0;
 						usDistances.front_right = 0;
 						usDistances.rear_left = 0;
 						usDistances.rear_right = 0;
 					}
 					else{
-						usDistances.front_left = 30;
-						usDistances.front_right = 30;
+						usDistances.front_left = US_RANGE;
+						usDistances.front_right = US_RANGE;
 						usDistances.rear_left = 0;
 						usDistances.rear_right = 0;
 					}
@@ -131,7 +130,7 @@ void MoveToBeeState::doIt() {
 				else{
 
 					Serial.println("Backwards");
-					if(trajectory_index==4){
+					if(trajectory_index==4 or trajectory_index == 2){
 						usDistances.front_left = 0;
 						usDistances.front_right = 0;
 						usDistances.rear_left = 0;
@@ -140,8 +139,8 @@ void MoveToBeeState::doIt() {
 					else{
 						usDistances.front_left = 0;
 						usDistances.front_right = 0;
-						usDistances.rear_left = 30;
-						usDistances.rear_right = 30;
+						usDistances.rear_left = US_RANGE;
+						usDistances.rear_right = US_RANGE;
 					}
 				}
 				usManager.setMinRange(&usDistances);
@@ -153,7 +152,8 @@ void MoveToBeeState::doIt() {
 
 void MoveToBeeState::reEnter(unsigned long interruptTime){
 	time_start+=interruptTime;
-	if(trajectory_index == 4){
+	if(trajectory_index == 3
+			){
 		if(tiretteState.get_color() == GREEN){
 			navigator.turn_to(traj_bee_green[trajectory_index][0]);
 		}

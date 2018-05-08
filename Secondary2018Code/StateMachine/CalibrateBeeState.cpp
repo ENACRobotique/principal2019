@@ -6,6 +6,7 @@
  */
 
 #include "CalibrateBeeState.h"
+#include "ExtendArmBeeState.h"
 #include "TiretteState.h"
 #include "../Navigator.h"
 #include "Arduino.h"
@@ -18,16 +19,20 @@
 CalibrateBeeState calibrateBeeState = CalibrateBeeState();
 
 
-float traj_calibrate_green[][2] = { {1830,50},
-									{1830,POS_Y_WATER_GREEN},
+float traj_calibrate_green[][2] = { {1830,170},
 									{0,0},
-									{1950,POS_Y_WATER_GREEN},
+									{1950,170},
+									{1850,170},
+									{-90,0},
+									{1850,50}
 };
 
-float traj_calibrate_orange[][2] = {{1830,2950},
-									{1830,POS_Y_WATER_ORANGE},
+float traj_calibrate_orange[][2] = {{1830,2830},
 									{0,0},
-									{1950,POS_Y_WATER_ORANGE},
+									{1950,2830},
+									{1850,2830},
+									{-90,0},
+									{1850,2950}
 };
 
 CalibrateBeeState::CalibrateBeeState() {
@@ -56,8 +61,8 @@ void CalibrateBeeState::enter() {
 
 	if(navigator.moveForward()){
 		Serial.println("Forward");
-		usDistances.front_left = 30;
-		usDistances.front_right = 30;
+		usDistances.front_left = US_RANGE;
+		usDistances.front_right = US_RANGE;
 		usDistances.rear_left = 0;
 		usDistances.rear_right = 0;
 	}
@@ -65,8 +70,8 @@ void CalibrateBeeState::enter() {
 		Serial.println("Backwards");
 		usDistances.front_left = 0;
 		usDistances.front_right = 0;
-		usDistances.rear_left = 30;
-		usDistances.rear_right = 30;
+		usDistances.rear_left = US_RANGE;
+		usDistances.rear_right = US_RANGE;
 	}
 	usManager.setMinRange(&usDistances);
 
@@ -81,29 +86,26 @@ void CalibrateBeeState::doIt() {
 	if(navigator.isTrajectoryFinished()){
 		Serial.print("trajectory:");
 		Serial.println(trajectory_index);
-		if(trajectory_index == 3){
+		if(trajectory_index == 5){
+			fsmSupervisor.setNextState(&extendArmBeeState);
 			if(tiretteState.get_color() == GREEN){
-				Odometry::set_pos(1910,POS_Y_WATER_GREEN,0);
+				Odometry::set_pos(1850,110,-90);
 			}
 			else{
-				Odometry::set_pos(1910,POS_Y_WATER_ORANGE,0);
+				Odometry::set_pos(1850,2890,-90);
 			}
-			Serial.print(Odometry::get_pos_x());
-			Serial.print("\t");
-			Serial.println(Odometry::get_pos_y());
-			fsmSupervisor.setNextState(&moveToWaterState);
 		}
 		else{
 			trajectory_index+=1;
-			if(trajectory_index == 1){
+			if(trajectory_index == 3){
 				if(tiretteState.get_color() == GREEN){
-					Odometry::set_pos(1830,90,-90);
+					Odometry::set_pos(1890,170,0);
 				}
 				else{
-					Odometry::set_pos(1830,2910,-90);
+					Odometry::set_pos(1890,2830,0);
 				}
 			}
-			if(trajectory_index == 2){
+			if(trajectory_index == 1 or trajectory_index == 4){
 				navigator.turn_to(traj_calibrate_green[trajectory_index][0]);
 				usDistances.front_left = 0;
 				usDistances.front_right = 0;
@@ -122,17 +124,32 @@ void CalibrateBeeState::doIt() {
 
 				if(navigator.moveForward()){
 					Serial.println("Forward");
-					usDistances.front_left = 30;
-					usDistances.front_right = 30;
-					usDistances.rear_left = 0;
-					usDistances.rear_right = 0;
+					if(trajectory_index == 2){
+						usDistances.front_left = 0;
+						usDistances.front_right = 0;
+						usDistances.rear_left = 0;
+						usDistances.rear_right = 0;
+					}
+					else{
+						usDistances.front_left = US_RANGE;
+						usDistances.front_right = US_RANGE;
+						usDistances.rear_left = 0;
+						usDistances.rear_right = 0;
+					}
 				}
 				else{
-					Serial.println("Backwards");
-					usDistances.front_left = 0;
-					usDistances.front_right = 0;
-					usDistances.rear_left = 30;
-					usDistances.rear_right = 30;
+					if(trajectory_index == 2){
+						usDistances.front_left = 0;
+						usDistances.front_right = 0;
+						usDistances.rear_left = 0;
+						usDistances.rear_right = 0;
+					}
+					else{
+						usDistances.front_left = 0;
+						usDistances.front_right = 0;
+						usDistances.rear_left = US_RANGE;
+						usDistances.rear_right = US_RANGE;
+					}
 				}
 				usManager.setMinRange(&usDistances);
 			}
@@ -143,7 +160,7 @@ void CalibrateBeeState::doIt() {
 
 void CalibrateBeeState::reEnter(unsigned long interruptTime){
 	time_start+=interruptTime;
-	if(trajectory_index == 2){
+	if(trajectory_index == 1 or trajectory_index == 4){
 		if(tiretteState.get_color() == GREEN){
 			navigator.turn_to(traj_calibrate_green[trajectory_index][0]);
 		}

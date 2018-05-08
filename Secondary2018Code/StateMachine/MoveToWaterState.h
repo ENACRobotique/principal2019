@@ -8,6 +8,8 @@
 #ifndef STATEMACHINE_MOVETOWATERSTATE_H_
 #define STATEMACHINE_MOVETOWATERSTATE_H_
 
+#define TIME_US 2500
+
 #include "AbstractState.h"
 #include "../lib/USManager.h"
 
@@ -28,7 +30,9 @@ public:
 private:
 
 	unsigned long time_start;
+	int trajectory_index;
 	USDistances usDistances;
+	unsigned long time_us;
 };
 
 extern MoveToWaterState moveToWaterState;
