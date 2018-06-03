@@ -8,9 +8,10 @@
 #ifndef STATEMACHINE_TIRETTESTATE_H_
 #define STATEMACHINE_TIRETTESTATE_H_
 
-#define POS_X_WATER			810
-#define POS_Y_WATER_GREEN	208
-#define POS_Y_WATER_ORANGE 	2832
+#define POS_X_WATER_GREEN	820
+#define POS_X_WATER_ORANGE	829
+#define POS_Y_WATER_GREEN	211
+#define POS_Y_WATER_ORANGE 	2840
 
 #include "AbstractState.h"
 #include "Servo.h"
@@ -27,6 +28,7 @@ public:
 	void enter();
 	void reEnter(unsigned long interruptTime);
 	void forceLeave();
+	void pauseNextState();
 	unsigned long get_time_start(){
 		return time_start;
 	}

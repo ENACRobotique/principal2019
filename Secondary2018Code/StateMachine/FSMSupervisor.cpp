@@ -8,6 +8,7 @@
 #include "FSMSupervisor.h"
 #include "Arduino.h"
 #include "AbstractState.h"
+#include "MoveToBeeState.h"
 #include "TiretteState.h"
 #include "DeadState.h"
 #include "PauseState.h"
@@ -35,6 +36,10 @@ void FSMSupervisor::setNextState(AbstractState* state) {
 void FSMSupervisor::update() {
 	if (millis() - tiretteState.get_time_start() > TIME_RACE){
 		fsmSupervisor.setNextState(&deadState); //TODO Créer un état où le robot s'arrête
+	}
+
+	if(currentState == &pauseState && pauseState.isTooLong()){
+		previousState->pauseNextState();
 	}
 
 	if(nextState != NULL && nextState != currentState){

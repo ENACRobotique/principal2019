@@ -40,7 +40,7 @@ void Navigator::move_to(float x, float y){
 
 void Navigator::turn_to(float theta){
 	theta_target = center_radian(PI*theta/180);
-	Serial.print("moving_to : ");
+	Serial.print("turning_to : ");
 	Serial.println(theta_target);
 	move_type = TURN;
 	move_state = INITIAL_TURN;
@@ -228,6 +228,10 @@ bool Navigator::moveForward(){
 	}
 }
 
+
+Move_state Navigator::get_move_state(){
+	return move_state;
+}
 
 float Navigator::center_axes(float angle)
 {

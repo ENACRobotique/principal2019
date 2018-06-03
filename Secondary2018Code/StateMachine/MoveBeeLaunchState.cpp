@@ -8,14 +8,14 @@
 #include "MoveBeeLaunchState.h"
 
 #include "CalibrateBeeState.h"
-#include "MoveToWaterState.h"
 #include "DeadState.h"
-#include "RetractArmBeeState.h"
 #include "../Navigator.h"
 #include "Arduino.h"
 #include "../params.h"
 #include "TiretteState.h"
 #include "FSMSupervisor.h"
+#include "MoveToWaterPause.h"
+#include "MoveToWaterTransition.h"
 
 MoveBeeLaunchState moveBeeLaunchState = MoveBeeLaunchState();
 
@@ -33,16 +33,17 @@ MoveBeeLaunchState::~MoveBeeLaunchState() {
 }
 
 void MoveBeeLaunchState::enter() {
-	Serial.println("Etat rotation vers l'abeille");
+	Serial.println("Etat lancement de l'abeille");
 	if(tiretteState.get_color() == GREEN){
 		navigator.move_to(1850,510);
 	}
 	else{
 		navigator.move_to(1850,2490);
 	}
+	Serial.println("Pas d'ultrasons à gauche");
 	if(navigator.moveForward()){
 		Serial.println("Forward");
-		usDistances.front_left = US_RANGE;
+		usDistances.front_left = 0;
 		usDistances.front_right = US_RANGE;
 		usDistances.rear_left = 0;
 		usDistances.rear_right = 0;
@@ -52,7 +53,7 @@ void MoveBeeLaunchState::enter() {
 		usDistances.front_left = 0;
 		usDistances.front_right = 0;
 		usDistances.rear_left = US_RANGE;
-		usDistances.rear_right = US_RANGE;
+		usDistances.rear_right = 0;
 	}
 	usManager.setMinRange(&usDistances);
 	time_start = millis();
@@ -69,7 +70,7 @@ void MoveBeeLaunchState::doIt() {
 			arm.write(RETRACTED_ARM);
 		}
 		if(millis() - time_servo > SERVO_MOVEMENT_DURATION){
-			fsmSupervisor.setNextState(&moveToWaterState);
+			fsmSupervisor.setNextState(&moveToWaterTrans);
 		}
 	}
 }
@@ -89,6 +90,9 @@ void MoveBeeLaunchState::reEnter(unsigned long interruptTime){
 	}
 }
 
-void MoveBeeLaunchState::forceLeave(){
+void MoveBeeLaunchState::pauseNextState(){
+	fsmSupervisor.setNextState(&moveToWaterPause);
+}
 
+void MoveBeeLaunchState::forceLeave(){
 }

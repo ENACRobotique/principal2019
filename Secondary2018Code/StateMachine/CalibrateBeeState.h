@@ -21,6 +21,7 @@ public:
 	void enter();
 	void reEnter(unsigned long interruptTime);
 	void forceLeave();
+	void pauseNextState();
 	unsigned long get_time_start(){
 		return time_start;
 	}

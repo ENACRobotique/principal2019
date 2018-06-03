@@ -6,8 +6,8 @@
  */
 
 #include "MoveToCubeState.h"
-#include "MoveToCubeState2.h"
-#include "DeadState.h"
+#include "MoveToCube2Pause.h"
+#include "MoveToCube2Transition.h"
 #include "TiretteState.h"
 #include "../Navigator.h"
 #include "Arduino.h"
@@ -18,20 +18,17 @@
 
 MoveToCubeState moveToCubeState = MoveToCubeState();
 
-float traj_cube_green[][2] = { 	{1400,POS_Y_WATER_GREEN},
-								{1400,840},
-								{0,0},
-								{150,840}
+float traj_cube_green[][2] = {	{0,0},
+								{200,855}
 };
 
-float traj_cube_orange[][2] = {	{1400, POS_Y_WATER_ORANGE},
-								{1400,2170},
-								{0,0},
-								{150,2170}
+float traj_cube_orange[][2] = {	{0,0},
+								{200,2155}
 };
 
 MoveToCubeState::MoveToCubeState() {
 	time_start = 0;
+	time_us = 0;
 	trajectory_index = 0;
 	flags = E_ULTRASOUND;
 	usDistances.front_left = 0;
@@ -45,29 +42,12 @@ MoveToCubeState::~MoveToCubeState() {
 }
 
 void MoveToCubeState::enter() {
-	Serial.println("Etat déplacement vers l'abeille");
-
-	if(tiretteState.get_color() == GREEN){
-		navigator.move_to(traj_cube_green[0][0],traj_cube_green[0][1]);
-	}
-	else{
-		navigator.move_to(traj_cube_orange[0][0],traj_cube_orange[0][1]);
-	}
-
-	if(navigator.moveForward()){
-		Serial.println("Forward");
-		usDistances.front_left = US_RANGE;
-		usDistances.front_right = US_RANGE;
-		usDistances.rear_left = 0;
-		usDistances.rear_right = 0;
-	}
-	else{
-		Serial.println("Backwards");
-		usDistances.front_left = 0;
-		usDistances.front_right = 0;
-		usDistances.rear_left = US_RANGE;
-		usDistances.rear_right = US_RANGE;
-	}
+	Serial.println("Etat déplacement vers les cubes");
+	navigator.turn_to(0);
+	usDistances.front_left = 0;
+	usDistances.front_right = 0;
+	usDistances.rear_left = 0;
+	usDistances.rear_right = 0;
 	usManager.setMinRange(&usDistances);
 
 	time_start = millis();
@@ -77,72 +57,62 @@ void MoveToCubeState::leave() {
 }
 
 void MoveToCubeState::doIt() {
+	if(time_us != 0 && (millis() - time_us > TIME_US_CUBE)){
+		Serial.println("Plus d'ultrasons");
+		usDistances.front_left = 0;
+		usDistances.front_right = 0;
+		usDistances.rear_left = 0;
+		usDistances.rear_right = 0;
+		usManager.setMinRange(&usDistances);
+		time_us = 0;
+	}
 	if(navigator.isTrajectoryFinished()){
 		Serial.print("trajectory:");
 		Serial.println(trajectory_index);
-		if(trajectory_index == 3){
-			fsmSupervisor.setNextState(&deadState);
+		if(trajectory_index == 1){
+			if(tiretteState.get_color() == GREEN){
+				Odometry::set_pos(200,855,0);
+			}
+			else{
+				Odometry::set_pos(200,2155,0);
+			}
+			fsmSupervisor.setNextState(&moveToCube2Transition);
 		}
 		else{
 			trajectory_index+=1;
-			if(trajectory_index == 2){
-				navigator.turn_to(0);
-				usDistances.front_left = 0;
-				usDistances.front_right = 0;
-				usDistances.rear_left = 0;
-				usDistances.rear_right = 0;
-				usManager.setMinRange(&usDistances);
+			time_us = millis();
+
+			if(tiretteState.get_color() == GREEN){
+				navigator.move_to(traj_cube_green[trajectory_index][0],traj_cube_green[trajectory_index][1]);
 			}
 			else{
-				if(tiretteState.get_color() == GREEN){
-					navigator.move_to(traj_cube_green[trajectory_index][0],traj_cube_green[trajectory_index][1]);
-				}
-				else{
-					Serial.println("Orange");
-					navigator.move_to(traj_cube_orange[trajectory_index][0],traj_cube_orange[trajectory_index][1]);
-				}
-
-				if(navigator.moveForward()){
-					Serial.println("Forward");
-					if(trajectory_index==4){
-						usDistances.front_left = 0;
-						usDistances.front_right = 0;
-						usDistances.rear_left = 0;
-						usDistances.rear_right = 0;
-					}
-					else{
-						usDistances.front_left = US_RANGE;
-						usDistances.front_right = US_RANGE;
-						usDistances.rear_left = 0;
-						usDistances.rear_right = 0;
-					}
-				}
-				else{
-
-					Serial.println("Backwards");
-					if(trajectory_index==4){
-						usDistances.front_left = 0;
-						usDistances.front_right = 0;
-						usDistances.rear_left = 0;
-						usDistances.rear_right = 0;
-					}
-					else{
-						usDistances.front_left = 0;
-						usDistances.front_right = 0;
-						usDistances.rear_left = US_RANGE;
-						usDistances.rear_right = US_RANGE;
-					}
-				}
-				usManager.setMinRange(&usDistances);
+				Serial.println("Orange");
+				navigator.move_to(traj_cube_orange[trajectory_index][0],traj_cube_orange[trajectory_index][1]);
 			}
+
+			if(navigator.moveForward()){
+				usDistances.front_left = US_RANGE;
+				usDistances.front_right = US_RANGE;
+				usDistances.rear_left = 0;
+				usDistances.rear_right = 0;
+			}
+			else{
+				usDistances.front_left = 0;
+				usDistances.front_right = 0;
+				usDistances.rear_left = US_RANGE;
+				usDistances.rear_right = US_RANGE;
+			}
+			usManager.setMinRange(&usDistances);
 		}
 	}
-
 }
 
 void MoveToCubeState::reEnter(unsigned long interruptTime){
 	time_start+=interruptTime;
-	if(trajectory_index == 2){
+	if(time_us != 0){
+		time_us+=interruptTime;
+	}
+	if(trajectory_index == 0){
 		navigator.turn_to(0);
 	}
 	else{
@@ -157,4 +127,8 @@ void MoveToCubeState::reEnter(unsigned long interruptTime){
 
 void MoveToCubeState::forceLeave(){
 
+}
+
+void MoveToCubeState::pauseNextState(){
+	fsmSupervisor.setNextState(&moveToCube2Pause);
 }

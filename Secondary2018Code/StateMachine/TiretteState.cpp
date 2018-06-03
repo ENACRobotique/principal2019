@@ -96,3 +96,7 @@ void TiretteState::forceLeave(){
 int TiretteState::get_color(){
 	return COLOR_BEGIN;
 }
+
+void TiretteState::pauseNextState(){
+
+}

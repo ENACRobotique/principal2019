@@ -1,22 +1,22 @@
 /*
- * MoveToCubeState.h
+ * MoveToButtonState.h
  *
  *  Created on: 18 avr. 2018
  *      Author: Maxime
  */
 
-#ifndef STATEMACHINE_MOVETOCUBESTATE_H_
-#define STATEMACHINE_MOVETOCUBESTATE_H_
-
-#define TIME_US_CUBE 3000
+#ifndef STATEMACHINE_MOVETOBUTTONSTATE_H_
+#define STATEMACHINE_MOVETOBUTTONSTATE_H_
 
 #include "AbstractState.h"
 #include "../lib/USManager.h"
 
-class MoveToCubeState : public AbstractState {
+#define TIME_US_BUTTON 3000
+
+class MoveToButtonState : public AbstractState {
 public:
-	MoveToCubeState();
-	virtual ~MoveToCubeState();
+	MoveToButtonState();
+	virtual ~MoveToButtonState();
 
 	void doIt();
 	void leave();
@@ -30,12 +30,12 @@ public:
 
 private:
 
-	unsigned long trajectory_index;
 	unsigned long time_start;
 	unsigned long time_us;
+	int trajectory_index;
 	USDistances usDistances;
 };
 
-extern MoveToCubeState moveToCubeState;
+extern MoveToButtonState moveToButtonState;
 
-#endif /* STATEMACHINE_MOVETOCUBESTATE_H_ */
+#endif /* STATEMACHINE_MOVETOBUTTONSTATE_H_ */

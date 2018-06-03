@@ -29,6 +29,7 @@ public:
 	void forceStop();
 	bool isTrajectoryFinished();
 	bool moveForward();
+	Move_state get_move_state();
 
 private:
 	bool turn_done;

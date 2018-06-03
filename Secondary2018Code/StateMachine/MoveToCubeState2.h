@@ -8,6 +8,8 @@
 #ifndef STATEMACHINE_MOVETOCUBESTATE2_H_
 #define STATEMACHINE_MOVETOCUBESTATE2_H_
 
+#define US_TIME_CUBE2 2000
+
 #include "AbstractState.h"
 #include "../lib/USManager.h"
 
@@ -26,6 +28,7 @@ public:
 	void enter();
 	void reEnter(unsigned long interruptTime);
 	void forceLeave();
+	void pauseNextState();
 	unsigned long get_time_start(){
 		return time_start;
 	}
@@ -34,6 +37,7 @@ private:
 
 	unsigned long trajectory_index;
 	unsigned long time_start;
+	unsigned long us_time;
 	USDistances usDistances;
 };
 

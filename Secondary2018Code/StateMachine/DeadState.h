@@ -20,6 +20,7 @@ public:
 	void enter();
 	void reEnter(unsigned long interruptTime);
 	void forceLeave();
+	void pauseNextState();
 };
 
 extern DeadState deadState;

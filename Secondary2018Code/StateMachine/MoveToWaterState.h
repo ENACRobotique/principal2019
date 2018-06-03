@@ -8,7 +8,7 @@
 #ifndef STATEMACHINE_MOVETOWATERSTATE_H_
 #define STATEMACHINE_MOVETOWATERSTATE_H_
 
-#define TIME_US 2500
+#define TIME_US 2000
 
 #include "AbstractState.h"
 #include "../lib/USManager.h"
@@ -23,6 +23,7 @@ public:
 	void enter();
 	void reEnter(unsigned long interruptTime);
 	void forceLeave();
+	void pauseNextState();
 	unsigned long get_time_start(){
 		return time_start;
 	}

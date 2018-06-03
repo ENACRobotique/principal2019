@@ -19,10 +19,13 @@ public:
 	void enter();
 	void reEnter(unsigned long interruptTime);
 	void forceLeave();
+	void pauseNextState();
 	unsigned long getPauseTime();
+	bool isTooLong();
 
 private:
 	unsigned long pauseStartTime;
+	bool isLong;
 };
 
 extern PauseState pauseState;

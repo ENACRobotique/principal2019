@@ -1,22 +1,22 @@
 /*
- * MoveToCubeState.h
+ * MoveToWaterTrans.h
  *
  *  Created on: 18 avr. 2018
  *      Author: Maxime
  */
 
-#ifndef STATEMACHINE_MOVETOCUBESTATE_H_
-#define STATEMACHINE_MOVETOCUBESTATE_H_
+#ifndef STATEMACHINE_MOVETOWATERTRANS_H_
+#define STATEMACHINE_MOVETOWATERTRANS_H_
 
-#define TIME_US_CUBE 3000
+#define TIME_US 2000
 
 #include "AbstractState.h"
 #include "../lib/USManager.h"
 
-class MoveToCubeState : public AbstractState {
+class MoveToWaterTrans : public AbstractState {
 public:
-	MoveToCubeState();
-	virtual ~MoveToCubeState();
+	MoveToWaterTrans();
+	virtual ~MoveToWaterTrans();
 
 	void doIt();
 	void leave();
@@ -30,12 +30,11 @@ public:
 
 private:
 
-	unsigned long trajectory_index;
 	unsigned long time_start;
-	unsigned long time_us;
+	int trajectory_index;
 	USDistances usDistances;
 };
 
-extern MoveToCubeState moveToCubeState;
+extern MoveToWaterTrans moveToWaterTrans;
 
-#endif /* STATEMACHINE_MOVETOCUBESTATE_H_ */
+#endif /* STATEMACHINE_MOVETOWATERTRANS_H_ */

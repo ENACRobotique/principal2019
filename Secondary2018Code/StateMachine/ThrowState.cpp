@@ -7,16 +7,19 @@
 
 #include "ThrowState.h"
 #include "TiretteState.h"
-#include "DeadState.h"
+#include "MoveToButtonTransition.h"
 #include "Arduino.h"
 #include "../params.h"
 #include "FSMSupervisor.h"
 #include "Servo.h"
 #include "DynamixelSerial4.h"
 #include "../Navigator.h"
-#include "MoveToCubeState.h"
+#include "MoveToCubeTransition.h"
 
 ThrowState throwState = ThrowState();
+
+float vibration_green[] = {POS_X_WATER_GREEN +20, POS_X_WATER_GREEN -20};
+float vibration_orange[] = {POS_X_WATER_ORANGE +20, POS_X_WATER_GREEN -20};
 
 ThrowState::ThrowState() {
 	time_start = 0;
@@ -45,7 +48,8 @@ void ThrowState::leave() {
 
 void ThrowState::doIt() {
 	if (millis() - time_start > THROW_DURATION) {
-		fsmSupervisor.setNextState(&moveToCubeState);
+//		fsmSupervisor.setNextState(&moveToCubeTransition);
+		fsmSupervisor.setNextState(&moveToCubeTransition);
 	}
 
 	if((millis() - time_start > MOTOR_START_DURATION)&& dynamixel_not_started){
@@ -56,12 +60,11 @@ void ThrowState::doIt() {
 
 	if(millis() - time_last_vibration > VIBRATION_DURATION ){
 			time_last_vibration = millis();
-			float vibration[] = {POS_X_WATER +20, POS_X_WATER -20};
 			if(digitalRead(COLOR) == GREEN){
-				navigator.throw_to(vibration[vibration_index],POS_Y_WATER_GREEN,0.06);
+				navigator.throw_to(vibration_green[vibration_index],POS_Y_WATER_GREEN,-0.02);
 			}
 			else{
-				navigator.throw_to(vibration[vibration_index],POS_Y_WATER_ORANGE,-0.06);
+				navigator.throw_to(vibration_orange[vibration_index],POS_Y_WATER_ORANGE,0.02);
 			}
 			vibration_index = (vibration_index+1)%2;
 	}
@@ -77,4 +80,8 @@ void ThrowState::reEnter(unsigned long interruptTime){
 void ThrowState::forceLeave(){
 	analogWrite(MOT_GALET_L,0);
 	Dynamixel.turn(DYNAMIXEL_ID,false,0);
+}
+
+void ThrowState::pauseNextState(){
+
 }

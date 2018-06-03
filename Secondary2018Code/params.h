@@ -43,7 +43,8 @@ const int ACCEL_MAX = 500;
 const int ACCEL_MAX_THROW = 100;
 const int SPEED_MAX = 350;
 
-const int US_RANGE = 30;
+const int US_RANGE = 35;
+const int US_RANGE_DIMINUSHED = 25;
 
 const float ACCEL_OMEGA_MAX = 1;
 const float OMEGA_MAX = 1.5;
@@ -67,6 +68,7 @@ const float NAVIGATOR_TIME_PERIOD = 0.05;
 const unsigned long THROW_DURATION = 20000;
 const unsigned long SERVO_MOVEMENT_DURATION = 1000;
 const unsigned long DETECTION_STOP_TIME = 1500;
+const unsigned long PAUSE_TIME = 20000;
 
 const int RETRACTED_ARM = 45;
 const int EXTENDED_ARM = 105;

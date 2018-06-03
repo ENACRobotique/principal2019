@@ -1,22 +1,22 @@
 /*
- * MoveToCubeState.h
+ * MoveToCube2Transition.h
  *
  *  Created on: 18 avr. 2018
  *      Author: Maxime
  */
 
-#ifndef STATEMACHINE_MOVETOCUBESTATE_H_
-#define STATEMACHINE_MOVETOCUBESTATE_H_
+#ifndef STATEMACHINE_MOVETOCUBE2TRANSITION_H_
+#define STATEMACHINE_MOVETOCUBE2TRANSITION_H_
 
 #define TIME_US_CUBE 3000
 
 #include "AbstractState.h"
 #include "../lib/USManager.h"
 
-class MoveToCubeState : public AbstractState {
+class MoveToCube2Transition : public AbstractState {
 public:
-	MoveToCubeState();
-	virtual ~MoveToCubeState();
+	MoveToCube2Transition();
+	virtual ~MoveToCube2Transition();
 
 	void doIt();
 	void leave();
@@ -36,6 +36,6 @@ private:
 	USDistances usDistances;
 };
 
-extern MoveToCubeState moveToCubeState;
+extern MoveToCube2Transition moveToCube2Transition;
 
-#endif /* STATEMACHINE_MOVETOCUBESTATE_H_ */
+#endif /* STATEMACHINE_MOVETOCUBE2TRANSITION_H_ */

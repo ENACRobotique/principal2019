@@ -1,22 +1,22 @@
 /*
- * MoveToCubeState.h
+ * MoveToCubePause.h
  *
  *  Created on: 18 avr. 2018
  *      Author: Maxime
  */
 
-#ifndef STATEMACHINE_MOVETOCUBESTATE_H_
-#define STATEMACHINE_MOVETOCUBESTATE_H_
+#ifndef STATEMACHINE_MOVETOCUBEPAUSE_H_
+#define STATEMACHINE_MOVETOCUBEPAUSE_H_
 
 #define TIME_US_CUBE 3000
 
 #include "AbstractState.h"
 #include "../lib/USManager.h"
 
-class MoveToCubeState : public AbstractState {
+class MoveToCubePause : public AbstractState {
 public:
-	MoveToCubeState();
-	virtual ~MoveToCubeState();
+	MoveToCubePause();
+	virtual ~MoveToCubePause();
 
 	void doIt();
 	void leave();
@@ -29,13 +29,10 @@ public:
 	}
 
 private:
-
-	unsigned long trajectory_index;
 	unsigned long time_start;
-	unsigned long time_us;
 	USDistances usDistances;
 };
 
-extern MoveToCubeState moveToCubeState;
+extern MoveToCubePause moveToCubePause;
 
-#endif /* STATEMACHINE_MOVETOCUBESTATE_H_ */
+#endif /* STATEMACHINE_MOVETOCUBEPAUSE_H_ */

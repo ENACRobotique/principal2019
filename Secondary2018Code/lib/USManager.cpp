@@ -8,6 +8,7 @@
 #include "USManager.h"
 #include "Ultrasound.h"
 #include "Arduino.h"
+#include "../Navigator.h"
 
 USManager usManager = USManager();
 
@@ -47,8 +48,10 @@ void USManager::update() {
 
 bool USManager::obstacleDetected() {
 	bool obstacle_detected = false;
-	for(int i=0;i<NB_US;i++){
-		obstacle_detected = obstacle_detected || tab_ultrasound[i]->obstacleDetected();
+	if(navigator.get_move_state() != INITIAL_TURN){
+		for(int i=0;i<NB_US;i++){
+			obstacle_detected = obstacle_detected || tab_ultrasound[i]->obstacleDetected();
+		}
 	}
 	return obstacle_detected;
 }
