@@ -38,16 +38,19 @@ const int SPARE4 = 7;
 const int DYNAMIXEL_CONTROL = 30;
 const int DYNAMIXEL_ID =1;
 
-const int EMERGENCY_BRAKE = 1800;
-const int ACCEL_MAX = 500;
+const int EMERGENCY_BRAKE = 2500;
+const int ACCEL_MAX = 800;
 const int ACCEL_MAX_THROW = 100;
-const int SPEED_MAX = 350;
+const int SPEED_MAX = 500;
 
-const int US_RANGE = 35;
-const int US_RANGE_DIMINUSHED = 25;
+const float SPEED_REMOTE = 4;
+const float OMEGA_REMOTE = 0.02;
 
-const float ACCEL_OMEGA_MAX = 1;
-const float OMEGA_MAX = 1.5;
+const int US_RANGE = 0;
+const int US_RANGE_DIMINUSHED = 0;
+
+const float ACCEL_OMEGA_MAX = 2;
+const float OMEGA_MAX = 2.5;
 
 const float ADMITTED_OMEGA_ERROR = 0.03;
 const float ADMITTED_SPEED_ERROR = 5;
@@ -64,6 +67,8 @@ const float INCR_TO_MM = PI*WHEEL_DIAMETER/800.0;
 
 const float CONTROL_PERIOD = 0.02;
 const float NAVIGATOR_TIME_PERIOD = 0.05;
+const float REMOTE_PERIOD = 0.02;
+const float REMOTE_THRESHOLD = 40;
 
 const unsigned long THROW_DURATION = 20000;
 const unsigned long SERVO_MOVEMENT_DURATION = 1000;

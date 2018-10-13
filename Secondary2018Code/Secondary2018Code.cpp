@@ -1,5 +1,6 @@
 // Do not remove the include below
 #include "Secondary2018Code.h"
+#include "remoteControl.h"
 #include "Metro.h"
 #include "params.h"
 #include "odometry.h"
@@ -14,6 +15,7 @@ Metro navigatorTime = Metro(NAVIGATOR_TIME_PERIOD * 1000);
 void setup()
 {
 	Serial.begin(115200);
+	//Serial1.begin(115200);
 	Odometry::init();
 	MotorControl::init();
 	fsmSupervisor.init(&tiretteState);
@@ -25,14 +27,16 @@ void setup()
 // The loop function is called in an endless loop
 void loop()
 {
-	fsmSupervisor.update();
+	//fsmSupervisor.update();
 
 	if(controlTime.check()) {
 		Odometry::update();
 		MotorControl::update();
 	}
 
-	if(navigatorTime.check()) {
-		navigator.update();
-	}
+	//if(navigatorTime.check()) {
+	//	navigator.update();
+	//}
+
+	remoteController.update();
 }
