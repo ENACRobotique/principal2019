@@ -73,7 +73,7 @@ namespace MotorControl {
 		float error_speed = cons_speed - Odometry::get_speed();
 		error_integrale_speed += error_speed;
 		delta_speed = error_speed - prev_speed_error;
-		prev_speed_error = error_integrale_speed;
+		prev_speed_error = error_speed;
 		float cmd_speed = Kp_speed * error_speed + Ki_speed * error_integrale_speed + Kd_speed * delta_speed;
 
 		float error_omega = cons_omega - Odometry::get_omega();
