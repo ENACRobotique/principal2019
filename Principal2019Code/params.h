@@ -11,15 +11,15 @@
 
 const unsigned long TIME_RACE = 100000;
 
-const int ENCODEUR1_A = 21;
-const int ENCODEUR1_B = 20;
-const int ENCODEUR2_A = 17;
-const int ENCODEUR2_B = 16;
+const int ENCODEUR1_A = 2;
+const int ENCODEUR1_B = 3;
+const int ENCODEUR2_A = 4;
+const int ENCODEUR2_B = 5;
 
-const int MOT1_PWM = 6;
-const int MOT1_DIR = 5;
-const int MOT2_PWM = 29;
-const int MOT2_DIR = 28;
+const int MOT1_PWM = 7;
+const int MOT1_DIR = 6;
+const int MOT2_PWM = 9;
+const int MOT2_DIR = 8;
 
 const int SERVO1 = 39;
 const int SERVO2 = 15;
@@ -60,10 +60,12 @@ const float ADMITTED_ANGLE_ERROR = 0.01;
 
 const float MAX_DRIFT = 0.1;
 
-const float WHEEL_DIAMETER = 54.0;
-const float WHEELBASE = 199.0;
+const float WHEEL_DIAMETER = 75.5;
+const float WHEELBASE = 245;
 
-const float INCR_TO_MM = PI*WHEEL_DIAMETER/800.0;
+const float INCR_TR = 500.0;
+const float REDUCTION = 676/49;
+const float INCR_TO_MM = PI*WHEEL_DIAMETER/(INCR_TR*REDUCTION);
 
 const float CONTROL_PERIOD = 0.02;
 const float NAVIGATOR_TIME_PERIOD = 0.05;

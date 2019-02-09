@@ -28,11 +28,11 @@ namespace MotorControl {
 
 	float cons_speed;
 	float cons_omega;
-	float Ki_speed = 0.2;
-	float Kp_speed = 0.5;
+	float Ki_speed = 0.08;
+	float Kp_speed = 0.12;
 	float Kd_speed = 0;
-	float Ki_omega = 20;
-	float Kp_omega = 30;
+	float Ki_omega = 0 ;
+	float Kp_omega = 0;
 	float Kd_omega = 0;
 
 	float error_integrale_speed;
@@ -64,7 +64,8 @@ namespace MotorControl {
 		cons_omega = cons_speed = 0;
 		error_integrale_omega = error_integrale_speed = 0;
 		prev_omega_error = prev_speed_error = 0;
-
+		analogWriteFrequency(MOT1_PWM,29296.875);
+		analogWriteFrequency(MOT2_PWM,29296.875);
 
 	}
 
@@ -91,17 +92,17 @@ namespace MotorControl {
 		digitalWrite(MOT2_DIR, direction_sign(cmd_mot2));
 
 
-		/*Serial.print(cons_speed);
+		Serial.print(cons_speed);
 		Serial.print("\t");
-		Serial.print(Odometry::get_speed());
-		Serial.print("\t");
-		Serial.print(cons_omega);
-		Serial.print("\t");
-		Serial.println(Odometry::get_omega());
-		Serial.print("\t");
-		Serial.print(error_speed);
-		Serial.print("\t");
-		Serial.print(error_omega);
-		Serial.println("\t");*/
+		Serial.println(Odometry::get_speed());
+//		Serial.print("\t");
+//		Serial.print(cons_omega);
+//		Serial.print("\t");
+//		Serial.println(Odometry::get_omega());
+//		Serial.print("\t");
+//		Serial.println(error_speed);
+//		Serial.print("\t");
+//		Serial.print(error_omega);
+//		Serial.println("\t");
 	}
 }
