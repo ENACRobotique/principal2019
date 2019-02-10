@@ -28,11 +28,11 @@ namespace MotorControl {
 
 	float cons_speed;
 	float cons_omega;
-	float Ki_speed = 0.08;
-	float Kp_speed = 0.12;
+	float Ki_speed = 0.085;
+	float Kp_speed = 0.085;
 	float Kd_speed = 0;
-	float Ki_omega = 0 ;
-	float Kp_omega = 0;
+	float Ki_omega = 13.5 ;
+	float Kp_omega = 13.5;
 	float Kd_omega = 0;
 
 	float error_integrale_speed;
@@ -41,6 +41,7 @@ namespace MotorControl {
 	float delta_speed;
 	float delta_omega;
 	float prev_speed_error;
+	float prev_speed;
 	float prev_omega_error;
 
 	void set_cons(float speed, float omega) {
@@ -62,7 +63,7 @@ namespace MotorControl {
 		pinMode(MOT2_DIR, OUTPUT);
 		pinMode(MOT2_PWM, OUTPUT);
 		cons_omega = cons_speed = 0;
-		error_integrale_omega = error_integrale_speed = 0;
+		error_integrale_omega = error_integrale_speed = prev_speed = 0;
 		prev_omega_error = prev_speed_error = 0;
 		analogWriteFrequency(MOT1_PWM,29296.875);
 		analogWriteFrequency(MOT2_PWM,29296.875);
@@ -73,9 +74,12 @@ namespace MotorControl {
 
 		float error_speed = cons_speed - Odometry::get_speed();
 		error_integrale_speed += error_speed;
-		delta_speed = error_speed - prev_speed_error;
+		//delta_speed = error_speed - prev_speed_error;
+		delta_speed = Odometry::get_speed() - prev_speed;//best Kd ?
+		prev_speed = Odometry::get_speed();
+
 		prev_speed_error = error_speed;
-		float cmd_speed = Kp_speed * error_speed + Ki_speed * error_integrale_speed + Kd_speed * delta_speed;
+		float cmd_speed = Kp_speed * error_speed + Ki_speed * error_integrale_speed - Kd_speed * delta_speed;
 
 		float error_omega = cons_omega - Odometry::get_omega();
 		error_integrale_omega += error_omega;
@@ -92,9 +96,9 @@ namespace MotorControl {
 		digitalWrite(MOT2_DIR, direction_sign(cmd_mot2));
 
 
-		Serial.print(cons_speed);
-		Serial.print("\t");
-		Serial.println(Odometry::get_speed());
+//		Serial.print(cons_speed);
+//		Serial.print("\t");
+//		Serial.println(Odometry::get_speed());
 //		Serial.print("\t");
 //		Serial.print(cons_omega);
 //		Serial.print("\t");

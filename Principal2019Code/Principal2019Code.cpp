@@ -15,8 +15,8 @@ Metro navigatorTime = Metro(NAVIGATOR_TIME_PERIOD * 1000);
 Metro asservTime = Metro((unsigned long)2*1000);
 
 int i=0;
-float tab[4] = {400, 0, -400, 0};
-
+float tab_speed[2] = {300,300};
+float tab_omega[2] = {3.14/2.,3.14/2.};
 //The setup function is called once at startup of the sketch
 void setup()
 {
@@ -42,8 +42,8 @@ void loop()
 	}
 
 	if(asservTime.check()){
-		MotorControl::set_cons(tab[i], 0);
-		i=(i+1)%4;
+		MotorControl::set_cons(tab_speed[i],tab_omega[i]);
+		i=(i+1)%2;
 	}
 	//if(navigatorTime.check()) {
 	//	navigator.update();
