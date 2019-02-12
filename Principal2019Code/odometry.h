@@ -14,6 +14,7 @@ namespace Odometry {
 
 	void update();
 	void init();
+	void reset();
 
 	void set_pos(float x, float y, float theta);
 

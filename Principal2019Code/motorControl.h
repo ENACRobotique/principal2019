@@ -11,7 +11,7 @@
 namespace MotorControl {
 	void update();
 	void init();
-
+	void reset();
 	float get_cons_speed();
 	float get_cons_omega();
 

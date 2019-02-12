@@ -32,6 +32,13 @@ namespace Odometry{
 
 	}
 
+	void reset(){
+		_incr1 = 0;
+		_incr2 = 0;
+		pos_x = pos_y = pos_theta = speed = omega = 0;
+
+	}
+
 	void isr1() {
 		if(digitalRead(ENCODEUR1_B)) {
 			//_incr1++;
@@ -79,6 +86,7 @@ namespace Odometry{
 		pos_y = y;
 		pos_theta = PI*theta/180;
 	}
+
 
 	void update() {
 		cli();

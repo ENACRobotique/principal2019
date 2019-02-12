@@ -70,6 +70,14 @@ namespace MotorControl {
 
 	}
 
+	void reset() {
+		cons_omega = cons_speed = 0;
+		error_integrale_omega = error_integrale_speed = prev_speed = 0;
+		prev_omega_error = prev_speed_error = 0;
+		analogWrite(MOT1_PWM, 0);
+		analogWrite(MOT2_PWM, 0);
+	}
+
 	void update() {
 
 		float error_speed = cons_speed - Odometry::get_speed();
