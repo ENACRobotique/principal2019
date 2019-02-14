@@ -17,7 +17,7 @@ Metro asservTime = Metro((unsigned long)0.5*1000);
 
 unsigned long t0;
 float temps = 12000;
-float vitesse_init = 200;
+float vitesse_init = -100;
 float vitesse = vitesse_init;
 //The setup function is called once at startup of the sketch
 void setup()
