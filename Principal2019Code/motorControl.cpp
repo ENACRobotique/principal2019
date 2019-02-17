@@ -49,6 +49,11 @@ namespace MotorControl {
 		cons_omega = omega;
 	}
 
+	void set_radius(float speed, float radius){
+		cons_speed = speed;
+		cons_omega = speed/radius;  //omega=V/R ?
+	}
+
 	float get_cons_speed(){
 		return cons_speed;
 	}

@@ -16,6 +16,7 @@ namespace MotorControl {
 	float get_cons_omega();
 
 	void set_cons(float speed, float omega);
+	void set_radius(float speed, float radius);
 }
 
 
