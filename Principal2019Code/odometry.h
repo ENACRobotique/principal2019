@@ -21,6 +21,7 @@ namespace Odometry {
 	float get_pos_x();
 	float get_pos_y();
 	float get_pos_theta();
+	float normalizeAngle(float angle);
 	float get_speed();
 	float get_omega();
 }

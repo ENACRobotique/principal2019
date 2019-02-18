@@ -70,7 +70,7 @@ namespace Odometry{
 	}
 
 	float get_pos_theta(){
-		return pos_theta;
+		return normalizeAngle(pos_theta);
 	}
 
 	float get_speed(){
@@ -87,6 +87,13 @@ namespace Odometry{
 		pos_theta = PI*theta/180;
 	}
 
+	float normalizeAngle(float angle)
+	{
+	    float newAngle = angle;
+	    while (newAngle <= -PI) newAngle += TWO_PI;
+	    while (newAngle > PI) newAngle -= TWO_PI;
+	    return newAngle;
+	}
 
 	void update() {
 		cli();
