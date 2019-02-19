@@ -9,6 +9,7 @@
 #include "Navigator.h"
 #include "StateMachine/FSMSupervisor.h"
 #include "StateMachine/TiretteState.h"
+#include "communication.h"
 Metro controlTime = Metro((unsigned long)(CONTROL_PERIOD * 1000));
 Metro navigatorTime = Metro(NAVIGATOR_TIME_PERIOD * 1000);
 
@@ -75,23 +76,9 @@ void loop()
 	}
 	if(navigatorTime.check()) {
 	//	navigator.update();
-		int x = Odometry::get_pos_x();
-		int y = Odometry::get_pos_y();
-		int theta_com = (Odometry::get_pos_theta() + PI) * 1000;
-		uint8_t buffer[9];
 
-		buffer[0] = 0xFF;
-		buffer[1] = 0x01;
-		buffer[2] = (x & 0xFF00)>>8;
-		buffer[3] = x & 0x00FF;
-		buffer[4] = (y & 0xFF00)>>8;
-		buffer[5] = y & 0xFF;
-		buffer[6] = (theta_com & 0xFF00)>>8;
-		buffer[7] = theta_com & 0xFF;
-		buffer[8] = '\n';
-
-		Serial1.write(buffer, 9);
-
+		Message message = make_pos_vel_message(Odometry::get_pos_x(), Odometry::get_pos_y(), Odometry::get_pos_theta(), Odometry::get_speed(), Odometry::get_omega());
+		send_message(message);
 	}
 
 	//remoteController.update();
