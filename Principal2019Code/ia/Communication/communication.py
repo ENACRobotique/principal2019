@@ -99,13 +99,29 @@ class Communication:
         self.ser = serial.Serial(SERIAL_PATH,SERIAL_BAUDRATE, timeout = TIMEOUT)
 
     def receive_message(self):
+        waiting = 0
+
         
-        b_header1 = self.ser.read()
-        if b_header1 == '0xFF':
-            b_header2 = self.ser.read():
-                if b_header2 == '0xFF':
-                    b_length = self.ser.read():
-                        payload = self.ser.read(bitstring.Bitstream(b_length).unpack('uint16')
+        if !waiting:
+	        b_header1 = self.ser.read()
+	        if b_header1 == '0xFF':
+	            b_header2 = self.ser.read():
+	                if b_header2 == '0xFF':
+	                    b_length = self.ser.read()
+	                    b_length = bitstring.Bitstream(b_length).unpack('uint8')
+	                    if ser.inWaiting() >= b_length:
+	                    	payload_extended = self.ser.read(b_length)
+
+	                        waiting = 0
+	                    else:
+	                        waiting = 1
+	    else : 
+	    	if sr.inWaiting() >= b_length:
+	    		payload_extended = self.ser.read(b_length)
+	    		waiting = 0
+
+
+
 
 
 
