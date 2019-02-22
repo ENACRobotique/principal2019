@@ -72,7 +72,7 @@ void loop()
 
 	if(asservTime.check()){
 		//Serial1.println(Odometry::get_pos_x());
-		Serial.println(Odometry::get_pos_theta());
+		//Serial.println(Odometry::get_pos_theta());
 	}
 	if(navigatorTime.check()) {
 	//	navigator.update();

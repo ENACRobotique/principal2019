@@ -16,6 +16,13 @@
 #include <HardwareSerial.h>
 #include "params.h"
 
+#define SPEED_ADDER (1<<15)
+#define XY_ADDER (1<<15)
+#define RADIAN_TO_MSG_FACTOR 1000
+#define RADIAN_TO_MSG_ADDER PI
+#define ANGULAR_SPEED_TO_MSG_FACTOR ((1<<15)/30.0) //max omega=30rad/s
+#define ANGULAR_SPEED_TO_MSG_ADDER (1<<15) //split uint16 in two
+
 enum MessagesID{
 	POS_VEL,
 	BUTTONS,
