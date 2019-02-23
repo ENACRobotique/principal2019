@@ -8,6 +8,8 @@
 #include "communication.h"
 
 
+Velocity _velocity;
+
 ReceivingState receiving_state = IDLE;
 
 Message make_pos_vel_message(float x, float y, float theta, float speed, float omega) {
@@ -25,13 +27,13 @@ Message make_pos_vel_message(float x, float y, float theta, float speed, float o
 		checksum += msg.payload.data[i];
 	}
 	 //checksum = ~checksum; //cf AX12 protocol
-	Serial.print("uninverted: ");
-	Serial.print(checksum);
+	//Serial.print("uninverted: ");
+	//Serial.print(checksum);
 
 	checksum = ~checksum;
 	 msg.checksum = checksum;
-	 Serial.print("\tinverted: ");
-	 Serial.println(checksum);
+	 //Serial.print("\tinverted: ");
+	 //Serial.println(checksum);
 	 return msg;
 }
 
@@ -44,3 +46,70 @@ void send_message(Message msg){
 
 	Serial1.write(buf, msg.length + 3);
 }
+
+void velocity_decode(Message* p_message, Velocity* p_velocity){
+	uint16_t speed_readed;
+	uint16_t omega_readed;
+	speed_readed = (p_message->payload).data[0];
+	speed_readed = (speed_readed<<8) | (p_message->payload).data[1];
+	p_velocity->speed = (float)speed_readed - SPEED_ADDER;
+
+	omega_readed = (p_message->payload).data[2];
+	omega_readed = (omega_readed<<8) | (p_message->payload).data[3];
+	p_velocity->omega = ((float)omega_readed - ANGULAR_SPEED_TO_MSG_ADDER) / ANGULAR_SPEED_TO_MSG_FACTOR;
+
+}
+
+//------------------------------Lecture message--------------------------------
+
+void receive_message(Message* p_message){
+	uint8_t b;
+	uint8_t checksum_readed;
+	p_message->inprogress = 1;
+	if(Serial1.available()>p_message->length){
+		switch(p_message->state){
+		case IDLE:
+			if((b=Serial1.read())==0xFF){
+				p_message->state = INIT1;
+			}
+			break;
+		case INIT1:
+			if((b=Serial1.read())==0xFF){
+				p_message->state = INIT2;
+			}
+			else {
+				p_message->state = IDLE;
+			}
+			break;
+		case INIT2:
+			p_message->length = Serial1.read();
+			p_message->checksum += p_message->length;
+			p_message->state = READ;
+			break;
+		case READ:
+			p_message->id = Serial1.read();
+			p_message->checksum += p_message->id;
+			for (int i =0; i< p_message->length-2; i++){
+				(p_message->payload).data[i] = Serial1.read();
+				p_message->checksum += (p_message->payload).data[i];
+			}
+			checksum_readed = Serial1.read();
+			if(checksum_readed==p_message->checksum){
+				p_message->inprogress = 0;
+			}
+			p_message->length = 0;
+			p_message->id = 0;
+			p_message->checksum = 0;
+
+			break;
+		}
+	}
+}
+
+
+
+
+
+
+
+

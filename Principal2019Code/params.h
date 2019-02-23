@@ -85,6 +85,4 @@ const int ORANGE = !GREEN;
 
 const int NB_US = 4;
 
-const HardwareSerial RASPI_COMMUNICATION_SERIAL = Serial1;
-const int RASPI_COMMUNICATION_BAUDRATE = 115200;
 #endif /* PARAMS_H_ */

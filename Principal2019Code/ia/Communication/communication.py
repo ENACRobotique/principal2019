@@ -2,6 +2,8 @@ import bitstring
 from math import pi
 from enum import Enum
 import serial
+import numpy as np
+import robot
 
 RADIAN_TO_MSG_ADDER = pi
 RADIAN_TO_MSG_FACTOR = 1000
@@ -13,44 +15,36 @@ SERIAL_BAUDRATE = 115200
 SERIAL_PATH = "/dev/ttyUSB0"
 TIMEOUT = 0.01
 
-class RobotPosition:
 
-    def __init__(self, x=0, y=0, theta=0, speed=0, omega=0):
-        self._x = x
-        self._y = y 
-        self._theta = theta
-        self._speed = speed
-        self._omega = omega
+class MakeVelocityMessage:
 
-    def __repr__(self):
-        return('x={} ; y={} ; theta={} ; speed={} ; omega={}'.format(self.x, self.y, self.theta, self.speed, self.omega))
-    
-    def update(self, x, y, theta, speed, omega):
-        self._x = x
-        self._y = y
-        self._theta = theta
-        self._speed = speed
-        self._omega = omega
+    def __init__(self):
+        self._speed = None
+        self._omega = None
 
-    @property
-    def x(self):
-        return self._x
-
-    @property
-    def y(self):
-        return self._y
-
-    @property
-    def theta(self):
-        return self._theta
 
     @property
     def speed(self):
-        return self._speed
+        return self._speed + SPEED_ADDER
 
     @property
     def omega(self):
-        return self._omega
+        return (self._omega * ANGULAR_SPEED_TO_MSG_FACTOR) + ANGULAR_SPEED_TO_MSG_ADDER
+
+    def update(self, speed, omega):
+        self._speed = speed
+        self._omega = omega
+
+
+    def serial_encode(self):
+        
+        id_message = Type.VELOCITY
+        lenght = 6
+        checksum = ~(np.uint8(lenght)+np.uint8(id_message.value)+np.uint8(self.speed)+np.uint8(self.omega)) & 0xFF
+        s = bitstring.pack('uintle:8, uintle:8, uintle:8, uintle:8, uintle:16, uintle:16, uintle:8',
+        0xFF, 0xFF, lenght, id_message.value, self.speed, self.omega, checksum)
+        return s
+
 
 
 class PositionReceived:
@@ -88,15 +82,16 @@ class PositionReceived:
         self._x, self._y, self._theta, self._speed, self._omega = s.unpack(
             'uintle:16, uintle:16, uintle:16, uintle:16, uintle:16')
 
-    def serial_encode(self):
-        s = bitstring.BitStream('uintle:16, uintle:16, uintle:16, uintle:16, uintle:16',
-        self._x, self._y, self._theta, self._speed, self._omega )
+    
 
 
 class Type(Enum):
-    POS_VEL = 0
-    BUTTONS = 1
-    VOLTAGE = 2
+    #up messages
+    POS_VEL = 0 
+    BUTTONS = 1 
+    VOLTAGE = 2 
+    #down messages
+    VELOCITY = 3 
 
 
 
@@ -109,7 +104,7 @@ class StateReceive(Enum):
     INIT2 = 2
     READ = 3
 
-class Communication:
+class CommunicationReceived:
 
     def __init__(self):
         self.ser = serial.Serial(SERIAL_PATH,SERIAL_BAUDRATE, timeout = TIMEOUT)
@@ -175,5 +170,16 @@ class Communication:
 
 
 
+#--------------------------------------------Envoie des trames----------------------------------------------
 
 
+
+class CommunicationSend:
+
+    def __init__(self):
+        self.ser = serial.Serial(SERIAL_PATH,SERIAL_BAUDRATE, timeout = TIMEOUT)
+
+
+    def send_message(self, message):
+        self.ser.write(message)
+        

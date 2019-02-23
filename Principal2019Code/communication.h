@@ -24,9 +24,12 @@
 #define ANGULAR_SPEED_TO_MSG_ADDER (1<<15) //split uint16 in two
 
 enum MessagesID{
+	//up
 	POS_VEL,
 	BUTTONS,
-	VOLTAGE
+	VOLTAGE,
+	//down
+	VELOCITY
 };
 
 enum ReceivingState{
@@ -55,15 +58,26 @@ union  __attribute__((__packed__)) Payload{
 	uint8_t data[sizeof(Pos_vel)];
 };
 
+typedef struct Velocity{
+	float speed;
+	float omega;
+}Velocity;
+
 typedef struct Message{
 	uint8_t length;
 	uint8_t id;
 	union Payload payload;
 	uint8_t checksum;
+	ReceivingState state;
+	int inprogress;
 }Message;
 
 Message make_pos_vel_message(float x, float y, float theta, float speed, float omega);
 
 void send_message(Message msg);
+void receive_message(Message* p_message);
+void velocity_decode(Message* p_message, Velocity* p_velocity);
+
+extern Velocity _velocity;
 
 #endif

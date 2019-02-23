@@ -20,6 +20,10 @@ unsigned long t0;
 float temps = 20*1000; //temps en ms
 float vitesse_init = 1.14;
 float vitesse = vitesse_init;
+
+
+Message downmessage;
+
 //The setup function is called once at startup of the sketch
 void setup()
 {
@@ -33,6 +37,8 @@ void setup()
 	controlTime.reset();
 	//navigatorTime.reset();
 	t0 = millis();
+
+
 
 }
 
@@ -77,8 +83,18 @@ void loop()
 	if(navigatorTime.check()) {
 	//	navigator.update();
 
-		Message message = make_pos_vel_message(Odometry::get_pos_x(), Odometry::get_pos_y(), Odometry::get_pos_theta(), Odometry::get_speed(), Odometry::get_omega());
-		send_message(message);
+		receive_message(&downmessage);
+		if(!(downmessage.inprogress)){
+			if(downmessage.id==VELOCITY){
+				velocity_decode(&downmessage, &_velocity);
+				Serial.print(_velocity.speed);
+				Serial.println(_velocity.omega);
+			}
+		}
+
+
+		Message upmessage = make_pos_vel_message(Odometry::get_pos_x(), Odometry::get_pos_y(), Odometry::get_pos_theta(), Odometry::get_speed(), Odometry::get_omega());
+		send_message(upmessage);
 	}
 
 	//remoteController.update();
