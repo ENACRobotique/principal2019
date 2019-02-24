@@ -7,10 +7,10 @@
 
 #include "communication.h"
 
-
 Velocity _velocity;
 
-ReceivingState receiving_state = IDLE;
+Message _message;
+ReceivingState _receiving_state = IDLE;
 
 Message make_pos_vel_message(float x, float y, float theta, float speed, float omega) {
 	Message msg;
@@ -47,69 +47,82 @@ void send_message(Message msg){
 	Serial1.write(buf, msg.length + 3);
 }
 
-void velocity_decode(Message* p_message, Velocity* p_velocity){
-	uint16_t speed_readed;
-	uint16_t omega_readed;
-	speed_readed = (p_message->payload).data[0];
-	speed_readed = (speed_readed<<8) | (p_message->payload).data[1];
-	p_velocity->speed = (float)speed_readed - SPEED_ADDER;
-
-	omega_readed = (p_message->payload).data[2];
-	omega_readed = (omega_readed<<8) | (p_message->payload).data[3];
-	p_velocity->omega = ((float)omega_readed - ANGULAR_SPEED_TO_MSG_ADDER) / ANGULAR_SPEED_TO_MSG_FACTOR;
-
+float get_omega_received(Message* p_message){
+	float omega_received = (p_message->payload.velocity.omega - ANGULAR_SPEED_TO_MSG_ADDER) / ANGULAR_SPEED_TO_MSG_FACTOR;
+	return omega_received;
 }
+
+float get_speed_received(Message* p_message){
+	float speed_received = p_message->payload.velocity.speed -SPEED_ADDER;
+	return speed_received;
+}
+
+
+//void velocity_decode(Message* p_message, Velocity* p_velocity){
+//	uint16_t speed_readed;
+//	uint16_t omega_readed;
+//	speed_readed = (p_message->payload).data[0];
+//	speed_readed = (speed_readed<<8) | (p_message->payload).data[1];
+//	p_velocity->speed = (float)speed_readed - SPEED_ADDER;
+//
+//	omega_readed = (p_message->payload).data[2];
+//	omega_readed = (omega_readed<<8) | (p_message->payload).data[3];
+//	p_velocity->omega = ((float)omega_readed - ANGULAR_SPEED_TO_MSG_ADDER) / ANGULAR_SPEED_TO_MSG_FACTOR;
+//}
+
+
 
 //------------------------------Lecture message--------------------------------
 
-void receive_message(Message* p_message){
+int receive_message(void){
+	int retour = 0; // 0 : rien à signaler. pas d'erreur. Le message n'est pas complet ou y a rien à lire
 	uint8_t b;
 	uint8_t checksum_readed;
-	p_message->inprogress = 1;
-	if(Serial1.available()>p_message->length){
-		switch(p_message->state){
-		case IDLE:
-			if((b=Serial1.read())==0xFF){
-				p_message->state = INIT1;
+	if(Serial1.available()>_message.length){
+		if(_receiving_state==IDLE){
+			b=Serial1.read();
+			if(b==0xFF){
+				_receiving_state = INIT1;
 			}
-			break;
-		case INIT1:
+		}
+		if(_receiving_state==INIT1){
 			if((b=Serial1.read())==0xFF){
-				p_message->state = INIT2;
+				_receiving_state = INIT2;
 			}
 			else {
-				p_message->state = IDLE;
+				_receiving_state = IDLE;
 			}
-			break;
-		case INIT2:
-			p_message->length = Serial1.read();
-			p_message->checksum += p_message->length;
-			p_message->state = READ;
-			break;
-		case READ:
-			p_message->id = Serial1.read();
-			p_message->checksum += p_message->id;
-			for (int i =0; i< p_message->length-2; i++){
-				(p_message->payload).data[i] = Serial1.read();
-				p_message->checksum += (p_message->payload).data[i];
+		}
+		if(_receiving_state==INIT2){
+			_message.length = Serial1.read();
+			_message.checksum = _message.length;
+			_receiving_state = READ;
+		}
+		if(_receiving_state==READ){
+			_message.id = Serial1.read();
+			_message.checksum += _message.id;
+			for (int i =0; i< _message.length-2; i++){
+				(_message.payload).data[i] = Serial1.read();
+				_message.checksum += (_message.payload).data[i];
 			}
+			_message.checksum = ~_message.checksum;
 			checksum_readed = Serial1.read();
-			if(checksum_readed==p_message->checksum){
-				p_message->inprogress = 0;
+			if(checksum_readed==_message.checksum){
+				retour = 1; // message lu et ok
 			}
-			p_message->length = 0;
-			p_message->id = 0;
-			p_message->checksum = 0;
-
-			break;
+			else{
+				retour = -1; //erreur de checksum
+			}
+			_message.length = 0;
+			_receiving_state = IDLE;
 		}
 	}
+	return retour;
 }
 
-
-
-
-
-
-
-
+void get_received_message(Message* msg) {
+	msg->checksum = _message.checksum;
+	msg->id = _message.id;
+	msg->length = _message.length;
+	memcpy(&msg->payload, &_message.payload, sizeof(Pos_vel));
+}

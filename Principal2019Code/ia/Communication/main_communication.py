@@ -12,7 +12,7 @@ if __name__ == '__main__':
 	positionReceived = com.PositionReceived()
 
 	messageVelocity = com.MakeVelocityMessage()
-	messageVelocity.update(100,0)
+	messageVelocity.update(0,-10)
 	downCommunication.send_message(messageVelocity.serial_encode())
 	while True:
 

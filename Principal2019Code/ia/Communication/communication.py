@@ -2,7 +2,6 @@ import bitstring
 from math import pi
 from enum import Enum
 import serial
-import numpy as np
 import robot
 
 RADIAN_TO_MSG_ADDER = pi
@@ -25,11 +24,11 @@ class MakeVelocityMessage:
 
     @property
     def speed(self):
-        return self._speed + SPEED_ADDER
+        return int(self._speed + SPEED_ADDER)
 
     @property
     def omega(self):
-        return (self._omega * ANGULAR_SPEED_TO_MSG_FACTOR) + ANGULAR_SPEED_TO_MSG_ADDER
+        return int((self._omega * ANGULAR_SPEED_TO_MSG_FACTOR) + ANGULAR_SPEED_TO_MSG_ADDER)
 
     def update(self, speed, omega):
         self._speed = speed
@@ -40,10 +39,14 @@ class MakeVelocityMessage:
         
         id_message = Type.VELOCITY
         lenght = 6
-        checksum = ~(np.uint8(lenght)+np.uint8(id_message.value)+np.uint8(self.speed)+np.uint8(self.omega)) & 0xFF
-        s = bitstring.pack('uintle:8, uintle:8, uintle:8, uintle:8, uintle:16, uintle:16, uintle:8',
-        0xFF, 0xFF, lenght, id_message.value, self.speed, self.omega, checksum)
-        return s
+        header = bitstring.pack('uintle:8, uintle:8', 0xFF, 0xFF)
+        s = bitstring.pack('uintle:8, uintle:8, uintle:16, uintle:16', lenght, id_message.value, self.speed, self.omega)
+        checksum = bitstring.pack('uintle:8', (~sum(s.tobytes()) & 0xFF))
+        print(checksum)
+        #checksum = ~(np.uint8(lenght)+np.uint8(id_message.value)+np.uint8(self.speed)+np.uint8(self.omega)) & 0xFF
+        print(lenght, id_message.value, self.speed, self.omega)
+        data = header+s+checksum
+        return data
 
 
 
@@ -181,5 +184,5 @@ class CommunicationSend:
 
 
     def send_message(self, message):
-        self.ser.write(message)
+        self.ser.write(message.tobytes())
         

@@ -83,18 +83,21 @@ void loop()
 	if(navigatorTime.check()) {
 	//	navigator.update();
 
-		receive_message(&downmessage);
-		if(!(downmessage.inprogress)){
+		if(receive_message()==1){
+			get_received_message(&downmessage);
 			if(downmessage.id==VELOCITY){
-				velocity_decode(&downmessage, &_velocity);
-				Serial.print(_velocity.speed);
-				Serial.println(_velocity.omega);
+				float speed = get_speed_received(&downmessage);
+				float omega = get_omega_received(&downmessage);
+				//velocity_decode(&downmessage, &_velocity);
+				Serial.print(speed);
+				Serial.print("\t");
+				Serial.println(omega);
 			}
 		}
 
 
-		Message upmessage = make_pos_vel_message(Odometry::get_pos_x(), Odometry::get_pos_y(), Odometry::get_pos_theta(), Odometry::get_speed(), Odometry::get_omega());
-		send_message(upmessage);
+		//Message upmessage = make_pos_vel_message(Odometry::get_pos_x(), Odometry::get_pos_y(), Odometry::get_pos_theta(), Odometry::get_speed(), Odometry::get_omega());
+		//send_message(upmessage);
 	}
 
 	//remoteController.update();
