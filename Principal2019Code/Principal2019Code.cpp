@@ -67,12 +67,12 @@ void loop()
 		MotorControl::update();
 	}
 
-	if ((millis() - t0)< temps){
-		MotorControl::set_radius(300,-250);
-	}
-	else{
-		MotorControl::set_cons(0,0);
-	}
+//	if ((millis() - t0)< temps){
+//		MotorControl::set_radius(300,-250);
+//	}
+//	else{
+//		MotorControl::set_cons(0,0);
+//	}
 
 
 
@@ -85,19 +85,24 @@ void loop()
 
 		if(receive_message()==1){
 			get_received_message(&downmessage);
+
+			if(downmessage.id==POSITION){
+				float x = get_x_received(&downmessage);
+				float y = get_y_received(&downmessage);
+				float theta = get_theta_received(&downmessage);
+				Odometry::set_pos(x, y, theta);
+			}
+
 			if(downmessage.id==VELOCITY){
-				float speed = get_speed_received(&downmessage);
 				float omega = get_omega_received(&downmessage);
-				//velocity_decode(&downmessage, &_velocity);
-				Serial.print(speed);
-				Serial.print("\t");
-				Serial.println(omega);
+				float speed = get_speed_received(&downmessage);
+				MotorControl::set_cons(speed, omega);
 			}
 		}
 
 
-		//Message upmessage = make_pos_vel_message(Odometry::get_pos_x(), Odometry::get_pos_y(), Odometry::get_pos_theta(), Odometry::get_speed(), Odometry::get_omega());
-		//send_message(upmessage);
+		Message upmessage = make_pos_vel_message(Odometry::get_pos_x(), Odometry::get_pos_y(), Odometry::get_pos_theta(), Odometry::get_speed(), Odometry::get_omega());
+		send_message(upmessage);
 	}
 
 	//remoteController.update();

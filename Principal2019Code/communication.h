@@ -29,7 +29,8 @@ enum MessagesID{
 	BUTTONS,
 	VOLTAGE,
 	//down
-	VELOCITY
+	VELOCITY,
+	POSITION
 };
 
 enum ReceivingState{
@@ -57,10 +58,18 @@ typedef struct __attribute__((__packed__)) Velocity{
 	uint16_t omega;
 }Velocity;
 
+typedef struct __attribute__((__packed__)) Posistion{
+	uint16_t x;
+	uint16_t y;
+	uint16_t theta;
+}Position;
+
+
 union  __attribute__((__packed__)) Payload{
-	Pos_vel pos_vel;
+	Pos_vel pos_vel; //
 	Buttons buttons;
 	Velocity velocity;
+	Position position;
 	uint8_t data[sizeof(Pos_vel)];
 };
 
@@ -76,8 +85,14 @@ Message make_pos_vel_message(float x, float y, float theta, float speed, float o
 void send_message(Message msg);
 int receive_message();
 void get_received_message(Message* msg);
+
 float get_omega_received(Message* p_message);
 float get_speed_received(Message* p_message);
+
+float get_x_received(Message* p_message);
+float get_y_received(Message* p_message);
+float get_theta_received(Message* p_message);
+
 
 extern Velocity _velocity;
 

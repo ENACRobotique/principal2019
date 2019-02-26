@@ -26,15 +26,9 @@ Message make_pos_vel_message(float x, float y, float theta, float speed, float o
 	for(size_t i=0; i<sizeof(Pos_vel);i++){
 		checksum += msg.payload.data[i];
 	}
-	 //checksum = ~checksum; //cf AX12 protocol
-	//Serial.print("uninverted: ");
-	//Serial.print(checksum);
-
 	checksum = ~checksum;
-	 msg.checksum = checksum;
-	 //Serial.print("\tinverted: ");
-	 //Serial.println(checksum);
-	 return msg;
+	msg.checksum = checksum;
+	return msg;
 }
 
 void send_message(Message msg){
@@ -53,22 +47,24 @@ float get_omega_received(Message* p_message){
 }
 
 float get_speed_received(Message* p_message){
-	float speed_received = p_message->payload.velocity.speed -SPEED_ADDER;
+	float speed_received = p_message->payload.velocity.speed - SPEED_ADDER;
 	return speed_received;
 }
 
+float get_x_received(Message* p_message){
+	float x_received = p_message->payload.position.x - XY_ADDER;
+	return x_received;
+}
 
-//void velocity_decode(Message* p_message, Velocity* p_velocity){
-//	uint16_t speed_readed;
-//	uint16_t omega_readed;
-//	speed_readed = (p_message->payload).data[0];
-//	speed_readed = (speed_readed<<8) | (p_message->payload).data[1];
-//	p_velocity->speed = (float)speed_readed - SPEED_ADDER;
-//
-//	omega_readed = (p_message->payload).data[2];
-//	omega_readed = (omega_readed<<8) | (p_message->payload).data[3];
-//	p_velocity->omega = ((float)omega_readed - ANGULAR_SPEED_TO_MSG_ADDER) / ANGULAR_SPEED_TO_MSG_FACTOR;
-//}
+float get_y_received(Message* p_message){
+	float y_received = p_message->payload.position.y - XY_ADDER;
+	return y_received;
+}
+
+float get_theta_received(Message* p_message){
+	float theta_received = (p_message->payload.position.theta/RADIAN_TO_MSG_FACTOR - RADIAN_TO_MSG_ADDER);
+	return theta_received;
+}
 
 
 
