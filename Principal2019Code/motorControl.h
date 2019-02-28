@@ -8,7 +8,9 @@
 #ifndef MOTORCONTROL_H_
 #define MOTORCONTROL_H_
 
+
 namespace MotorControl {
+	extern unsigned long time_last_command;
 	void update();
 	void init();
 	void reset();

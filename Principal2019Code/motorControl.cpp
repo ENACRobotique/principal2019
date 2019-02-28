@@ -11,6 +11,8 @@
 #include "params.h"
 #include "motorControl.h"
 
+
+
 int clamp(int inf, int sup, float x) {
 	return min(sup, max(inf, x));
 }
@@ -25,6 +27,8 @@ int direction_sign(int nb) {
 }
 
 namespace MotorControl {
+
+	unsigned long time_last_command;
 
 	float cons_speed;
 	float cons_omega;
@@ -85,7 +89,10 @@ namespace MotorControl {
 
 	void update() {
 
-
+		if(millis()-time_last_command > 2000){
+			cons_speed = 0;
+			cons_omega = 0;
+		}
 
 		float error_speed = cons_speed - Odometry::get_speed();
 		error_integrale_speed += error_speed;
