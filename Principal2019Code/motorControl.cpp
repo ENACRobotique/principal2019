@@ -85,6 +85,8 @@ namespace MotorControl {
 
 	void update() {
 
+
+
 		float error_speed = cons_speed - Odometry::get_speed();
 		error_integrale_speed += error_speed;
 		//delta_speed = error_speed - prev_speed_error;
@@ -100,26 +102,29 @@ namespace MotorControl {
 		prev_omega_error = error_omega;
 		float cmd_omega = Kp_omega * error_omega + Ki_omega * error_integrale_omega + Kd_omega * delta_omega;
 
-		int cmd_mot1 = clamp(-255, 255, cmd_speed + cmd_omega);
-		int cmd_mot2 = -clamp(-255, 255, cmd_speed - cmd_omega);
+		int cmd_mot1 = clamp(-240, 240, cmd_speed + cmd_omega);
+		int cmd_mot2 = -clamp(-240, 240, cmd_speed - cmd_omega);
 
-		analogWrite(MOT1_PWM, abs(cmd_mot1));
+		analogWrite(MOT1_PWM, abs(cmd_mot1)-1);
 		digitalWrite(MOT1_DIR, direction_sign(cmd_mot1));
-		analogWrite(MOT2_PWM, abs(cmd_mot2));
+		analogWrite(MOT2_PWM, abs(cmd_mot2)-1);
 		digitalWrite(MOT2_DIR, direction_sign(cmd_mot2));
 
-
-//		Serial.print(cons_speed);
-//		Serial.print("\t");
-//		Serial.println(Odometry::get_speed());
-//		Serial.print("\t");
-//		Serial.print(cons_omega);
-//		Serial.print("\t");
-//		Serial.println(Odometry::get_omega());
-//		Serial.print("\t");
-//		Serial.println(error_speed);
-//		Serial.print("\t");
-//		Serial.print(error_omega);
-//		Serial.println("\t");
+		Serial.print("cons speed :");
+		Serial.print(cons_speed);
+		Serial.print("\t speed : ");
+		Serial.print(Odometry::get_speed());
+		Serial.print("\t cons omega : ");
+		Serial.print(cons_omega);
+		Serial.print("\t omega : ");
+		Serial.print(Odometry::get_omega());
+		Serial.print("\terror_speed: ");
+		Serial.print(error_speed);
+		Serial.print("\terror_speed: ");
+		Serial.print(error_omega);
+		Serial.print("\tcmd1: ");
+		Serial.print(cmd_mot1);
+		Serial.print("\tcmd2: ");
+		Serial.println(cmd_mot2);
 	}
 }
