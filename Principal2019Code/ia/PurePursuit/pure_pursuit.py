@@ -36,6 +36,6 @@ class PurePursuit:
         p_robot = Point(current_robot.x, current_robot.y)
         theta = current_robot.theta
         index, p_goal = self.path.find_goal_point(p_robot, look_ahead_distance)
-        x_body = cos(theta)*p_goal.x + sin(theta)*p_goal.y - p_robot.x
+        x_body = cos(theta)*p_goal.x - sin(theta)*p_goal.y - p_robot.x
         omega_control = ((2*current_robot.speed)/(look_ahead_distance**2))*x_body
         return omega_control

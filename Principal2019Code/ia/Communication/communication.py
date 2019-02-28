@@ -11,7 +11,7 @@ XY_ADER = 1<<15
 ANGULAR_SPEED_TO_MSG_FACTOR = (1<<15)/30 #max omega=30rad/s  
 ANGULAR_SPEED_TO_MSG_ADDER = (1<<15) #split uint16 in two    
 SERIAL_BAUDRATE = 115200
-SERIAL_PATH = "/dev/ttyUSB0"
+SERIAL_PATH = "/dev/ttyAMA0"
 TIMEOUT = 0.01
 
 

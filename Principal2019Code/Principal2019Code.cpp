@@ -48,20 +48,21 @@ void setup()
 void loop()
 {
 	//fsmSupervisor.update();
-	if (Serial.available()){
-		char receive = Serial.read();
-		if (receive == 'r'){
-			Odometry::reset();
-			MotorControl::reset();
-			t0=millis();
-			Serial.println("reset de la teensy");
-			vitesse = vitesse_init;
-		}
-		if (receive == 's'){
-			Serial.println("Stop");
-			vitesse = 0;
-		}
-	}
+//	if (Serial.available()){
+//		char receive = Serial.read();
+//		if (receive == 'r'){
+//			Odometry::reset();
+//			MotorControl::reset();
+//			t0=millis();
+//			Serial.println("reset de la teensy");
+//			vitesse = vitesse_init;
+//		}
+//		if (receive == 's'){
+//			Serial.println("Stop");
+//			vitesse = 0;
+//		}
+//	}
+
 	if(controlTime.check()) {
 		Odometry::update();
 		MotorControl::update();
@@ -75,16 +76,20 @@ void loop()
 //	}
 
 
+//
+//	if(asservTime.check()){
+//		Serial1.println(Odometry::get_pos_x());
+//		Serial.println(Odometry::get_pos_theta());
+//	}
 
-	if(asservTime.check()){
-		//Serial1.println(Odometry::get_pos_x());
-		//Serial.println(Odometry::get_pos_theta());
-	}
+
 	if(navigatorTime.check()) {
 	//	navigator.update();
 
+
 		if(receive_message()==1){
 			get_received_message(&downmessage);
+
 
 			if(downmessage.id==POSITION){
 				float x = get_x_received(&downmessage);
@@ -94,8 +99,14 @@ void loop()
 			}
 
 			if(downmessage.id==VELOCITY){
+				MotorControl::time_last_command = millis();
 				float omega = get_omega_received(&downmessage);
 				float speed = get_speed_received(&downmessage);
+//				Serial.print(omega);
+//				Serial.print("\t");
+//				Serial.println(speed);
+				//speed = 100;
+
 				MotorControl::set_cons(speed, omega);
 			}
 		}
