@@ -29,7 +29,7 @@ class Robot:
 class PurePursuit:
 
     def __init__(self, path):
-        self.path
+        self.path = path
 
     def compute(self, current_robot, look_ahead_distance):
         p_robot = Point(current_robot.x, current_robot.y)

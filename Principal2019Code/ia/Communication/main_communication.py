@@ -22,7 +22,7 @@ if __name__ == '__main__':
 
 	positionReceived = com.PositionReceived()
 
-	#messageVelocity = com.MakeVelocityMessage()
+	messageVelocity = com.MakeVelocityMessage()
 	#messageVelocity.update(100, -1)
 	#downCommunication.send_message(messageVelocity.serial_encode())
 
@@ -31,8 +31,11 @@ if __name__ == '__main__':
 	downCommunication.send_message(messagePosition.serial_encode())
 
 	Y = np.linspace(0, 1500, 1000)
-	path = np.array([Point(0, Y[i]) for i in range(1000)])
-
+	X = np.linspace(0,0,1000)
+	path = np.array([Point(X[i], Y[i]) for i in range(1000)])
+	tracking = pp.PurePursuit(path)
+	look_ahead_distance = 200
+	
 	while True:
 
 		receive_message = upCommunication.receive_message()
@@ -42,7 +45,10 @@ if __name__ == '__main__':
 			if id_message == com.Type.POS_VEL.value:
 				positionReceived.serial_decode(payload)
 				robot.update(positionReceived.x, positionReceived.y, positionReceived.theta, positionReceived.speed, positionReceived.omega)
-
+				omega = tracking.compute(robot, look_ahead_distance)
+				messageVelocity.update(100, omega)
+				downCommunication.send_message(messageVelocity.serial_encode())
+				
 
 
 
