@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
+import sys
+path = "../Communication"
+sys.path.append(path)
 
 from math import sin, cos
 
-from path import Path, Point
+from path import Point, Path
 from robot import RobotPosition
 
 """
