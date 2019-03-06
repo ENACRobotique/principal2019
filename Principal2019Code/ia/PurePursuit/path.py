@@ -60,9 +60,19 @@ class Path:
         for i in range(0, n-1):
             self.dists[i+1] = self.dists[i] + dist(self.points[i+1], self.points[i])
 
-    def find_closest_point(self, p0):
-        dist_to_p0 = np.array([dist(p0, p) for p in self.points[self.last_passed_index:]])
+    def find_closest_point(self, p0, max_index=100):
+        dist_to_p0 = np.array([dist(p0, p) for p in self.points[self.last_passed_index:self.last_passed_index+max_index]])
         i = np.argmin(dist_to_p0) + self.last_passed_index
+        self.last_passed_index = i
+        return i
+        
+    def find_closest_point_loop(self, p0, max_index=100):
+        i = self.find_closest_point(p0, max_index)
+        end_reached = False
+        if i == len(self.points)-1 and dist(p0, self.points[0]) <= dist(p0, self.points[-1]):
+            i = 0
+            end_reached = True
+            self.last_passed_index = 0
         return i
 
     def find_goal_point(self, p0, look_ahead_distance):
@@ -71,7 +81,24 @@ class Path:
         index = index_start
         dist_to_p0 = dist(p0, p_start)
         path_length = len(self.points)
-        while index < path_length and dist_to_p0 < look_ahead_distance:
+        while index < path_length-1 and dist_to_p0 < look_ahead_distance:
             index += 1
             dist_to_p0 = dist(p0, self.points[index])
+        return index, self.points[index]
+        
+    def find_goal_point_loop(self, p0, look_ahead_distance):
+        index_start = self.find_closest_point_loop(p0)
+        p_start = self.points[index_start]
+        index = index_start
+        dist_to_p0 = dist(p0, p_start)
+        path_length = len(self.points)
+        while index < path_length-1 and dist_to_p0 < look_ahead_distance:
+            index += 1
+            dist_to_p0 = dist(p0, self.points[index])
+        if index == len(self.points)-1:
+            index = 0
+            dist_to_p0 = dist(p0, self.points[index])
+            while dist_to_p0 < look_ahead_distance:
+                index += 1
+                dist_to_p0 = dist(p0, self.points[index])
         return index, self.points[index]
