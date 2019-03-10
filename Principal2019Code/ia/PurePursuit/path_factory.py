@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from path import Point, Path
+from path import Point, Path, dist, delta
 
-from math import sin, cos, sqrt, pi, floor
+from math import sin, cos, sqrt, pi, floor, atan2
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -38,11 +38,23 @@ def plot_polyline(*args):
 #path = polyline(1000, A, B, C, D)
 
 
-def circle(Nbpoints, C, r):
+def circle(Nbpoints, C, A):
+    """
+    :param Nbpoints: int, nb of points of the path
+    :param C:  cennter of the circle
+    :param A: departure point of the path, element of the circle. ||C-A|| = R
+    :return: path, class Path
+    """
     x_c, y_c = C.x, C.y
+    x_a, y_a = A.x, A.y
+    r = dist(C, A)
+    if x_a - x_c < 1:
+        alpha = 0
+    else:
+        alpha = atan2((y_a-y_c),(x_a-x_c))
     t = np.linspace(0, 2*pi, Nbpoints)
-    X = r*np.cos(t)+x_c
-    Y = r*np.sin(t)+y_c
+    X = r*np.cos(t+alpha)+x_c
+    Y = r*np.sin(t+alpha)+y_c
     path = Path([Point(X[i], Y[i]) for i in range(Nbpoints)])
     return path
 
