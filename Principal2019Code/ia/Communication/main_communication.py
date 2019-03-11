@@ -10,10 +10,11 @@ sys.path.append(path)
 path = "../PurePursuit"
 sys.path.append(path)
 import pure_pursuit as pp
+import path_factory as pf
 from path import Path, Point
 
 if __name__ == '__main__':
-    robot = robot.RobotPosition(10, 10, 0, 0, 0)
+    robot = robot.RobotPosition(0, 0, 0, 0, 0)
     print(robot)
 
     upCommunication = com.CommunicationReceived()
@@ -27,13 +28,15 @@ if __name__ == '__main__':
 
     messagePosition.update(robot.x, robot.y, robot.theta)
     downCommunication.send_message(messagePosition.serial_encode())
-
-    Y = np.linspace(0, 1500, 1000)
-    X = np.linspace(0, 0, 1000)
-    path = Path(np.array([Point(X[i], Y[i]) for i in range(1000)]))
+    
+    Nbpoints = 1000
+    path = pf.line(Nbpoints, Point(0,0), Point(1500,0))
+    #path = pf.circle(Nbpoints, Point(0,0), Point(0,800))
+    
+    #path = pf.polyline(Nbpoints, Point(0,0), Point(0, 500), Point(500,500), Point(500,0),Point(0,0))
 
     tracking = pp.PurePursuit(path)
-    look_ahead_distance = 200
+    look_ahead_distance = 150
     _speed_tracking = 100
 
     while True:
@@ -48,7 +51,8 @@ if __name__ == '__main__':
                 robot.update(positionReceived.x, positionReceived.y, positionReceived.theta, positionReceived.speed, positionReceived.omega)
                 #print(robot)
 
-            omega = tracking.compute(robot, look_ahead_distance)
-            print("omega_cons = ", omega)
-            messageVelocity.update(_speed_tracking, omega)
+            speed, omega = tracking.compute(robot, look_ahead_distance, False)
+            print("omega_cons = ", omega, "speed_cons = ", speed)
+            
+            messageVelocity.update(speed, omega)
             downCommunication.send_message(messageVelocity.serial_encode())
