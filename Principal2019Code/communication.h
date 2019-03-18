@@ -58,11 +58,18 @@ typedef struct __attribute__((__packed__)) Velocity{
 	uint16_t omega;
 }Velocity;
 
-typedef struct __attribute__((__packed__)) Posistion{
+typedef struct __attribute__((__packed__)) Position{
 	uint16_t x;
 	uint16_t y;
 	uint16_t theta;
 }Position;
+
+typedef struct __attribute__((__packed__)) US{
+	uint16_t front_left;
+	uint16_t front_right;
+	uint16_t rear_left;
+	uint16_t rear_right;
+}US;
 
 
 union  __attribute__((__packed__)) Payload{
@@ -70,6 +77,7 @@ union  __attribute__((__packed__)) Payload{
 	Buttons buttons;
 	Velocity velocity;
 	Position position;
+	US us;
 	uint8_t data[sizeof(Pos_vel)];
 };
 

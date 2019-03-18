@@ -1,7 +1,9 @@
 import serial, bitstring
+
+
 import numpy as np
 from math import sin, pi
-from time import sleep
+from time import time
 
 import communication as com
 import robot
@@ -36,9 +38,9 @@ if __name__ == '__main__':
     downCommunication.send_message(messagePosition.serial_encode())
     
     Nbpoints = 5000
-    #path = pf.line(Nbpoints, Point(0,0), Point(3000-300-305-150,0))
+    #path = pf.line(Nbpoints, Point(0,0), Point(3000-500,0))
     #path = pf.polyline(Nbpoints, Point(0,0), Point(1500,500), Point(3000-500,0))
-    #path = pf.circle(Nbpoints, Point(0,0), Point(0,800))
+    #path = pf.circle(Nbpoints, Point(0,600), 600)
     
     #list = [Point(i, -350*sin(2*pi*i/2000)) for i in np.linspace(0,2000, Nbpoints)]
     #list += [Point(i, 350*sin(2*pi*i/2000)) for i in np.linspace(2000,0, Nbpoints)]
@@ -52,8 +54,12 @@ if __name__ == '__main__':
     #path = pf.polyline(Nbpoints, Point(0,0), Point(0, 500), Point(500,500), Point(500,0),Point(0,0))
 
     tracking = pp.PurePursuit(path)
-
-    while True:
+    
+    x = []
+    y = []
+    
+    t0_test = time()
+    while time()-t0_test<40:
         
         #sleep(params.NAVIGATOR_TIME_PERIOD)
 
@@ -61,11 +67,13 @@ if __name__ == '__main__':
 
         if receive_message is not None:
             id_message, payload = receive_message
-            print(payload)
 
             if id_message == com.Type.POS_VEL.value:
                 positionReceived.serial_decode(payload)
                 robot.update(positionReceived.x, positionReceived.y, positionReceived.theta, positionReceived.speed, positionReceived.omega)
+                x.append(positionReceived.x)
+                y.append(positionReceived.y)
+                print("({}, {})".format(positionReceived.x, positionReceived.y))
                 #print(robot)
 
             speed, omega = tracking.compute(robot, False)
@@ -73,4 +81,7 @@ if __name__ == '__main__':
             
             messageVelocity.update(speed, omega)
             downCommunication.send_message(messageVelocity.serial_encode())
-    
+            
+            
+            
+    np.savez('outfile.npz', x=np.array(x), y=np.array(y))

@@ -41,7 +41,6 @@ class PurePursuit:
         
         #look_ahead_distance = max(self.look_min,dist_foresee)
         
-        print("L = ", look_ahead_distance)
         
         p_robot = Point(current_robot.x, current_robot.y)
         theta = current_robot.theta
@@ -97,7 +96,7 @@ class PurePursuit:
         """
         
         #Third test
-        if(p_goal == self.path.points[-1]):
+        if abs(dist_foresee - dist_to_end) <= p.ADMITTED_POSITION_ERROR :#(p_goal == self.path.points[-1]):
             speed_cons = max(0, abs(current_robot.speed) - p.MAX_ACCEL*p.NAVIGATOR_TIME_PERIOD)
             omega_cons = ((2*speed_cons)/(look_ahead_distance**2))*x_body
             print("proche")
