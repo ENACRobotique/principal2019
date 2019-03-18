@@ -1,18 +1,15 @@
+import sys
+
 import bitstring
 from math import pi
 from enum import Enum
 import serial
 import robot
 
-RADIAN_TO_MSG_ADDER = pi
-RADIAN_TO_MSG_FACTOR = 1000
-SPEED_ADDER = 1<<15
-XY_ADER = 1<<15
-ANGULAR_SPEED_TO_MSG_FACTOR = (1<<15)/30 #max omega=30rad/s  
-ANGULAR_SPEED_TO_MSG_ADDER = (1<<15) #split uint16 in two    
-SERIAL_BAUDRATE = 115200
-SERIAL_PATH = "/dev/ttyAMA0"
-TIMEOUT = 0.01
+path = "../../ia"
+sys.path.append(path)
+
+import params
 
 
 class MakeVelocityMessage:
@@ -23,11 +20,11 @@ class MakeVelocityMessage:
 
     @property
     def speed(self):
-        return int(self._speed + SPEED_ADDER)
+        return int(self._speed + params.SPEED_ADDER)
 
     @property
     def omega(self):
-        return int((self._omega * ANGULAR_SPEED_TO_MSG_FACTOR) + ANGULAR_SPEED_TO_MSG_ADDER)
+        return int((self._omega * params.ANGULAR_SPEED_TO_MSG_FACTOR) + params.ANGULAR_SPEED_TO_MSG_ADDER)
 
     def update(self, speed, omega):
         self._speed = speed
@@ -35,13 +32,13 @@ class MakeVelocityMessage:
 
     def serial_encode(self):
         id_message = Type.VELOCITY
-        lenght = 6
+        length = 6
         header = bitstring.pack('uintle:8, uintle:8', 0xFF, 0xFF)
-        s = bitstring.pack('uintle:8, uintle:8, uintle:16, uintle:16', lenght, id_message.value, self.speed, self.omega)
+        s = bitstring.pack('uintle:8, uintle:8, uintle:16, uintle:16', length, id_message.value, self.speed, self.omega)
         checksum = bitstring.pack('uintle:8', (~sum(s.tobytes()) & 0xFF))
         #print(checksum)
-        #checksum = ~(np.uint8(lenght)+np.uint8(id_message.value)+np.uint8(self.speed)+np.uint8(self.omega)) & 0xFF
-        #print(lenght, id_message.value, self.speed, self.omega)
+        #checksum = ~(np.uint8(length)+np.uint8(id_message.value)+np.uint8(self.speed)+np.uint8(self.omega)) & 0xFF
+        #print(length, id_message.value, self.speed, self.omega)
         data = header+s+checksum
         return data
 
@@ -54,15 +51,15 @@ class MakePositionMessage:
 
     @property
     def x(self):
-        return int(self._x + XY_ADER)
+        return int(self._x + params.XY_ADER)
 
     @property
     def y(self):
-        return int(self._y + XY_ADER)
+        return int(self._y + params.XY_ADER)
 
     @property
     def theta(self):
-        return int((self._theta+RADIAN_TO_MSG_ADDER)*RADIAN_TO_MSG_FACTOR)
+        return int((self._theta+params.RADIAN_TO_MSG_ADDER)*params.RADIAN_TO_MSG_FACTOR)
 
     def update(self, x, y, theta):
         self._x = x
@@ -88,32 +85,51 @@ class PositionReceived:
         self._theta = None
         self._speed = None
         self._omega = None
+        self._us_front_right = None;
+        self._us_front_left = None;
+        self._us_rear_right = None;
+        self._us_rear_left = None;
 
     @property
     def x(self):
-        return self._x - XY_ADER
+        return self._x - params.XY_ADER
 
     @property
     def y(self):
-        return self._y -XY_ADER
+        return self._y - params.XY_ADER
 
     @property
     def theta(self):
-        return (self._theta / RADIAN_TO_MSG_FACTOR) - RADIAN_TO_MSG_ADDER
+        return (self._theta / params.RADIAN_TO_MSG_FACTOR) - params.RADIAN_TO_MSG_ADDER
 
     @property
     def speed(self):
-        return self._speed - SPEED_ADDER
+        return self._speed - params.SPEED_ADDER
 
     @property
     def omega(self):
-        return (self._omega - ANGULAR_SPEED_TO_MSG_ADDER) / ANGULAR_SPEED_TO_MSG_FACTOR
+        return (self._omega - params.ANGULAR_SPEED_TO_MSG_ADDER) / params.ANGULAR_SPEED_TO_MSG_FACTOR
+    
+    """@property
+    def us_front_right(self):
+        return (self._us_front_right)
+    
+    @property
+    def us_front_left(self):
+        return (self._us_front_left)
+    
+    @property
+    def us_rear_right(self):
+        return (self._us_rear_right)
+    
+    @property
+    def us_rear_left(self):
+        return (self._us_rear_left)"""
 
 
     def serial_decode(self, payload):
         s = bitstring.BitStream(payload)
-        self._x, self._y, self._theta, self._speed, self._omega = s.unpack(
-            'uintle:16, uintle:16, uintle:16, uintle:16, uintle:16')
+        self._x, self._y, self._theta, self._speed, self._omega = s.unpack('uintle:16, uintle:16, uintle:16, uintle:16, uintle:16')
 
     
 
@@ -141,7 +157,7 @@ class StateReceive(Enum):
 class CommunicationReceived:
 
     def __init__(self):
-        self.ser = serial.Serial(SERIAL_PATH,SERIAL_BAUDRATE, timeout = TIMEOUT)
+        self.ser = serial.Serial(params.SERIAL_PATH,params.SERIAL_BAUDRATE, timeout = params.TIMEOUT)
         self.state = StateReceive.IDLE
         self.lenght = 0
         self.checksum = 0
@@ -202,7 +218,7 @@ class CommunicationReceived:
 class CommunicationSend:
 
     def __init__(self):
-        self.ser = serial.Serial(SERIAL_PATH,SERIAL_BAUDRATE, timeout = TIMEOUT)
+        self.ser = serial.Serial(params.SERIAL_PATH,params.SERIAL_BAUDRATE, timeout = params.TIMEOUT)
 
 
     def send_message(self, message):

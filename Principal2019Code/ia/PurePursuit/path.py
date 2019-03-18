@@ -31,7 +31,8 @@ class Path:
     def __init__(self, points):
         self.points = points  #array of points from class Point
         #self.headings = self.compute_headings()
-        self.dists = self.compute_dist()
+        self.compute_dist()
+        #self.compute_curvature()
         self.last_passed_index = 0
         """if len(headings) > 0:
             self.headings = headings
@@ -100,9 +101,8 @@ class Path:
         return i
 
     def find_goal_point(self, p0, look_ahead_distance):
-        index_start = self.find_closest_point(p0)
-        p_start = self.points[index_start]
-        index = index_start
+        index = self.find_closest_point(p0) #index at the start
+        p_start = self.points[index]
         dist_to_p0 = dist(p0, p_start)
         path_length = len(self.points)
         while index < path_length-1 and dist_to_p0 < look_ahead_distance:
@@ -111,9 +111,8 @@ class Path:
         return index, self.points[index]
         
     def find_goal_point_loop(self, p0, look_ahead_distance):
-        index_start = self.find_closest_point_loop(p0)
-        p_start = self.points[index_start]
-        index = index_start
+        index = self.find_closest_point_loop(p0) #index at the start
+        p_start = self.points[index]
         dist_to_p0 = dist(p0, p_start)
         path_length = len(self.points)
         while index < path_length-1 and dist_to_p0 < look_ahead_distance:

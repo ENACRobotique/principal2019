@@ -61,6 +61,17 @@ def circle(Nbpoints, C, A):
 def plot_circle(path):
     plt.plot([path.points[i].x for i in range(len(path.points))],
              [path.points[i].y for i in range(len(path.points))], '--r')
+    
+    
+def lemniscate(Nbpoints, a, b):
+    t = np.linspace(0,1,Nbpoints)
+    X = a*np.sin(2*np.pi*(t-0.25))+a
+    Y = b*np.cos(2*np.pi*(t-0.25))*np.sin(2*np.pi*(t-0.25))
+    path = Path([Point(X[i], Y[i]) for i in range(Nbpoints)])
+    return path
+    
+    
+    
 
 
 def parametric_curve(Nbpoints, x_equation, y_equation):
