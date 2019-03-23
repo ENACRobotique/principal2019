@@ -38,7 +38,7 @@ if __name__ == '__main__':
     downCommunication.send_message(messagePosition.serial_encode())
     
     Nbpoints = 5000
-    #path = pf.line(Nbpoints, Point(0,0), Point(3000-500,0))
+    path = pf.line(Nbpoints, Point(0,0), Point(3000-500,0))
     #path = pf.polyline(Nbpoints, Point(0,0), Point(1500,500), Point(3000-500,0))
     #path = pf.circle(Nbpoints, Point(0,600), 600)
     
@@ -48,10 +48,12 @@ if __name__ == '__main__':
     
     #path = Path([Point(i, -300*sin(2*pi*i/2500)) for i in np.linspace(0,2500, Nbpoints)])
     
-    path = pf.lemniscate(Nbpoints, 1000, 600)
+    #path = pf.lemniscate(Nbpoints, 1000, 600)
     
     
     #path = pf.polyline(Nbpoints, Point(0,0), Point(0, 500), Point(500,500), Point(500,0),Point(0,0))
+
+    path.compute_speed(0.25,0.75,p.SPEED_MAX)
 
     tracking = pp.PurePursuit(path)
     

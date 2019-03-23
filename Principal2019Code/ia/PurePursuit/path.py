@@ -1,7 +1,12 @@
 # -*- coding: utf-8 -*-
+import sys
+path="../../ia"
+sys.path.append(path)
 
 import numpy as np
 from math import sqrt
+
+import params as p
 
 class Point:
     def __init__(self,x,y):
@@ -84,6 +89,21 @@ class Path:
                 self.curvature[i] *= np.sign(cross)
         self.curvature[0] = self.curvature[1]
         self.curvature[-1] = self.curvature[-2]
+
+    def compute_speed(self, top_of_climb, top_of_descent, Vmax):# TOC, TOD percentage [0,1]
+        self.speed = np.array([])
+        nb_points = len(self.points)
+        iTOC = int(nb_points*top_of_climb)
+        iTOD = int(nb_points*t)
+        a = Vmax/iTOC**2
+        for i in range(iTOC+1):
+            np.append(self.speed, a*i**2)
+        a = Vmax/(iTOD-(nb_points-1)**2)
+        for i in range(iTOD, nb_points):
+            np.append(self.speed, a*(i-(nb_points-1)**2))
+
+
+
 
     def find_closest_point(self, p0, max_index=100):
         dist_to_p0 = np.array([dist(p0, p) for p in self.points[self.last_passed_index:self.last_passed_index+max_index]])
