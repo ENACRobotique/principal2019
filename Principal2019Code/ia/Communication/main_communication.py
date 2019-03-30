@@ -37,7 +37,7 @@ if __name__ == '__main__':
     messagePosition.update(robot.x, robot.y, robot.theta)
     downCommunication.send_message(messagePosition.serial_encode())
     
-    Nbpoints = 5000
+    Nbpoints = 10000
     path = pf.line(Nbpoints, Point(0,0), Point(3000-500,0))
     #path = pf.polyline(Nbpoints, Point(0,0), Point(1500,500), Point(3000-500,0))
     #path = pf.circle(Nbpoints, Point(0,600), 600)
@@ -48,12 +48,13 @@ if __name__ == '__main__':
     
     #path = Path([Point(i, -300*sin(2*pi*i/2500)) for i in np.linspace(0,2500, Nbpoints)])
     
-    #path = pf.lemniscate(Nbpoints, 1000, 600)
+    path = pf.lemniscate(Nbpoints, 1000, 600)
     
     
     #path = pf.polyline(Nbpoints, Point(0,0), Point(0, 500), Point(500,500), Point(500,0),Point(0,0))
 
-    path.compute_speed(0.25,0.75,p.SPEED_MAX)
+    path.compute_speed(0.2,0.85,p.SPEED_MAX)
+    print(path.speed)
 
     tracking = pp.PurePursuit(path)
     
@@ -61,7 +62,7 @@ if __name__ == '__main__':
     y = []
     
     t0_test = time()
-    while time()-t0_test<40:
+    while time()-t0_test<35:
         
         #sleep(params.NAVIGATOR_TIME_PERIOD)
 
@@ -78,7 +79,7 @@ if __name__ == '__main__':
                 print("({}, {})".format(positionReceived.x, positionReceived.y))
                 #print(robot)
 
-            speed, omega = tracking.compute(robot, False)
+            omega, speed = tracking.compute(robot, False)
             print("omega_cons = ", omega, "speed_cons = ", speed)
             
             messageVelocity.update(speed, omega)

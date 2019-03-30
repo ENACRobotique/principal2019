@@ -23,9 +23,9 @@ TIMEOUT = 0.01
 
 #Variables de naviagtion et de pure pursuit
 MAX_ACCEL = 600
-SPEED_MAX = 200
+SPEED_MAX = 300
 ADMITTED_POSITION_ERROR = 5
 NAVIGATOR_TIME_PERIOD = 0.05
 #Definition of look_ahead distance : L=L0+k*speed
-L0 = 100
-k = 0.23
+L0 = 100 #100
+k = 0.7 #0.23

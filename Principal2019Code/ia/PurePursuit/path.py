@@ -35,6 +35,7 @@ class Path:
 
     def __init__(self, points):
         self.points = points  #array of points from class Point
+        self.length = len(self.points)
         #self.headings = self.compute_headings()
         self.compute_dist()
         #self.compute_curvature()
@@ -94,13 +95,32 @@ class Path:
         self.speed = np.array([])
         nb_points = len(self.points)
         iTOC = int(nb_points*top_of_climb)
-        iTOD = int(nb_points*t)
-        a = Vmax/iTOC**2
-        for i in range(iTOC+1):
-            np.append(self.speed, a*i**2)
-        a = Vmax/(iTOD-(nb_points-1)**2)
+        iTOD = int(nb_points*top_of_descent)
+
+        #parabole
+        """for i in range(iTOC+1):
+            a = Vmax/iTOC**2
+            self.speed = np.append(self.speed, a*i**2)
+            
+        for i in range(iTOC+1,iTOD):
+            self.speed = np.append(self.speed, p.SPEED_MAX)   
+             
         for i in range(iTOD, nb_points):
-            np.append(self.speed, a*(i-(nb_points-1)**2))
+            a = Vmax/(iTOD-(nb_points-1))**2
+            self.speed = np.append(self.speed, a*(i-(nb_points-1))**2)"""
+            
+        #trapeze
+        for i in range(iTOC+1):
+            a = Vmax/iTOC
+            self.speed = np.append(self.speed, min(Vmax,a*i+40))
+            
+        for i in range(iTOC+1,iTOD):
+            self.speed = np.append(self.speed, p.SPEED_MAX)   
+             
+        for i in range(iTOD, nb_points):
+            a = Vmax/(iTOD-(nb_points-1))
+            self.speed = np.append(self.speed, a*(i-(nb_points-1)))
+        
 
 
 
