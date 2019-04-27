@@ -44,16 +44,16 @@ class PurePursuit:
             
         x_body = -sin(theta)*(p_goal.x-p_robot.x) + cos(theta)*(p_goal.y-p_robot.y)
         
-        print(p_goal.x, p_goal.y)
+        #print(p_goal.x, p_goal.y)
         
         #dist_to_end = dist(p_robot, self.path.points[-1])
         
         #dist_to_end = dist(p_robot, self.path.points[-1])
         #dist_to_end = self.path.dists[-1]-self.path.dists[closest_point_index]
 
-        print("closest_index : ", closest_point_index)
-        print("goal_point_index : ", p_goal_index)
-        print("Goal : ({}, {})".format(p_goal.x, p_goal.y))
+        #print("closest_index : ", closest_point_index)
+        #print("goal_point_index : ", p_goal_index)
+        #print("Goal : ({}, {})".format(p_goal.x, p_goal.y))
         speed_cons = self.path.speed[closest_point_index]#150
         if speed_cons <= 1:
             speed_cons = 0

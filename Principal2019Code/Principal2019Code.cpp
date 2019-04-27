@@ -18,7 +18,7 @@ Metro asservTime = Metro((unsigned long)0.5*1000);
 
 unsigned long t0;
 float temps = 20*1000; //temps en ms
-float vitesse_init = 1.14;
+float vitesse_init =80;//1.14;
 float vitesse = vitesse_init;
 
 
@@ -48,20 +48,20 @@ void setup()
 void loop()
 {
 	//fsmSupervisor.update();
-//	if (Serial.available()){
-//		char receive = Serial.read();
-//		if (receive == 'r'){
-//			Odometry::reset();
-//			MotorControl::reset();
-//			t0=millis();
-//			Serial.println("reset de la teensy");
-//			vitesse = vitesse_init;
-//		}
-//		if (receive == 's'){
-//			Serial.println("Stop");
-//			vitesse = 0;
-//		}
-//	}
+	if (Serial.available()){
+		char receive = Serial.read();
+		if (receive == 'r'){
+			Odometry::reset();
+			MotorControl::reset();
+			t0=millis();
+			Serial.println("reset de la teensy");
+			vitesse = vitesse_init;
+		}
+		if (receive == 's'){
+			Serial.println("Stop");
+			vitesse = 0;
+		}
+	}
 
 	if(controlTime.check()) {
 		Odometry::update();
@@ -87,7 +87,7 @@ void loop()
 	//	navigator.update();
 
 
-		if(receive_message()==1){
+		/*if(receive_message()==1){
 			get_received_message(&downmessage);
 
 
@@ -108,12 +108,16 @@ void loop()
 				//speed = 100;
 
 				MotorControl::set_cons(speed, omega);
-			}
-		}
+			}*/
+		//MotorControl::set_cons(vitesse, 0);
+		MotorControl::set_cons(vitesse, 0);
+		//Serial.print(Odometry::get_speed());
+		//Serial.println(Odometry::get_omega());
 
 
-		Message upmessage = make_pos_vel_message(Odometry::get_pos_x(), Odometry::get_pos_y(), Odometry::get_pos_theta(), Odometry::get_speed(), Odometry::get_omega());
-		send_message(upmessage);
+
+		//Message upmessage = make_pos_vel_message(Odometry::get_pos_x(), Odometry::get_pos_y(), Odometry::get_pos_theta(), Odometry::get_speed(), Odometry::get_omega());
+		//send_message(upmessage);
 	}
 
 	//remoteController.update();

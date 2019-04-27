@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
+from params import NAVIGATOR_TIME_PERIOD
 path="../../ia"
 sys.path.append(path)
 
@@ -13,6 +14,7 @@ class Point:
         self.x = x
         self.y = y
         
+        
     def __repr__(self):
         print("x = : ", self.x, "y = : ", self.y, "\n")
 
@@ -22,6 +24,7 @@ def delta(p1, p2):
     dx = p2.x - p1.x
     dy = p2.y - p1.y
     return Point(dx, dy)
+
 
 def dist(p1, p2):
     dx = p2.x - p1.x
@@ -49,6 +52,7 @@ class Path:
         else:
             self.compute_dists()"""
 
+
     def compute_headings(self):
         self.headings = np.zeros(len(self.points))
         for i, _ in enumerate(self.points):
@@ -59,6 +63,7 @@ class Path:
             else:
                 dp = delta(self.points[i-1], self.points[i+1])
                 self.headings[i] = np.arctan2(dp.y, dp.x)   
+         
                            
     def compute_dist(self):
         n = len(self.points)
@@ -66,6 +71,7 @@ class Path:
         self.dists[0] = 0
         for i in range(0, n-1):
             self.dists[i+1] = self.dists[i] + dist(self.points[i+1], self.points[i])
+
 
     def compute_curvature(self):
         self.curvature = np.zeros(len(self.points))
@@ -90,6 +96,7 @@ class Path:
                 self.curvature[i] *= np.sign(cross)
         self.curvature[0] = self.curvature[1]
         self.curvature[-1] = self.curvature[-2]
+
 
     def compute_speed(self, top_of_climb, top_of_descent, Vmax):# TOC, TOD percentage [0,1]
         self.speed = np.array([])
@@ -120,9 +127,14 @@ class Path:
         for i in range(iTOD, nb_points):
             a = Vmax/(iTOD-(nb_points-1))
             self.speed = np.append(self.speed, a*(i-(nb_points-1)))
-        
-
-
+            
+    def compute_speed_2(self):
+        nb_points = len(self.points)
+        self.speed = np.array([0]*nb_points)
+        for i in range(1,int(nb_points/2)):
+            self.speed[i] = min(self.speed[i-1] + p.MAX_ACCEL*p.NAVIGATOR_TIME_PERIOD, p.SPEED_MAX)
+            self.speed[nb_points -1 -i] = min(self.speed[nb_points -i] + p.MAX_ACCEL*p.NAVIGATOR_TIME_PERIOD, p.SPEED_MAX)
+        self.speed[int(nb_points/2)] = min(self.speed[int(nb_points/2)-1] + p.MAX_ACCEL*p.NAVIGATOR_TIME_PERIOD, p.SPEED_MAX)
 
 
     def find_closest_point(self, p0, max_index=100):
@@ -130,6 +142,7 @@ class Path:
         i = np.argmin(dist_to_p0) + self.last_passed_index
         self.last_passed_index = i
         return i
+    
         
     def find_closest_point_loop(self, p0, max_index=100):
         i = self.find_closest_point(p0, max_index)
@@ -140,6 +153,7 @@ class Path:
             self.last_passed_index = 0
         return i
 
+
     def find_goal_point(self, p0, look_ahead_distance):
         index = self.find_closest_point(p0) #index at the start
         p_start = self.points[index]
@@ -149,6 +163,7 @@ class Path:
             index += 1
             dist_to_p0 = dist(p0, self.points[index])
         return index, self.points[index]
+      
         
     def find_goal_point_loop(self, p0, look_ahead_distance):
         index = self.find_closest_point_loop(p0) #index at the start

@@ -11,32 +11,32 @@
 
 const unsigned long TIME_RACE = 100000;
 
-const int ENCODEUR1_A = 2;
-const int ENCODEUR1_B = 3;
-const int ENCODEUR2_A = 4;
-const int ENCODEUR2_B = 5;
+const int ENCODEUR1_A = 3;
+const int ENCODEUR1_B = 4;
+const int ENCODEUR2_A = 29;
+const int ENCODEUR2_B = 30;
 
-const int MOT1_PWM = 7;
+const int MOT1_PWM = 5;
 const int MOT1_DIR = 6;
-const int MOT2_PWM = 9;
+const int MOT2_PWM = 7;
 const int MOT2_DIR = 8;
 
-const int SERVO1 = 39;
-const int SERVO2 = 15;
+const int SERVO1 = 2;
+//const int SERVO2 = 15;
 const int SERVO3 = 37;
 
 const int MOT_GALET_L = 35;
 
-const int COLOR = 26;
-const int TIRETTE = 25;
+const int COLOR = 25;
+const int TIRETTE = 24;
 
-const int SPARE1 = 10;
-const int SPARE2 = 9;
-const int SPARE3 = 8;
-const int SPARE4 = 7;
+//const int SPARE1 = 10;
+//const int SPARE2 = 9;
+//const int SPARE3 = 8;
+//const int SPARE4 = 7;
 
-const int DYNAMIXEL_CONTROL = 30;
-const int DYNAMIXEL_ID =1;
+const int DYNAMIXEL_CONTROL = 35;
+const int DYNAMIXEL_ID = 1 ;
 
 const int EMERGENCY_BRAKE = 2500;
 const int ACCEL_MAX = 800;
@@ -61,7 +61,7 @@ const float ADMITTED_ANGLE_ERROR = 0.01;
 const float MAX_DRIFT = 0.1;
 
 const float WHEEL_DIAMETER = 71.9530;
-const float WHEELBASE = 243.87;
+const float WHEELBASE = 248.77;
 
 const float INCR_TR = 500.0;
 const float REDUCTION = 676/49;
@@ -76,6 +76,8 @@ const unsigned long THROW_DURATION = 20000;
 const unsigned long SERVO_MOVEMENT_DURATION = 1000;
 const unsigned long DETECTION_STOP_TIME = 1500;
 const unsigned long PAUSE_TIME = 20000;
+
+const unsigned long COMMAND_TIMEOUT = 10000;
 
 const int RETRACTED_ARM = 45;
 const int EXTENDED_ARM = 105;

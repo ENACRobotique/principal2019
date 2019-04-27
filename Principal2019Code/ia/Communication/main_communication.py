@@ -54,7 +54,6 @@ if __name__ == '__main__':
     #path = pf.polyline(Nbpoints, Point(0,0), Point(0, 500), Point(500,500), Point(500,0),Point(0,0))
 
     path.compute_speed(0.2,0.85,p.SPEED_MAX)
-    print(path.speed)
 
     tracking = pp.PurePursuit(path)
     
@@ -76,13 +75,13 @@ if __name__ == '__main__':
                 robot.update(positionReceived.x, positionReceived.y, positionReceived.theta, positionReceived.speed, positionReceived.omega)
                 x.append(positionReceived.x)
                 y.append(positionReceived.y)
-                print("({}, {})".format(positionReceived.x, positionReceived.y))
+                print("({}, {}, {}, {}, {})".format(positionReceived.x, positionReceived.y, positionReceived.theta, positionReceived.speed, positionReceived.omega))
                 #print(robot)
 
             omega, speed = tracking.compute(robot, False)
-            print("omega_cons = ", omega, "speed_cons = ", speed)
+            #print("omega_cons = ", omega, "speed_cons = ", speed)
             
-            messageVelocity.update(speed, omega)
+            messageVelocity.update(200, 0)
             downCommunication.send_message(messageVelocity.serial_encode())
             
             
