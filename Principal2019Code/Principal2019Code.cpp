@@ -38,7 +38,7 @@ void setup()
 	//navigatorTime.reset();
 	t0 = millis();
 
-
+	pinMode(POMPE, OUTPUT);
 
 }
 
@@ -47,8 +47,9 @@ void setup()
 // The loop function is called in an endless loop
 void loop()
 {
+	analogWrite(POMPE, 1);
 	//fsmSupervisor.update();
-	if (Serial.available()){
+	/*if (Serial.available()){
 		char receive = Serial.read();
 		if (receive == 'r'){
 			Odometry::reset();
@@ -61,7 +62,8 @@ void loop()
 			Serial.println("Stop");
 			vitesse = 0;
 		}
-	}
+	}*/
+
 
 	if(controlTime.check()) {
 		Odometry::update();
@@ -87,7 +89,7 @@ void loop()
 	//	navigator.update();
 
 
-		/*if(receive_message()==1){
+		if(receive_message()==1){
 			get_received_message(&downmessage);
 
 
@@ -108,17 +110,24 @@ void loop()
 				//speed = 100;
 
 				MotorControl::set_cons(speed, omega);
-			}*/
+			}
 		//MotorControl::set_cons(vitesse, 0);
-		MotorControl::set_cons(vitesse, 0);
+		//MotorControl::set_cons(vitesse, 0);
 		//Serial.print(Odometry::get_speed());
 		//Serial.println(Odometry::get_omega());
 
 
 
-		//Message upmessage = make_pos_vel_message(Odometry::get_pos_x(), Odometry::get_pos_y(), Odometry::get_pos_theta(), Odometry::get_speed(), Odometry::get_omega());
-		//send_message(upmessage);
-	}
+		Message upmessage = make_pos_vel_message(Odometry::get_pos_x(), Odometry::get_pos_y(), Odometry::get_pos_theta(), Odometry::get_speed(), Odometry::get_omega());
+		send_message(upmessage);
+
+		}//fin if receive message
+
+		//MotorControl::set_cons(0, 0);
+		//analogWrite(POMPE, HIGH);
 
 	//remoteController.update();
-}
+
+	}//fin navigatorTime.check()
+
+}//fin loop

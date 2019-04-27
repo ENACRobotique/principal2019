@@ -13,6 +13,9 @@ Velocity _velocity;
 Message _message;
 ReceivingState _receiving_state = IDLE;
 
+
+//--------------------Fabrication en envoie des message up (Teensy->Raspi)-----------------------------------------------------
+
 Message make_pos_vel_message(float x, float y, float theta, float speed, float omega) {
 	Message msg;
 	USDistances USdist = usManager.getRanges();
@@ -48,6 +51,8 @@ void send_message(Message msg){
 	Serial1.write(buf, msg.length + 3);
 }
 
+//--------------------Lecture et getter des messages down (Raspi->Teensy)-----------------------------------------------------
+
 float get_omega_received(Message* p_message){
 	float omega_received = (p_message->payload.velocity.omega - ANGULAR_SPEED_TO_MSG_ADDER) / ANGULAR_SPEED_TO_MSG_FACTOR;
 	return omega_received;
@@ -73,9 +78,10 @@ float get_theta_received(Message* p_message){
 	return theta_received;
 }
 
-
-
-//------------------------------Lecture message--------------------------------
+int get_pump_received(Message* p_message){
+	int activation = p_message->payload.pump.activation;
+	return activation;
+}
 
 int receive_message(void){
 	int retour = 0; // 0 : rien à signaler. pas d'erreur. Le message n'est pas complet ou y a rien à lire

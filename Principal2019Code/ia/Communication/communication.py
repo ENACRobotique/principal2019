@@ -5,6 +5,7 @@ from math import pi
 from enum import Enum
 import serial
 import robot
+#from builtins import None
 
 path = "../../ia"
 sys.path.append(path)
@@ -74,7 +75,30 @@ class MakePositionMessage:
         checksum = bitstring.pack('uintle:8', (~sum(s.tobytes()) & 0xFF))
         data = header+s+checksum
         return data
-
+    
+class MakePumpMessage:
+    
+    def __init__(self):
+        self._pump_activated = None 
+    
+    @property
+    def pump_activated(self):
+        if self._pump_activated != 0:
+            return 1
+        else :
+            return 0
+        
+    def update(self, activation):
+        self._pump_activated = activation #activation is an int. 0 if no activation. 
+        
+    def serial_encode(self):
+        id_message = Type.PUMP
+        length = 1
+        header = bitstring.pack('uintle:8, uintle:8', 0xFF, 0xFF)
+        s = bitstring.pack('uintle:8, uintle:8, uintle:8', length, id_message.value, self.pump_activated)
+        checksum = bitstring.pack('uintle:8', (~sum(s.tobytes()) & 0xFF))
+        data = header+s+checksum
+        return data
 
 
 class PositionReceived:
@@ -85,10 +109,10 @@ class PositionReceived:
         self._theta = None
         self._speed = None
         self._omega = None
-        self._us_front_right = None;
+        """self._us_front_right = None;
         self._us_front_left = None;
         self._us_rear_right = None;
-        self._us_rear_left = None;
+        self._us_rear_left = None;"""
 
     @property
     def x(self):
@@ -142,6 +166,7 @@ class Type(Enum):
     #down messages
     VELOCITY = 3 
     POSITION = 4
+    PUMP = 5
 
 
 

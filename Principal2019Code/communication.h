@@ -30,7 +30,8 @@ enum MessagesID{
 	VOLTAGE,
 	//down
 	VELOCITY,
-	POSITION
+	POSITION,
+	PUMP
 };
 
 enum ReceivingState{
@@ -71,6 +72,10 @@ typedef struct __attribute__((__packed__)) US{
 	uint16_t rear_right;
 }US;
 
+typedef struct __attribute__((__packed__)) Pump{
+	uint8_t activation;
+}Pump;
+
 
 union  __attribute__((__packed__)) Payload{
 	Pos_vel pos_vel; //
@@ -78,6 +83,7 @@ union  __attribute__((__packed__)) Payload{
 	Velocity velocity;
 	Position position;
 	US us;
+	Pump pump;
 	uint8_t data[sizeof(Pos_vel)];
 };
 

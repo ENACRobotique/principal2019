@@ -27,6 +27,8 @@ const int SERVO3 = 37;
 
 const int MOT_GALET_L = 35;
 
+const int POMPE = 15;
+
 const int COLOR = 25;
 const int TIRETTE = 24;
 

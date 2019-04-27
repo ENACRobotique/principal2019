@@ -61,7 +61,7 @@ if __name__ == '__main__':
     y = []
     
     t0_test = time()
-    while time()-t0_test<35:
+    while True:#time()-t0_test<35:
         
         #sleep(params.NAVIGATOR_TIME_PERIOD)
 
@@ -78,12 +78,12 @@ if __name__ == '__main__':
                 print("({}, {}, {}, {}, {})".format(positionReceived.x, positionReceived.y, positionReceived.theta, positionReceived.speed, positionReceived.omega))
                 #print(robot)
 
-            omega, speed = tracking.compute(robot, False)
+            #omega, speed = tracking.compute(robot, False)
             #print("omega_cons = ", omega, "speed_cons = ", speed)
             
-            messageVelocity.update(200, 0)
-            downCommunication.send_message(messageVelocity.serial_encode())
+            #messageVelocity.update(200, 0)
+            #downCommunication.send_message(messageVelocity.serial_encode())
             
             
             
-    np.savez('outfile.npz', x=np.array(x), y=np.array(y))
+    #np.savez('outfile.npz', x=np.array(x), y=np.array(y))
