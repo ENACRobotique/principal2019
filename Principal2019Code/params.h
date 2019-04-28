@@ -79,7 +79,7 @@ const unsigned long SERVO_MOVEMENT_DURATION = 1000;
 const unsigned long DETECTION_STOP_TIME = 1500;
 const unsigned long PAUSE_TIME = 20000;
 
-const unsigned long COMMAND_TIMEOUT = 10000;
+const unsigned long COMMAND_TIMEOUT = 1000;
 
 const int RETRACTED_ARM = 45;
 const int EXTENDED_ARM = 105;

@@ -113,7 +113,7 @@ namespace Odometry{
 		omega = angle / CONTROL_PERIOD;
 
 
-		Serial.print(pos_x);
+		/*Serial.print(pos_x);
 		Serial.print("\t");
 		Serial.print(pos_y);
 		Serial.print("\t");
@@ -121,7 +121,7 @@ namespace Odometry{
 		Serial.print("\t");
 		Serial.print(speed);
 		Serial.print("\t");
-		Serial.println(omega);
+		Serial.println(omega);*/
 	}
 }
 

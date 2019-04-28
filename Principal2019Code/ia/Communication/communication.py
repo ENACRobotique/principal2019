@@ -93,7 +93,7 @@ class MakePumpMessage:
         
     def serial_encode(self):
         id_message = Type.PUMP
-        length = 1
+        length = 3
         header = bitstring.pack('uintle:8, uintle:8', 0xFF, 0xFF)
         s = bitstring.pack('uintle:8, uintle:8, uintle:8', length, id_message.value, self.pump_activated)
         checksum = bitstring.pack('uintle:8', (~sum(s.tobytes()) & 0xFF))

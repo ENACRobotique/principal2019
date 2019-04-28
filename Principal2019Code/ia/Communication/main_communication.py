@@ -31,6 +31,14 @@ if __name__ == '__main__':
     positionReceived = com.PositionReceived()
     messagePosition = com.MakePositionMessage()
     messageVelocity = com.MakeVelocityMessage()
+    
+    print("ici")
+    
+    messagePump = com.MakePumpMessage()
+    messagePump.update(1)
+    downCommunication.send_message(messagePump.serial_encode())
+    
+    print("la")
     # messageVelocity.update(100, -1)
     # downCommunication.send_message(messageVelocity.serial_encode())
 
@@ -60,10 +68,20 @@ if __name__ == '__main__':
     x = []
     y = []
     
-    t0_test = time()
-    while True:#time()-t0_test<35:
+    t0 = time()
+    while True:#time()-t0<35:
         
         #sleep(params.NAVIGATOR_TIME_PERIOD)
+        
+        """if time()-t0<10:
+            if time()-t0<5:
+                messagePump.update(1)
+            else :
+                messagePump.update(1)
+        else:
+            t0 = time()"""
+        messagePump.update(0)
+        downCommunication.send_message(messagePump.serial_encode())
 
         receive_message = upCommunication.receive_message()
 
