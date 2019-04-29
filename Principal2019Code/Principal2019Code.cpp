@@ -10,6 +10,7 @@
 #include "StateMachine/FSMSupervisor.h"
 #include "StateMachine/TiretteState.h"
 #include "communication.h"
+#include "libraries/DynamixelSerial5/DynamixelSerial5.h"
 Metro controlTime = Metro((unsigned long)(CONTROL_PERIOD * 1000));
 Metro navigatorTime = Metro(NAVIGATOR_TIME_PERIOD * 1000);
 
@@ -17,9 +18,11 @@ Metro asservTime = Metro((unsigned long)0.5*1000);
 
 
 unsigned long t0;
-float temps = 20*1000; //temps en ms
+float temps = 1*500; //temps en ms
 float vitesse_init =80;//1.14;
 float vitesse = vitesse_init;
+
+unsigned long time_last_command_pump;
 
 
 Message downmessage;
@@ -39,30 +42,47 @@ void setup()
 	t0 = millis();
 
 	pinMode(POMPE, OUTPUT);
+	pinMode(13, OUTPUT);
+	digitalWrite(POMPE, LOW);
+
+	Dynamixel.begin(1000000, DYNAMIXEL_CONTROL);
+	//Dynamixel.setEndless(DYNAMIXEL_ID,true);
+	//Dynamixel.turn(DYNAMIXEL_ID,true,100);//MAX SPEED 1023
+	//Dynamixel.setID(254,1);
+	/*Dynamixel.setLEDAlarm(1, 1);
+	delay(500);
+	Dynamixel.setLEDAlarm(1, 0);
+	delay(500);
+	Dynamixel.setLEDAlarm(1, 1);
+*/
 
 }
 
-
+int led_status = 0;
 
 // The loop function is called in an endless loop
 void loop()
 {
-	analogWrite(POMPE, 1);
+
 	//fsmSupervisor.update();
 	/*if (Serial.available()){
 		char receive = Serial.read();
 		if (receive == 'r'){
-			Odometry::reset();
-			MotorControl::reset();
-			t0=millis();
-			Serial.println("reset de la teensy");
-			vitesse = vitesse_init;
+			//Odometry::reset();
+			//MotorControl::reset();
+			//t0=millis();
+			//Serial.println("reset de la teensy");
+			//vitesse = vitesse_init;
+			Serial.println("pompe activee");
+			digitalWrite(POMPE, HIGH);
 		}
 		if (receive == 's'){
-			Serial.println("Stop");
-			vitesse = 0;
+			//Serial.println("Stop");
+			//vitesse = 0;
+			Serial.println("pompe desactivee");
+			digitalWrite(POMPE, LOW);
 		}
-	}*/
+	}//fin serial available*/
 
 
 	if(controlTime.check()) {
@@ -70,9 +90,17 @@ void loop()
 		MotorControl::update();
 	}
 
-//	if ((millis() - t0)< temps){
-//		MotorControl::set_radius(300,-250);
-//	}
+	if ((millis() - t0)> temps){
+		//MotorControl::set_radius(300,-250);
+		t0 = millis();
+		//Dynamixel.setLEDAlarm(1, led_status);
+		Dynamixel.setEndless(1,false);
+		//Dynamixel.setAngleLimit(1, int CWLimit, int CCWLimit);
+		Dynamixel.move(1,502+20*led_status);
+		digitalWrite(13, led_status);
+		//digitalWrite(POMPE, led_status);
+		led_status ^= 1;
+	}
 //	else{
 //		MotorControl::set_cons(0,0);
 //	}
@@ -111,6 +139,13 @@ void loop()
 
 				MotorControl::set_cons(speed, omega);
 			}
+
+			if(downmessage.id==PUMP){
+				//Serial.print("pompe \n");
+				int activation = get_pump_received(&downmessage);
+				digitalWrite(POMPE, activation);
+				time_last_command_pump = millis();
+			}
 		//MotorControl::set_cons(vitesse, 0);
 		//MotorControl::set_cons(vitesse, 0);
 		//Serial.print(Odometry::get_speed());
@@ -123,8 +158,13 @@ void loop()
 
 		}//fin if receive message
 
+		if(millis()-time_last_command_pump > COMMAND_TIMEOUT){
+			digitalWrite(POMPE, LOW);
+		}
+
 		//MotorControl::set_cons(0, 0);
 		//analogWrite(POMPE, HIGH);
+
 
 	//remoteController.update();
 

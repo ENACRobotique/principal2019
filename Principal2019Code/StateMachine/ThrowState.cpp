@@ -6,13 +6,15 @@
  */
 
 #include "ThrowState.h"
+
 #include "TiretteState.h"
 #include "MoveToButtonTransition.h"
 #include "Arduino.h"
 #include "../params.h"
 #include "FSMSupervisor.h"
 #include "Servo.h"
-#include "DynamixelSerial4.h"
+
+#include "../libraries/DynamixelSerial5/DynamixelSerial5.h"
 #include "../Navigator.h"
 #include "MoveToCubeTransition.h"
 

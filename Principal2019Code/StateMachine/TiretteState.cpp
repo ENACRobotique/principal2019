@@ -6,15 +6,16 @@
  */
 
 #include "TiretteState.h"
+
 #include "MoveToWaterState.h"
 #include "MoveToBeeState.h"
 #include "Arduino.h"
 #include "../params.h"
 #include "FSMSupervisor.h"
-#include "DynamixelSerial4.h"
 #include "../odometry.h"
 #include "../libraries/i2c_t3/i2c_t3.h"
 #include "../lib/USManager.h"
+#include "../libraries/DynamixelSerial5/DynamixelSerial5.h"
 
 TiretteState tiretteState = TiretteState();
 Servo arm = Servo();
