@@ -65,24 +65,24 @@ void loop()
 {
 
 	//fsmSupervisor.update();
-	/*if (Serial.available()){
+	if (Serial.available()){
 		char receive = Serial.read();
 		if (receive == 'r'){
-			//Odometry::reset();
-			//MotorControl::reset();
-			//t0=millis();
-			//Serial.println("reset de la teensy");
-			//vitesse = vitesse_init;
-			Serial.println("pompe activee");
-			digitalWrite(POMPE, HIGH);
+			Odometry::reset();
+			MotorControl::reset();
+			t0=millis();
+			Serial.println("reset de la teensy");
+			vitesse = vitesse_init;
+			//Serial.println("pompe activee");
+			//digitalWrite(POMPE, HIGH);
 		}
 		if (receive == 's'){
-			//Serial.println("Stop");
-			//vitesse = 0;
-			Serial.println("pompe desactivee");
-			digitalWrite(POMPE, LOW);
+			Serial.println("Stop");
+			vitesse = 0;
+			//Serial.println("pompe desactivee");
+			//digitalWrite(POMPE, LOW);
 		}
-	}//fin serial available*/
+	}//fin serial available
 
 
 	if(controlTime.check()) {
@@ -96,7 +96,7 @@ void loop()
 		//Dynamixel.setLEDAlarm(1, led_status);
 		Dynamixel.setEndless(1,false);
 		//Dynamixel.setAngleLimit(1, int CWLimit, int CCWLimit);
-		Dynamixel.move(1,502+20*led_status);
+		//Dynamixel.move(1,502+20*led_status);
 		digitalWrite(13, led_status);
 		//digitalWrite(POMPE, led_status);
 		led_status ^= 1;
@@ -145,8 +145,11 @@ void loop()
 				int activation = get_pump_received(&downmessage);
 				digitalWrite(POMPE, activation);
 				time_last_command_pump = millis();
+				Message upmessageack = make_ack_message();
+				send_message(upmessageack);
 			}
-		//MotorControl::set_cons(vitesse, 0);
+
+
 		//MotorControl::set_cons(vitesse, 0);
 		//Serial.print(Odometry::get_speed());
 		//Serial.println(Odometry::get_omega());
@@ -158,13 +161,12 @@ void loop()
 
 		}//fin if receive message
 
-		if(millis()-time_last_command_pump > COMMAND_TIMEOUT){
+
+		/*if(millis()-time_last_command_pump > COMMAND_TIMEOUT){
 			digitalWrite(POMPE, LOW);
-		}
+		}*/
 
-		//MotorControl::set_cons(0, 0);
-		//analogWrite(POMPE, HIGH);
-
+	//MotorControl::set_cons(vitesse, 0);
 
 	//remoteController.update();
 

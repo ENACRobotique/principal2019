@@ -9,7 +9,7 @@ import random
 import sys
 from threading import Thread
 from time import time
-from builtins import None
+#from builtins import import None
 
 path = "../../ia"
 sys.path.append(path)

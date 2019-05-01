@@ -22,37 +22,20 @@ def pumpCommand(activation):
 
 
 if __name__ == '__main__':
+
     
     
-    
-    
-    
-    messagePump = com.MakePumpMessage()
-    
-    messagePump.update(1)
-    downCommunication = com.CommunicationSendWithAck(messagePump.serial_encode())
-    
-    
-        
-        
-    '''
+    t0 = time()
+    activation = 1
+    print(activation) 
+    pumpCommand(activation)   
     while True:
-        
-        
-        if time()-t0<10: #tries to turn the pump on for 5 sec and turn it off for 5 sec
-            if time()-t0<5:
-                messagePump.update(1)
-            else :
-                messagePump.update(0)
-        else:
+        if time()-t0>3: #tries to turn the pump on for 3 sec and turn it off for 5 sec
+            activation = (activation+1)%2
+            print(activation)
+            pumpCommand(activation)
             t0 = time()
-            '''
-        
-        #messagePump.update(1)
-        #sleep(5)
-    downCommunication.start()
-    print("ici")
-    downCommunication.join()
-    print("")
+    
+    
 
 
