@@ -5,14 +5,33 @@ from math import pi
 from enum import Enum
 import serial
 import robot
-#from builtins import None
+import random
+import sys
+from threading import Thread
+from time import time
+from builtins import None
 
 path = "../../ia"
 sys.path.append(path)
 
 import params
 
+#---------------------------------------------Types de trames up and down-------------------------------------------
 
+class Type(Enum):
+    #up messages
+    POS_VEL = 0 
+    BUTTONS = 1 
+    VOLTAGE = 2
+    ACK = 3 
+    #down messages
+    VELOCITY = 4 
+    POSITION = 5
+    PUMP = 6
+    GATE = 7
+
+
+#----------------------------------------------Trames down (Raspi->Teensy)----------------------------------------
 class MakeVelocityMessage:
 
     def __init__(self):
@@ -99,7 +118,32 @@ class MakePumpMessage:
         checksum = bitstring.pack('uintle:8', (~sum(s.tobytes()) & 0xFF))
         data = header+s+checksum
         return data
+    
+class MakeGateMessage:
+    
+    def __init__(self):
+        self._gate_activated = None
+        
+    @property
+    def gate_activated(self):
+        if self._gate_activated != 0:
+            return 1
+        else:
+            return 0
+        
+    def update(self, activation):
+        self._gate_activated = activation
+        
+    def serial_encode(self):
+        id_message = Type.GATE
+        length = 3
+        header = bitstring.pack('uintle:8, uintle:8', 0xFF, 0xFF)
+        s = bitstring.pack('uintle:8, uintle:8, uintle:8', length, id_message.value, self.gate_activated)
+        checksum = bitstring.pack('uintle:8', (~sum(s.tobytes()) & 0xFF))
+        data = header+s+checksum
+        return data
 
+#----------------------------------------------Trames up (Teensy->Raspi)----------------------------------------
 
 class PositionReceived:
 
@@ -158,17 +202,6 @@ class PositionReceived:
     
 
 
-class Type(Enum):
-    #up messages
-    POS_VEL = 0 
-    BUTTONS = 1 
-    VOLTAGE = 2 
-    #down messages
-    VELOCITY = 3 
-    POSITION = 4
-    PUMP = 5
-
-
 
 #--------------------------------------------Lecture des trames----------------------------------------------
 
@@ -220,11 +253,12 @@ class CommunicationReceived:
                 checksum_readed = bitstring.BitStream(self.ser.read()).unpack('uint:8')[0]
                 self.state = StateReceive.IDLE
                 self.lenght = 0
+                idmessage = self.id_message
                 self.id_message = 0
                 calculated_checksum = ~(self.checksum) & 0xFF
                 if calculated_checksum == checksum_readed:
                     self.checksum = 0
-                    return self.id_message, payload
+                    return idmessage, payload
                 else :
                     self.checksum = 0
                     return None #checksum invalide
@@ -240,7 +274,7 @@ class CommunicationReceived:
 
 
 
-class CommunicationSend:
+class CommunicationSend():
 
     def __init__(self):
         self.ser = serial.Serial(params.SERIAL_PATH,params.SERIAL_BAUDRATE, timeout = params.TIMEOUT)
@@ -248,4 +282,37 @@ class CommunicationSend:
 
     def send_message(self, message):
         self.ser.write(message.tobytes())
+        
+    
+    
+class CommunicationSendWithAck(Thread):
+
+    def __init__(self,message):
+        Thread.__init__(self)
+        self.ser = serial.Serial(params.SERIAL_PATH,params.SERIAL_BAUDRATE, timeout = params.TIMEOUT)
+        self.message = message
+    
+    def send_message(self, message):
+        self.ser.write(message.tobytes())
+    
+    
+    def run(self):
+        upCommunication = CommunicationReceived()
+        self.send_message(self.message)
+        ack = False
+        valeur_au_pif = 2
+        t0 = time()
+        while not ack:
+            if time()-t0 > valeur_au_pif:
+                self.send_message(self.message)
+                print("je renvoie")
+                t0 = time()
+            receive_message = upCommunication.receive_message()
+            
+            if receive_message is not None:
+                print(receive_message)
+                id_message, payload = receive_message
+                if id_message == Type.ACK.value:
+                    ack = True
+                    print("c'est ackté")
         

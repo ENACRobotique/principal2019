@@ -18,7 +18,7 @@ ReceivingState _receiving_state = IDLE;
 
 Message make_pos_vel_message(float x, float y, float theta, float speed, float omega) {
 	Message msg;
-	USDistances USdist = usManager.getRanges();
+	//USDistances USdist = usManager.getRanges();
 	msg.length = 12;// ID + message utile (10 octets) + CHECKSUM
 	msg.id = (uint8_t)POS_VEL;
 	msg.payload.pos_vel.x = (uint16_t)(x+XY_ADDER);
@@ -36,6 +36,17 @@ Message make_pos_vel_message(float x, float y, float theta, float speed, float o
 	for(size_t i=0; i<sizeof(Pos_vel);i++){
 		checksum += msg.payload.data[i];
 	}
+	checksum = ~checksum;
+	msg.checksum = checksum;
+	return msg;
+}
+
+Message make_ack_message(void){
+	Message msg;
+	msg.length = 3;// ID + message utile (1 octets) + CHECKSUM
+	msg.id = (uint8_t)ACK;
+	msg.payload.ack.acknowledgement = (uint8_t)7;
+	uint8_t checksum = msg.length + msg.id + 7;
 	checksum = ~checksum;
 	msg.checksum = checksum;
 	return msg;
@@ -80,6 +91,11 @@ float get_theta_received(Message* p_message){
 
 int get_pump_received(Message* p_message){
 	int activation = p_message->payload.pump.activation;
+	return activation;
+}
+
+int get_gate_received(Message* p_message){
+	int activation = p_message->payload.gate.activation;
 	return activation;
 }
 

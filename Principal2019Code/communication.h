@@ -28,10 +28,12 @@ enum MessagesID{
 	POS_VEL,
 	BUTTONS,
 	VOLTAGE,
+	ACK,
 	//down
 	VELOCITY,
 	POSITION,
-	PUMP
+	PUMP,
+	GATE
 };
 
 enum ReceivingState{
@@ -76,14 +78,24 @@ typedef struct __attribute__((__packed__)) Pump{
 	uint8_t activation;
 }Pump;
 
+typedef struct __attribute__((__packed__)) Gate{
+	uint8_t activation;
+}Gate;
+
+typedef struct __attribute__((__packed__)) Ack{
+	uint8_t acknowledgement;
+}Ack;
+
 
 union  __attribute__((__packed__)) Payload{
-	Pos_vel pos_vel; //
+	Pos_vel pos_vel;
 	Buttons buttons;
+	Ack ack;
 	Velocity velocity;
 	Position position;
 	US us;
 	Pump pump;
+	Gate gate;
 	uint8_t data[sizeof(Pos_vel)];
 };
 
@@ -95,6 +107,7 @@ typedef struct Message{
 }Message;
 
 Message make_pos_vel_message(float x, float y, float theta, float speed, float omega);
+Message make_ack_message(void);
 
 void send_message(Message msg);
 int receive_message();
@@ -109,7 +122,7 @@ float get_y_received(Message* p_message);
 float get_theta_received(Message* p_message);
 
 int get_pump_received(Message* p_message);
-
+int get_gate_received(Message* p_message);
 
 extern Velocity _velocity;
 

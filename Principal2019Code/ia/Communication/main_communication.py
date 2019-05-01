@@ -82,7 +82,7 @@ if __name__ == '__main__':
             t0 = time()"""
         messagePump.update(0)
         downCommunication.send_message(messagePump.serial_encode())
-
+        
         receive_message = upCommunication.receive_message()
 
         if receive_message is not None:
