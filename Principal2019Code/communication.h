@@ -33,7 +33,8 @@ enum MessagesID{
 	VELOCITY,
 	POSITION,
 	PUMP,
-	GATE
+	GATE,
+	DYN
 };
 
 enum ReceivingState{
@@ -86,6 +87,11 @@ typedef struct __attribute__((__packed__)) Ack{
 	uint8_t acknowledgement;
 }Ack;
 
+typedef struct __attribute__((__packed__)) Dyn{
+	uint8_t angle;
+	uint8_t speed;
+}Dyn;
+
 
 union  __attribute__((__packed__)) Payload{
 	Pos_vel pos_vel;
@@ -96,6 +102,7 @@ union  __attribute__((__packed__)) Payload{
 	US us;
 	Pump pump;
 	Gate gate;
+	Dyn dyn;
 	uint8_t data[sizeof(Pos_vel)];
 };
 
@@ -123,6 +130,9 @@ float get_theta_received(Message* p_message);
 
 int get_pump_received(Message* p_message);
 int get_gate_received(Message* p_message);
+
+int get_dynSpeed_received(Message* p_message);
+int get_dynAngle_received(Message* p_message);
 
 extern Velocity _velocity;
 

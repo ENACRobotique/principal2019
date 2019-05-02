@@ -46,15 +46,16 @@ void setup()
 	digitalWrite(POMPE, LOW);
 
 	Dynamixel.begin(1000000, DYNAMIXEL_CONTROL);
-	//Dynamixel.setEndless(DYNAMIXEL_ID,true);
-	//Dynamixel.turn(DYNAMIXEL_ID,true,100);//MAX SPEED 1023
+
+	Dynamixel.setEndless(DYNAMIXEL_ID,false);
+	//Dynamixel.move(DYNAMIXEL_ID,0);//MAX SPEED 1023
 	//Dynamixel.setID(254,1);
-	/*Dynamixel.setLEDAlarm(1, 1);
-	delay(500);
-	Dynamixel.setLEDAlarm(1, 0);
-	delay(500);
-	Dynamixel.setLEDAlarm(1, 1);
-*/
+	//Dynamixel.setLEDAlarm(1, 1);
+	//delay(500);
+	//Dynamixel.setLEDAlarm(1, 0);
+	//delay(500);
+	//Dynamixel.setLEDAlarm(1, 1);
+
 
 }
 
@@ -90,17 +91,17 @@ void loop()
 		MotorControl::update();
 	}
 
-	if ((millis() - t0)> temps){
+	/*if ((millis() - t0)> temps){
 		//MotorControl::set_radius(300,-250);
 		t0 = millis();
 		//Dynamixel.setLEDAlarm(1, led_status);
-		Dynamixel.setEndless(1,false);
+		//Dynamixel.setEndless(1,false);
 		//Dynamixel.setAngleLimit(1, int CWLimit, int CCWLimit);
-		//Dynamixel.move(1,502+20*led_status);
+		Dynamixel.moveSpeed(1,502+200*led_status, 100);
 		digitalWrite(13, led_status);
 		//digitalWrite(POMPE, led_status);
 		led_status ^= 1;
-	}
+	}*/
 //	else{
 //		MotorControl::set_cons(0,0);
 //	}
@@ -145,6 +146,14 @@ void loop()
 				int activation = get_pump_received(&downmessage);
 				digitalWrite(POMPE, activation);
 				time_last_command_pump = millis();
+				Message upmessageack = make_ack_message();
+				send_message(upmessageack);
+			}
+
+			if(downmessage.id==DYN){
+				int dyn_angle = get_dynAngle_received(&downmessage);
+				int dyn_speed = get_dynSpeed_received(&downmessage);
+				Dynamixel.moveSpeed(DYNAMIXEL_ID, dyn_angle, dyn_speed);
 				Message upmessageack = make_ack_message();
 				send_message(upmessageack);
 			}

@@ -9,6 +9,7 @@ import random
 import sys
 from threading import Thread
 from time import time
+from builtins import None
 #from builtins import import None
 
 path = "../../ia"
@@ -29,6 +30,7 @@ class Type(Enum):
     POSITION = 5
     PUMP = 6
     GATE = 7
+    DYN = 8
 
 
 #----------------------------------------------Trames down (Raspi->Teensy)----------------------------------------
@@ -142,6 +144,51 @@ class MakeGateMessage:
         checksum = bitstring.pack('uintle:8', (~sum(s.tobytes()) & 0xFF))
         data = header+s+checksum
         return data
+    
+class MakeDynamixelMessage:
+    
+    def __init__(self):
+        self._angle = None
+        self._speed = None
+        
+    @property
+    def angle(self):
+        a = 350
+        b = 1024/300
+        alpha = self._angle
+        if alpha<=0:
+            return int(b-a*alpha)
+        else:
+            if alpha<b/a:
+                return int(b-a*alpha)
+            if alpha >= b/a and alpha<360+(b-1023)/a:
+                if alpha>= b/a and alpha<(b/a+360+(b-1023)/a)/2:
+                    return 0
+                else:
+                    return 1023
+            else:
+                return int(b-a*(alpha-360))
+    
+    @property
+    def speed(self):
+        return self._speed
+    
+    def update(self, angle, speed):
+        """
+        angle is an angle (float) in °
+        speed is an speed between 0 and 1023
+        """
+        self._angle = angle
+        self._speed = speed
+        
+    def serial_encoder(self):
+        id_message = Type.DYN
+        length = 4
+        header = bitstring.pack('uintle:8, uintle:8', 0xFF, 0xFF)
+        s = bitstring.pack('uintle:8, uintle:8, uintle:8, uintle:8', length, id_message.value, self.angle, self.speed)
+        checksum = bitstring.pack('uintle:8', (~sum(s.tobytes()) & 0xFF))
+        data = header+s+checksum
+        return data
 
 #----------------------------------------------Trames up (Teensy->Raspi)----------------------------------------
 
@@ -153,10 +200,6 @@ class PositionReceived:
         self._theta = None
         self._speed = None
         self._omega = None
-        """self._us_front_right = None;
-        self._us_front_left = None;
-        self._us_rear_right = None;
-        self._us_rear_left = None;"""
 
     @property
     def x(self):
@@ -177,23 +220,6 @@ class PositionReceived:
     @property
     def omega(self):
         return (self._omega - params.ANGULAR_SPEED_TO_MSG_ADDER) / params.ANGULAR_SPEED_TO_MSG_FACTOR
-    
-    """@property
-    def us_front_right(self):
-        return (self._us_front_right)
-    
-    @property
-    def us_front_left(self):
-        return (self._us_front_left)
-    
-    @property
-    def us_rear_right(self):
-        return (self._us_rear_right)
-    
-    @property
-    def us_rear_left(self):
-        return (self._us_rear_left)"""
-
 
     def serial_decode(self, payload):
         s = bitstring.BitStream(payload)

@@ -25,11 +25,7 @@ Message make_pos_vel_message(float x, float y, float theta, float speed, float o
 	msg.payload.pos_vel.y = (uint16_t)(y+XY_ADDER);
 	msg.payload.pos_vel.theta = (uint16_t)((theta + RADIAN_TO_MSG_ADDER) * RADIAN_TO_MSG_FACTOR);
 	msg.payload.pos_vel.speed = (uint16_t)(speed+SPEED_ADDER);
-	msg.payload.pos_vel.omega = (uint16_t)((omega * ANGULAR_SPEED_TO_MSG_FACTOR) + ANGULAR_SPEED_TO_MSG_ADDER) ;
-	//msg.payload.us.front_left = (uint16_t)(USdist.front_left);
-	//msg.payload.us.front_right = (uint16_t)(USdist.front_right);
-	//msg.payload.us.rear_left = (uint16_t)(USdist.rear_left);
-	//msg.payload.us.rear_right = (uint16_t)(USdist.rear_right);
+	msg.payload.pos_vel.omega = (uint16_t)((omega * ANGULAR_SPEED_TO_MSG_FACTOR) + ANGULAR_SPEED_TO_MSG_ADDER);
 
 
 	uint8_t checksum = msg.length + msg.id;
@@ -97,6 +93,16 @@ int get_pump_received(Message* p_message){
 int get_gate_received(Message* p_message){
 	int activation = p_message->payload.gate.activation;
 	return activation;
+}
+
+int get_dynSpeed_received(Message* p_message){
+	int dyn_speed = p_message->payload.dyn.speed;
+	return dyn_speed;
+}
+
+int get_dynAngle_received(Message* p_message){
+	int dyn_angle = p_message->payload.dyn.angle;
+	return dyn_angle;
 }
 
 int receive_message(void){
