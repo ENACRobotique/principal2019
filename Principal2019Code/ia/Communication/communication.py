@@ -148,13 +148,13 @@ class MakeGateMessage:
 class MakeDynamixelMessage:
     
     def __init__(self):
-        self._angle = None
+        self._angle = None #a float in °
         self._speed = None
         
     @property
     def angle(self):
-        b = 350
-        a = 1024/300
+        b = 350 #number of angle when trunk at bottom
+        a = 1024/300 #300° made in 1024 bytes
         alpha = self._angle
         if alpha<=0:
             return int(b-a*alpha)
@@ -167,7 +167,7 @@ class MakeDynamixelMessage:
                 else:
                     return 1023
             else:
-                return int(b-a*(alpha-360))
+                return int(b-a*(alpha-360)) #return byte [0;1023]
     
     @property
     def speed(self):
