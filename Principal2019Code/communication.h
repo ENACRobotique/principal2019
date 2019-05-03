@@ -88,8 +88,8 @@ typedef struct __attribute__((__packed__)) Ack{
 }Ack;
 
 typedef struct __attribute__((__packed__)) Dyn{
-	uint8_t angle;
-	uint8_t speed;
+	uint16_t angle;
+	uint16_t speed;
 }Dyn;
 
 

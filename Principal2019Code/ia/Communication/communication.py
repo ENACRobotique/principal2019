@@ -9,7 +9,7 @@ import random
 import sys
 from threading import Thread
 from time import time
-from builtins import None
+#from builtins import None
 #from builtins import import None
 
 path = "../../ia"
@@ -153,8 +153,8 @@ class MakeDynamixelMessage:
         
     @property
     def angle(self):
-        a = 350
-        b = 1024/300
+        b = 350
+        a = 1024/300
         alpha = self._angle
         if alpha<=0:
             return int(b-a*alpha)
@@ -181,11 +181,12 @@ class MakeDynamixelMessage:
         self._angle = angle
         self._speed = speed
         
-    def serial_encoder(self):
+    def serial_encode(self):
         id_message = Type.DYN
-        length = 4
+        length = 6
         header = bitstring.pack('uintle:8, uintle:8', 0xFF, 0xFF)
-        s = bitstring.pack('uintle:8, uintle:8, uintle:8, uintle:8', length, id_message.value, self.angle, self.speed)
+        print("angle envoye :", self.angle)
+        s = bitstring.pack('uintle:8, uintle:8, uintle:16, uintle:16', length, id_message.value, self.angle, self.speed)
         checksum = bitstring.pack('uintle:8', (~sum(s.tobytes()) & 0xFF))
         data = header+s+checksum
         return data
@@ -199,7 +200,7 @@ class PositionReceived:
         self._y = None
         self._theta = None
         self._speed = None
-        self._omega = None
+        self._omega = None              
 
     @property
     def x(self):

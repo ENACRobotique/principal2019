@@ -48,7 +48,7 @@ void setup()
 	Dynamixel.begin(1000000, DYNAMIXEL_CONTROL);
 
 	Dynamixel.setEndless(DYNAMIXEL_ID,false);
-	//Dynamixel.move(DYNAMIXEL_ID,0);//MAX SPEED 1023
+	//Dynamixel.moveSpeed(DYNAMIXEL_ID,350, 1000);//MAX SPEED 1023
 	//Dynamixel.setID(254,1);
 	//Dynamixel.setLEDAlarm(1, 1);
 	//delay(500);
