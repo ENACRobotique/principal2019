@@ -6,7 +6,7 @@ from math import sin, pi
 from time import time
 
 from Communication import communication as com
-from Communication import robot
+from MainRobot import robot
 
 import sys
 path = "../PurePursuit"

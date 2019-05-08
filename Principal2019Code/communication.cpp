@@ -27,7 +27,6 @@ Message make_pos_vel_message(float x, float y, float theta, float speed, float o
 	msg.payload.pos_vel.speed = (uint16_t)(speed+SPEED_ADDER);
 	msg.payload.pos_vel.omega = (uint16_t)((omega * ANGULAR_SPEED_TO_MSG_FACTOR) + ANGULAR_SPEED_TO_MSG_ADDER);
 
-
 	uint8_t checksum = msg.length + msg.id;
 	for(size_t i=0; i<sizeof(Pos_vel);i++){
 		checksum += msg.payload.data[i];

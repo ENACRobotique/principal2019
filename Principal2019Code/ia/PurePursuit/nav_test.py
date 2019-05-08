@@ -8,7 +8,7 @@ from time import time
 
 from Communication import communication as com
 
-from Communication import robot
+from MainRobot import robot
 import params as p
 
 from PurePursuit import pure_pursuit as pp

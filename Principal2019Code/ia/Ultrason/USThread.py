@@ -1,5 +1,6 @@
 from threading import Thread
 import params as p
+import smbus
 
 class USManager():
     
@@ -29,6 +30,7 @@ class USThread(Thread):
     def __init__(self):
         Thread.__init__(self)
         self.USManager = USManager(500,500,500,500)
+        self.i2c = smbus.SMBus(1)
         
     def run(self):
         while(True):
