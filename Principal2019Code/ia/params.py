@@ -6,9 +6,12 @@
 """
 
 from math import pi
+from threading import RLock
 
 NAVIGATOR_TIME_PERIOD = 0.05
 
+VERROU = RLock()
+OBSTACLE_DETECTED = False
 
 #Variables de communications avec la Teensy
 RADIAN_TO_MSG_ADDER = pi

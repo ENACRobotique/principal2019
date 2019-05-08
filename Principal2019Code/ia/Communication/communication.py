@@ -4,7 +4,7 @@ import bitstring
 from math import pi
 from enum import Enum
 import serial
-import robot
+#import robot
 import random
 import sys
 from threading import Thread
@@ -175,7 +175,7 @@ class MakeDynamixelMessage:
     
     def update(self, angle, speed):
         """
-        angle is an angle (float) in °
+        angle is an angle (float) in ° [-180;180]
         speed is an speed between 0 and 1023
         """
         self._angle = angle

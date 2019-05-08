@@ -36,13 +36,13 @@ if __name__ == '__main__':
     activation = 1
     #print(activation) 
     #pumpCommand(activation)
-    n = 0   
+    n = 0  
+     
     while True:
         if time()-t0>5: #tries to turn the pump on for 3 sec and turn it off for 5 sec
             activation = (activation+1)%2
             n+=1
-            pumpCommand(activation)
+            #pumpCommand(activation)
             angle = ((-1)**n)*90
-            #print(angle)
             trunkCommand(angle, 1000)
             t0 = time()

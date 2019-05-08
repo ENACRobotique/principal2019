@@ -5,25 +5,27 @@ import numpy as np
 from math import sin, pi
 from time import time
 
-import communication as com
-import robot
+from Communication import communication as com
+from Communication import robot
 
 import sys
 path = "../PurePursuit"
 sys.path.append(path)
-path = "../PurePursuit"
+path = "../Ultrason"
 sys.path.append(path)
 path = "../../ia"
 sys.path.append(path)
 
-import pure_pursuit as pp
-import path_factory as pf
-from path import Path, Point
+from PurePursuit import pure_pursuit as pp
+from PurePursuit import path_factory as pf
+from Ultrason import USThread
+from PurePursuit.path_manager import Path, Point
 import params as p
 
 if __name__ == '__main__':
     robot = robot.RobotPosition(0, 0, 0, 0, 0)
     print(robot)
+    
 
     upCommunication = com.CommunicationReceived()
     downCommunication = com.CommunicationSend()
@@ -32,11 +34,9 @@ if __name__ == '__main__':
     messagePosition = com.MakePositionMessage()
     messageVelocity = com.MakeVelocityMessage()
     
-    print("ici")
-    
     messagePump = com.MakePumpMessage()
-    messagePump.update(1)
-    downCommunication.send_message(messagePump.serial_encode())
+    
+    print("ici")
     
     print("la")
     # messageVelocity.update(100, -1)
@@ -87,6 +87,8 @@ if __name__ == '__main__':
 
         if receive_message is not None:
             id_message, payload = receive_message
+            
+            
 
             if id_message == com.Type.POS_VEL.value:
                 positionReceived.serial_decode(payload)
@@ -96,11 +98,11 @@ if __name__ == '__main__':
                 print("({}, {}, {}, {}, {})".format(positionReceived.x, positionReceived.y, positionReceived.theta, positionReceived.speed, positionReceived.omega))
                 #print(robot)
 
-            #omega, speed = tracking.compute(robot, False)
+            omega, speed = tracking.compute(robot, False)
             #print("omega_cons = ", omega, "speed_cons = ", speed)
             
-            #messageVelocity.update(200, 0)
-            #downCommunication.send_message(messageVelocity.serial_encode())
+            messageVelocity.update(speed, omega)
+            downCommunication.send_message(messageVelocity.serial_encode())
             
             
             

@@ -29,12 +29,15 @@ enum MessagesID{
 	BUTTONS,
 	VOLTAGE,
 	ACK,
+
 	//down
 	VELOCITY,
 	POSITION,
 	PUMP,
 	GATE,
-	DYN
+	DYN,
+
+	USD
 };
 
 enum ReceivingState{
@@ -99,10 +102,12 @@ union  __attribute__((__packed__)) Payload{
 	Ack ack;
 	Velocity velocity;
 	Position position;
-	US us;
+
 	Pump pump;
 	Gate gate;
 	Dyn dyn;
+
+	US us;
 	uint8_t data[sizeof(Pos_vel)];
 };
 
@@ -114,6 +119,7 @@ typedef struct Message{
 }Message;
 
 Message make_pos_vel_message(float x, float y, float theta, float speed, float omega);
+Message make_US_message(void);
 Message make_ack_message(void);
 
 void send_message(Message msg);

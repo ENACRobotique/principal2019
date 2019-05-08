@@ -37,6 +37,23 @@ Message make_pos_vel_message(float x, float y, float theta, float speed, float o
 	return msg;
 }
 
+Message make_US_message(void){
+	Message msg;
+
+	msg.length = 10;// ID + message utile(8 octets) + CHECKSUM
+	msg.id = (uint8_t)USD;
+	USDistances USdist = usManager.getRanges();
+	msg.payload.us.front_left = USdist.front_left;
+	msg.payload.us.front_right = USdist.front_right;
+	msg.payload.us.rear_left = USdist.rear_left;
+	msg.payload.us.rear_right = USdist.rear_right;
+
+	uint8_t checksum = msg.length + msg.id;//TODO : faire une vraie checksum
+	checksum = ~checksum;
+	msg.checksum = checksum;
+	return msg;
+}
+
 Message make_ack_message(void){
 	Message msg;
 	msg.length = 3;// ID + message utile (1 octets) + CHECKSUM
@@ -49,10 +66,10 @@ Message make_ack_message(void){
 }
 
 void send_message(Message msg){
-	uint8_t buf[msg.length+3]; // buffer = start1 + srart2 + lenght + lenght_message
+	uint8_t buf[msg.length+3]; // buffer = start1 + srart2 + length + lenght_message
 	buf[0] = 0xFF;
 	buf[1] = 0xFF;
-	memcpy(buf+2, &msg, msg.length);  // msg.lenght - checksum + lenght
+	memcpy(buf+2, &msg, msg.length);  // msg.lenght - checksum + length
 	buf[msg.length + 2] = msg.checksum;
 
 	Serial1.write(buf, msg.length + 3);
@@ -131,6 +148,7 @@ int receive_message(void){
 		}
 		if(_receiving_state==READ){
 			_message.id = Serial1.read();
+			Serial.print(_message.id);
 			_message.checksum += _message.id;
 			for (int i =0; i< _message.length-2; i++){
 				(_message.payload).data[i] = Serial1.read();

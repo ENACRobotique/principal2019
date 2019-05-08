@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from path import Point, Path, dist, delta
+from PurePursuit.path_manager import Point, Path, dist, delta
 
 from math import sin, cos, sqrt, pi, floor, atan2
 import numpy as np
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 
 
 def line(Nbpoints, A, B):

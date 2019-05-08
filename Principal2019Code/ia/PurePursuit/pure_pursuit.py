@@ -8,8 +8,8 @@ sys.path.append(path)
 
 from math import sin, cos, sqrt
 
-from path import Point, Path, dist, delta
-from robot import RobotPosition
+from PurePursuit.path_manager import Point, Path, dist, delta
+#from robot import RobotPosition
 
 import params as p
 
@@ -25,7 +25,7 @@ class PurePursuit:
         
         look_ahead_distance = p.L0 + p.k*current_robot.speed
         
-        #Test : looke_ahead_distance égale à la distance de freiange à vitesse max
+        #Test : looke_ahead_distance égale à la distance de freinage à vitesse max
         #t_stop = current_robot.speed / p.MAX_ACCEL
         #dist_foresee = 4*(current_robot.speed*t_stop-0.5*p.MAX_ACCEL*t_stop**2)
         

@@ -19,7 +19,7 @@ Metro asservTime = Metro((unsigned long)0.5*1000);
 
 unsigned long t0;
 float temps = 1*500; //temps en ms
-float vitesse_init =80;//1.14;
+float vitesse_init =100;//1.14;
 float vitesse = vitesse_init;
 
 unsigned long time_last_command_pump;
@@ -48,7 +48,7 @@ void setup()
 	Dynamixel.begin(1000000, DYNAMIXEL_CONTROL);
 
 	Dynamixel.setEndless(DYNAMIXEL_ID,false);
-	//Dynamixel.moveSpeed(DYNAMIXEL_ID,350, 1000);//MAX SPEED 1023
+	//Dynamixel.moveSpeed(DYNAMIXEL_ID,500, 1000);//MAX SPEED 1023
 	//Dynamixel.setID(254,1);
 	//Dynamixel.setLEDAlarm(1, 1);
 	//delay(500);
@@ -64,7 +64,7 @@ int led_status = 0;
 // The loop function is called in an endless loop
 void loop()
 {
-
+/*
 	//fsmSupervisor.update();
 	if (Serial.available()){
 		char receive = Serial.read();
@@ -84,7 +84,7 @@ void loop()
 			//digitalWrite(POMPE, LOW);
 		}
 	}//fin serial available
-
+*/
 
 	if(controlTime.check()) {
 		Odometry::update();
@@ -151,6 +151,7 @@ void loop()
 			}
 
 			if(downmessage.id==DYN){
+				Serial.print("dyn \n");
 				int dyn_angle = get_dynAngle_received(&downmessage);
 				int dyn_speed = get_dynSpeed_received(&downmessage);
 				Dynamixel.moveSpeed(DYNAMIXEL_ID, dyn_angle, dyn_speed);
@@ -163,19 +164,21 @@ void loop()
 		//Serial.print(Odometry::get_speed());
 		//Serial.println(Odometry::get_omega());
 
+		}//fin if receive message
 
 
 		Message upmessage = make_pos_vel_message(Odometry::get_pos_x(), Odometry::get_pos_y(), Odometry::get_pos_theta(), Odometry::get_speed(), Odometry::get_omega());
 		send_message(upmessage);
 
-		}//fin if receive message
+		//Message USupmessage = make_US_message();
+		//send_message(USupmessage);
+
 
 
 		/*if(millis()-time_last_command_pump > COMMAND_TIMEOUT){
 			digitalWrite(POMPE, LOW);
 		}*/
 
-	//MotorControl::set_cons(vitesse, 0);
 
 	//remoteController.update();
 
