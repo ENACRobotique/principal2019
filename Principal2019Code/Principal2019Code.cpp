@@ -32,8 +32,6 @@ void setup()
 {
 	Serial.begin(115200);
 	Serial1.begin(115200);
-	//Serial1.begin(115200);
-	//while(!Serial);
 	Odometry::init();
 	MotorControl::init();
 	//fsmSupervisor.init(&tiretteState);
@@ -45,18 +43,29 @@ void setup()
 	pinMode(13, OUTPUT);
 	digitalWrite(POMPE, LOW);
 
+	pinMode(13, OUTPUT);
+	digitalWrite(13,HIGH);
+
 	Dynamixel.begin(1000000, DYNAMIXEL_CONTROL);
+	Dynamixel.setEndless(DYN_BROADCAST_ID,false);
 
-	Dynamixel.setEndless(DYNAMIXEL_ID,false);
-	//Dynamixel.moveSpeed(DYNAMIXEL_ID,500, 1000);//MAX SPEED 1023
-	//Dynamixel.setID(254,1);
-	//Dynamixel.setLEDAlarm(1, 1);
-	//delay(500);
-	//Dynamixel.setLEDAlarm(1, 0);
-	//delay(500);
-	//Dynamixel.setLEDAlarm(1, 1);
+//	Dynamixel.setID(254,/*new id*/);
+//	Dynamixel.ledStatus(DYN_BROADCAST_ID, 1);
+//	delay(500);
+//	Dynamixel.ledStatus(DYN_BROADCAST_ID, 0);
+//	delay(500);
+//	Dynamixel.ledStatus(DYN_BROADCAST_ID, 1);
 
+	//Get 3 Atoms
+	Dynamixel.moveSpeed(DYN_HOLDER_ID,900, DYN_MAX_SPEED);
+	delay(2000);
 
+	//Move Up
+	Dynamixel.moveSpeed(DYN_HOLDER_ID,DYN_HOLDER_UP, DYN_MAX_SPEED);
+	delay(10000);
+
+	//Go down
+	Dynamixel.moveSpeed(DYN_HOLDER_ID,DYN_HOLDER_DOWN, DYN_MAX_SPEED);
 }
 
 int led_status = 0;
@@ -64,6 +73,7 @@ int led_status = 0;
 // The loop function is called in an endless loop
 void loop()
 {
+	return;
 /*
 	//fsmSupervisor.update();
 	if (Serial.available()){
@@ -156,6 +166,7 @@ void loop()
 				int dyn_speed = get_dynSpeed_received(&downmessage);
 				Dynamixel.moveSpeed(DYNAMIXEL_ID, dyn_angle, dyn_speed);
 				Message upmessageack = make_ack_message();
+				//Dynamixel.moveSpeed(DYNAMIXEL_ID, dyn_angle, dyn_speed);
 				send_message(upmessageack);
 			}
 

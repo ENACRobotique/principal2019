@@ -38,8 +38,13 @@ const int TIRETTE = 24;
 //const int SPARE3 = 8;
 //const int SPARE4 = 7;
 
-const int DYNAMIXEL_CONTROL = 35;
-const int DYNAMIXEL_ID = 1 ;
+const int DYNAMIXEL_CONTROL = 32;
+const int DYN_MAX_SPEED=750;
+const int DYN_BROADCAST_ID = 254 ;
+
+const int DYN_HOLDER_ID = 6 ;
+const int DYN_HOLDER_UP=275;
+const int DYN_HOLDER_DOWN=900;
 
 const int EMERGENCY_BRAKE = 2500;
 const int ACCEL_MAX = 800;

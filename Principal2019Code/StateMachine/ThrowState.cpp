@@ -45,7 +45,7 @@ void ThrowState::enter() {
 
 void ThrowState::leave() {
 	analogWrite(MOT_GALET_L,0);
-	Dynamixel.turn(DYNAMIXEL_ID,false,0);
+	//Dynamixel.turn(DYNAMIXEL_ID,false,0);
 }
 
 void ThrowState::doIt() {
@@ -55,8 +55,8 @@ void ThrowState::doIt() {
 	}
 
 	if((millis() - time_start > MOTOR_START_DURATION)&& dynamixel_not_started){
-		Dynamixel.setEndless(DYNAMIXEL_ID,true);
-		Dynamixel.turn(DYNAMIXEL_ID,true,1023);
+		//Dynamixel.setEndless(DYNAMIXEL_ID,true);
+		//Dynamixel.turn(DYNAMIXEL_ID,true,1023);
 		dynamixel_not_started = false;
 	}
 
@@ -81,7 +81,7 @@ void ThrowState::reEnter(unsigned long interruptTime){
 
 void ThrowState::forceLeave(){
 	analogWrite(MOT_GALET_L,0);
-	Dynamixel.turn(DYNAMIXEL_ID,false,0);
+	//Dynamixel.turn(DYNAMIXEL_ID,false,0);
 }
 
 void ThrowState::pauseNextState(){
