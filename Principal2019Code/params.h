@@ -46,6 +46,11 @@ const int DYN_HOLDER_ID = 6 ;
 const int DYN_HOLDER_UP=275;
 const int DYN_HOLDER_DOWN=900;
 
+const int PIN_LOCK=23;
+const int LOCK_OPEN=45;
+const int LOCK_LOCK=80;
+
+
 const int EMERGENCY_BRAKE = 2500;
 const int ACCEL_MAX = 800;
 const int ACCEL_MAX_THROW = 100;

@@ -27,6 +27,8 @@ unsigned long time_last_command_pump;
 
 Message downmessage;
 
+Servo ServoLocker;
+
 //The setup function is called once at startup of the sketch
 void setup()
 {
@@ -46,6 +48,10 @@ void setup()
 	pinMode(13, OUTPUT);
 	digitalWrite(13,HIGH);
 
+
+	ServoLocker.attach(PIN_LOCK);
+	ServoLocker.write(LOCK_LOCK);
+
 	Dynamixel.begin(1000000, DYNAMIXEL_CONTROL);
 	Dynamixel.setEndless(DYN_BROADCAST_ID,false);
 
@@ -62,10 +68,18 @@ void setup()
 
 	//Move Up
 	Dynamixel.moveSpeed(DYN_HOLDER_ID,DYN_HOLDER_UP, DYN_MAX_SPEED);
-	delay(10000);
+	delay(5000);
 
 	//Go down
 	Dynamixel.moveSpeed(DYN_HOLDER_ID,DYN_HOLDER_DOWN, DYN_MAX_SPEED);
+	delay(2500);
+
+	//Handle Atom exit
+	ServoLocker.write(LOCK_OPEN);
+	delay(1500);
+	ServoLocker.write(LOCK_LOCK);
+	delay(1500);
+
 }
 
 int led_status = 0;
@@ -164,7 +178,6 @@ void loop()
 				Serial.print("dyn \n");
 				int dyn_angle = get_dynAngle_received(&downmessage);
 				int dyn_speed = get_dynSpeed_received(&downmessage);
-				Dynamixel.moveSpeed(DYNAMIXEL_ID, dyn_angle, dyn_speed);
 				Message upmessageack = make_ack_message();
 				//Dynamixel.moveSpeed(DYNAMIXEL_ID, dyn_angle, dyn_speed);
 				send_message(upmessageack);
