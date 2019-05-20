@@ -28,6 +28,7 @@ unsigned long time_last_command_pump;
 Message downmessage;
 
 Servo ServoLocker;
+Servo ServoHolderLocker;
 
 //The setup function is called once at startup of the sketch
 void setup()
@@ -52,6 +53,9 @@ void setup()
 	ServoLocker.attach(PIN_LOCK);
 	ServoLocker.write(LOCK_LOCK);
 
+	ServoHolderLocker.attach(PIN_HOLDER_LOCK);
+	ServoHolderLocker.write(HOLDER_LOCK_LOCK);
+
 	Dynamixel.begin(1000000, DYNAMIXEL_CONTROL);
 	Dynamixel.setEndless(DYN_BROADCAST_ID,false);
 
@@ -63,22 +67,30 @@ void setup()
 //	Dynamixel.ledStatus(DYN_BROADCAST_ID, 1);
 
 	//Get 3 Atoms
-	Dynamixel.moveSpeed(DYN_HOLDER_ID,900, DYN_MAX_SPEED);
+	Dynamixel.moveSpeed(DYN_HOLDER_ID,DYN_HOLDER_DOWN, DYN_MAX_SPEED);
 	delay(2000);
 
 	//Move Up
 	Dynamixel.moveSpeed(DYN_HOLDER_ID,DYN_HOLDER_UP, DYN_MAX_SPEED);
-	delay(5000);
+	delay(2500);
+
+	//Open the lock
+	ServoHolderLocker.write(HOLDER_LOCK_OPEN);
+	delay(1000);
+
 
 	//Go down
 	Dynamixel.moveSpeed(DYN_HOLDER_ID,DYN_HOLDER_DOWN, DYN_MAX_SPEED);
 	delay(2500);
+	ServoHolderLocker.write(HOLDER_LOCK_LOCK);
 
 	//Handle Atom exit
-	ServoLocker.write(LOCK_OPEN);
-	delay(1500);
-	ServoLocker.write(LOCK_LOCK);
-	delay(1500);
+	for(int i=0;i<3;i++){
+		ServoLocker.write(LOCK_OPEN);
+		delay(1500);
+		ServoLocker.write(LOCK_LOCK);
+		delay(1500);
+	}
 
 }
 

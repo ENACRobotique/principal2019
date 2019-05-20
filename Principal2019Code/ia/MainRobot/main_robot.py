@@ -1,5 +1,19 @@
 import serial
 
+import sys
+path = "../PathFinder"
+sys.path.append(path)
+path = "../Ultrason"
+sys.path.append(path)
+path = "../../ia"
+sys.path.append(path)
+path = "../Communication"
+sys.path.append(path)
+path = "../StateMachine"
+sys.path.append(path)
+path = "../PurePursuit"
+sys.path.append(path)
+
 
 import numpy as np
 from math import sin, pi
@@ -9,14 +23,6 @@ from Communication import communication as com
 from Communication import main_communication
 from StateMachine import state_machine
 from MainRobot import robot
-
-import sys
-path = "../PurePursuit"
-sys.path.append(path)
-path = "../Ultrason"
-sys.path.append(path)
-path = "../../ia"
-sys.path.append(path)
 
 from PurePursuit import pure_pursuit as pp
 from PurePursuit import path_factory as pf

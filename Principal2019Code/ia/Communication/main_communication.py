@@ -26,6 +26,7 @@ if __name__ == '__main__':
     robot = robot.RobotPosition(0, 0, 0, 0, 0)
     print(robot)
     
+<<<<<<< Updated upstream
 
     upCommunication = com.CommunicationReceived()
     downCommunication = com.CommunicationSend()
@@ -39,6 +40,15 @@ if __name__ == '__main__':
     print("ici")
     
     print("la")
+=======
+        self.positionReceived = com.PositionReceived()
+        self.messagePosition = com.MakePositionMessage()
+        self.messageZoneLidar = com.MakeLidarMessage()
+        self.ZoneLidarReceived = com.LidarZoneReceive()
+        self.messageVelocity = com.MakeVelocityMessage()
+        
+        self.messagePump = com.MakePumpMessage()
+>>>>>>> Stashed changes
     # messageVelocity.update(100, -1)
     # downCommunication.send_message(messageVelocity.serial_encode())
 
@@ -91,6 +101,7 @@ if __name__ == '__main__':
             
 
             if id_message == com.Type.POS_VEL.value:
+<<<<<<< Updated upstream
                 positionReceived.serial_decode(payload)
                 robot.update(positionReceived.x, positionReceived.y, positionReceived.theta, positionReceived.speed, positionReceived.omega)
                 x.append(positionReceived.x)
@@ -100,6 +111,15 @@ if __name__ == '__main__':
 
             omega, speed = tracking.compute(robot, False)
             #print("omega_cons = ", omega, "speed_cons = ", speed)
+=======
+                self.positionReceived.serial_decode(payload)
+                self.robot.update(self.positionReceived.x, self.positionReceived.y, self.positionReceived.theta, self.positionReceived.speed, self.positionReceived.omega)
+                print(robot)
+                
+            if id_message == com.Type.LID_UP.value:
+                self.ZoneLidarReceived.serial_decode(payload);
+                self.robot.updateZones(self.ZoneLidarReceived.get_zone1,self.ZoneLidarReceived.get_zone2,self.ZoneLidarReceived.get_zone3)
+>>>>>>> Stashed changes
             
             messageVelocity.update(speed, omega)
             downCommunication.send_message(messageVelocity.serial_encode())
