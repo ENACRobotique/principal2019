@@ -44,7 +44,7 @@ def main():
     #goal and start point definition
     
     #path creation
-    #- AStar planning (+ AStar parameters grid size and robot size
+    #- AStar planning (+ AStar parameters grid size and robot size)
     #- Bezier
     
     #Pure-Poursuite
@@ -96,13 +96,13 @@ def main():
     cx,cy = Bezier.calc_cxcy(Path)
     
     
-    #parameter for Pur-Poursuite
+    #parameter for Pure-Poursuite
     k = 0.1  # look forward gain
     Lfc = 2.0  # look-ahead distance
     Kp = 1.0  # speed proportional gain
     dt = 0.1  # [s] time increment for simulation
     L = 2.9  # [mm] wheel base of vehicle
-    target_speed = 30.0 / 3.6  # [mm/s]
+    target_speed = 300.0 / 3.6  # [mm/s]
     
     T = 100 #simulation time
     
@@ -116,11 +116,13 @@ def main():
     t = [0.0]
     
     target_ind = TestPP.calc_target_index(state, cx, cy)
-
+    
+    speed_cons = 0
     while T >= time and lastIndex > target_ind:
         ai = TestPP.PIDControl(target_speed, state.v)
         di, target_ind = TestPP.pure_pursuit_control(state, cx, cy, target_ind)
-        #print(ai,di)
+        speed_cons += ai
+        print(speed_cons,di*180/math.pi)
         state = TestPP.update(state, ai, di)
 
         time = time + dt

@@ -36,7 +36,7 @@ Message make_pos_vel_message(float x, float y, float theta, float speed, float o
 	return msg;
 }
 
-Message make_US_message(void){
+/*Message make_US_message(void){
 	Message msg;
 
 	msg.length = 10;// ID + message utile(8 octets) + CHECKSUM
@@ -51,7 +51,7 @@ Message make_US_message(void){
 	checksum = ~checksum;
 	msg.checksum = checksum;
 	return msg;
-}
+}*/
 
 Message make_ack_message(void){
 	Message msg;
@@ -59,6 +59,23 @@ Message make_ack_message(void){
 	msg.id = (uint8_t)ACK;
 	msg.payload.ack.acknowledgement = (uint8_t)7;
 	uint8_t checksum = msg.length + msg.id + 7;
+	checksum = ~checksum;
+	msg.checksum = checksum;
+	return msg;
+}
+
+Message make_lidar_message(uint8_t zone1,uint8_t zone2,uint8_t zone3){
+	Message msg;
+	msg.length = 5;//message utile de 3 octets
+	msg.id = (uint8_t)LID_UP;
+
+	msg.payload.lid.zone1 = zone1;//TODO: créer une structure qui stocke les valeurs des zones
+	msg.payload.lid.zone2 = zone2;
+	msg.payload.lid.zone3 = zone3;
+	uint8_t checksum = msg.length + msg.id;
+	for(size_t i=0; i<sizeof(Lid);i++){
+			checksum += msg.payload.data[i];
+	}
 	checksum = ~checksum;
 	msg.checksum = checksum;
 	return msg;
@@ -121,6 +138,31 @@ int get_dynAngle_received(Message* p_message){
 	return dyn_angle;
 }
 
+int get_pin1_received(Message* p_message){
+	int pin = p_message->payload.lid_pins.pin1;
+	return pin;
+}
+
+int get_pin2_received(Message* p_message){
+	int pin = p_message->payload.lid_pins.pin2;
+	return pin;
+}
+
+int get_pin3_received(Message* p_message){
+	int pin = p_message->payload.lid_pins.pin3;
+	return pin;
+}
+
+int get_pin4_received(Message* p_message){
+	int pin = p_message->payload.lid_pins.pin4;
+	return pin;
+}
+
+int get_pin5_received(Message* p_message){
+	int pin = p_message->payload.lid_pins.pin5;
+	return pin;
+}
+
 int receive_message(void){
 	int retour = 0; // 0 : rien à signaler. pas d'erreur. Le message n'est pas complet ou y a rien à lire
 	uint8_t b;
@@ -147,6 +189,7 @@ int receive_message(void){
 		}
 		if(_receiving_state==READ){
 			_message.id = Serial1.read();
+			Serial.print("ID recu : ");
 			Serial.print(_message.id);
 			_message.checksum += _message.id;
 			for (int i =0; i< _message.length-2; i++){
@@ -156,9 +199,11 @@ int receive_message(void){
 			_message.checksum = ~_message.checksum;
 			checksum_readed = Serial1.read();
 			if(checksum_readed==_message.checksum){
+				Serial.println("Message lu et ok");
 				retour = 1; // message lu et ok
 			}
 			else{
+				Serial.println("Message pas lu et pas ok");
 				retour = -1; //erreur de checksum
 			}
 			_message.length = 0;

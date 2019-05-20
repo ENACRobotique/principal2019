@@ -31,6 +31,9 @@ class Type(Enum):
     PUMP = 6
     GATE = 7
     DYN = 8
+    
+    LID_UP = 10
+    LID_DOWN = 11
 
 
 #----------------------------------------------Trames down (Raspi->Teensy)----------------------------------------
@@ -56,6 +59,8 @@ class MakeVelocityMessage:
         id_message = Type.VELOCITY
         length = 6
         header = bitstring.pack('uintle:8, uintle:8', 0xFF, 0xFF)
+        print("Message pos_vel préparé avec id = {}".format(id_message.value))
+        
         s = bitstring.pack('uintle:8, uintle:8, uintle:16, uintle:16', length, id_message.value, self.speed, self.omega)
         checksum = bitstring.pack('uintle:8', (~sum(s.tobytes()) & 0xFF))
         #print(checksum)
@@ -120,7 +125,32 @@ class MakePumpMessage:
         checksum = bitstring.pack('uintle:8', (~sum(s.tobytes()) & 0xFF))
         data = header+s+checksum
         return data
+
+class MakeLidarMessage:
     
+    def __init__(self):
+        self.pin1 = 0
+        self.pin2 = 0
+        self.pin3 = 0
+        self.pin4 = 0
+        self.pin5 = 0
+        
+    def update(self, pin1,pin2,pin3,pin4,pin5):
+        self.pin1 = pin1
+        self.pin2 = pin2
+        self.pin3 = pin3
+        self.pin4 = pin4
+        self.pin5 = pin5
+        
+    def serial_encode(self):
+        id_message = Type.LID_DOWN
+        length = 7
+        header = bitstring.pack('uintle:8, uintle:8', 0xFF, 0xFF)
+        s = bitstring.pack('uintle:8, uintle:8, uintle:8, uintle:8, uintle:8, uintle:8, uintle:8', length, id_message.value, self.pin1,self.pin2,self.pin3,self.pin4,self.pin5)
+        checksum = bitstring.pack('uintle:8', (~sum(s.tobytes()) & 0xFF))
+        data = header+s+checksum
+        return data
+
 class MakeGateMessage:
     
     def __init__(self):
@@ -148,13 +178,13 @@ class MakeGateMessage:
 class MakeDynamixelMessage:
     
     def __init__(self):
-        self._angle = None #a float in °
+        self._angle = None #a float in degrees
         self._speed = None
         
     @property
     def angle(self):
         b = 350 #number of angle when trunk at bottom
-        a = 1024/300 #300° made in 1024 bytes
+        a = 1024/300 #300 degrees made in 1024 bytes
         alpha = self._angle
         if alpha<=0:
             return int(b-a*alpha)
@@ -175,7 +205,7 @@ class MakeDynamixelMessage:
     
     def update(self, angle, speed):
         """
-        angle is an angle (float) in ° [-180;180]
+        angle is an angle (float) in degrees [-180;180]
         speed is an speed between 0 and 1023
         """
         self._angle = angle
@@ -228,7 +258,28 @@ class PositionReceived:
 
     
 
-
+class LidarZoneReceive:
+    
+    def __init__(self):
+        self.zone1 = None
+        self.zone2 = None
+        self.zone3 = None 
+        
+    @property
+    def get_zone1(self):
+        return self.zone1
+    
+    @property
+    def get_zone2(self):
+        return self.zone2
+    
+    @property
+    def get_zone3(self):
+        return self.zone3
+    
+    def serial_decode(self, payload):
+        s = bitstring.BitStream(payload)
+        self.zone1, self.zone2, self.zone3= s.unpack('uintle:8, uintle:8, uintle:8')
 
 #--------------------------------------------Lecture des trames----------------------------------------------
 
@@ -271,6 +322,7 @@ class CommunicationReceived:
 
             if self.state == StateReceive.READ:
                 self.id_message = bitstring.BitStream(self.ser.read()).unpack('uint:8')[0]
+                print("id_message : {}".format(self.id_message))
                 self.checksum += self.id_message
                 payload = self.ser.read(self.lenght-2)
                 self.checksum += sum(payload) 
@@ -285,12 +337,14 @@ class CommunicationReceived:
                 calculated_checksum = ~(self.checksum) & 0xFF
                 if calculated_checksum == checksum_readed:
                     self.checksum = 0
+                    print("Message bien lu")
                     return idmessage, payload
                 else :
+                    print("Message PAS bien lu")
                     self.checksum = 0
                     return None #checksum invalide
 
-        return None #message pas encore entièrement lu
+        return None #message pas encore entierement lu
 
 
 
@@ -309,6 +363,7 @@ class CommunicationSend():
 
     def send_message(self, message):
         self.ser.write(message.tobytes())
+        print(message.tobytes())
         
     
     
@@ -341,5 +396,5 @@ class CommunicationSendWithAck(Thread):
                 id_message, payload = receive_message
                 if id_message == Type.ACK.value:
                     ack = True
-                    print("c'est ackté")
+                    print("c'est ackte")
         

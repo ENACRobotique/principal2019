@@ -131,6 +131,16 @@ def plot_arrow(x, y, yaw, length=1.0, width=0.5, fc="r", ec="k"):
 
 class PurePursuit:
     def __init__(self, cx, cy, current_robot):
+        
+        self.k = 0.1  # look forward gain
+        self.Lfc = 2.0  # look-ahead distance
+        self.Kp = 1.0  # speed proportional gain
+        self.dt = 0.1  # [s]
+        self.L = 2.9  # [mm] wheel base of vehicle
+        
+        self.old_nearest_point_index = None
+        
+        
         self.cx = cx
         self.cy = cy
         SPEED_MAX = 300
@@ -147,8 +157,10 @@ class PurePursuit:
         self.omega_cons = 0.0
         self.speed_cons = 0.0
         
+        
     def updateState(self,current_robot):
         self.state = State(x=current_robot.x, y=current_robot.y, yaw=current_robot.theta, v=current_robot.speed)
+        
         
     def SaveLog(self) : 
         self.Save_x.append([self.state.x])
@@ -156,8 +168,9 @@ class PurePursuit:
         self.Save_yaw.append([self.state.yaw])
         self.Save_v.append([self.state.v])
         
+        
     def compute(self,current_robot):
-        ai = PIDControl(self.target_speed, self.state.v)
+        ai = self.PIDControl(self.target_speed, self.state.v)
         di, self.target_ind = pure_pursuit_control(self.state, self.cx, self.cy, self.target_ind)
         
         self.SaveLog()
@@ -165,14 +178,77 @@ class PurePursuit:
         self.omega_cons = di
         
         return (self.omega_cons,self.speed_cons)
+
+
+    def PIDControl(self,target, current):
+        a = self.Kp * (target - current)
+    
+        return a
+    
+    
+    def pure_pursuit_control(self,state, cx, cy, pind):
+
+        ind = self.calc_target_index(state, cx, cy)
+    
+        if pind >= ind:
+            ind = pind
+    
+        if ind < len(cx):
+            tx = cx[ind]
+            ty = cy[ind]
+        else:
+            tx = cx[-1]
+            ty = cy[-1]
+            ind = len(cx) - 1
+    
+        alpha = math.atan2(ty - state.rear_y, tx - state.rear_x) - state.yaw
+    
+        Lf = self.k * state.v + self.Lfc
+    
+        delta = math.atan2(2.0 * self.L * math.sin(alpha) / Lf, 1.0)
+    
+        return delta, ind
         
         
+        
+    def calc_target_index(self,state, cx, cy):
+    
+        if self.old_nearest_point_index is None:
+            # search nearest point index
+            dx = [state.rear_x - icx for icx in cx]
+            dy = [state.rear_y - icy for icy in cy]
+            d = [abs(math.sqrt(idx ** 2 + idy ** 2)) for (idx, idy) in zip(dx, dy)]
+            ind = d.index(min(d))
+            old_nearest_point_index = ind
+        else:
+            ind = self.old_nearest_point_index
+            distance_this_index = calc_distance(state, cx[ind], cy[ind])
+            while True:
+                ind = ind + 1 if (ind + 1) < len(cx) else ind
+                distance_next_index = calc_distance(state, cx[ind], cy[ind])
+                if distance_this_index < distance_next_index:
+                    break
+                distance_this_index = distance_next_index
+            self.old_nearest_point_index = ind
+    
+        L = 0.0
+    
+        Lf = self.k * state.v + self.Lfc
+    
+        # search look ahead target point index
+        while Lf > L and (ind + 1) < len(cx):
+            dx = cx[ind] - state.rear_x
+            dy = cy[ind] - state.rear_y
+            L = math.sqrt(dx ** 2 + dy ** 2)
+            ind += 1
+    
+        return ind
 
 def main():
     #  target course
-    II = np.arange(0, 500, 0.01)
+    II = np.arange(0, 500, 0.1)
     cx = [10*math.cos(ix / 5.0) for ix in II]
-    cy = [ix for ix in II]
+    cy = [10*math.sin(ix / 5.0) for ix in II]
     
     """
     cx=[]
@@ -204,7 +280,7 @@ def main():
     while T >= time and lastIndex > target_ind:
         ai = PIDControl(target_speed, state.v)
         di, target_ind = pure_pursuit_control(state, cx, cy, target_ind)
-        #print(ai,di)
+        print(ai,di*180/math.pi)
         state = update(state, ai, di)
 
         time = time + dt

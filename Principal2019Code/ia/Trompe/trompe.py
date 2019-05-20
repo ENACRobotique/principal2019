@@ -9,7 +9,7 @@ path = "../../ia"
 sys.path.append(path)
 
 
-import communication as com
+from Communication import communication as com
 import params as p
 
 

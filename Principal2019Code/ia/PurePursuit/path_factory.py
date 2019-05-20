@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 
-from PurePursuit.path_manager import Point, Path, dist, delta
+from PurePursuit.path_manager import Path, dist, delta
 
 from math import sin, cos, sqrt, pi, floor, atan2
 import numpy as np
 import matplotlib.pyplot as plt
-
+from shapely.geometry import Point
 
 def line(Nbpoints, A, B):
     t = np.linspace(0,1,Nbpoints)
-    X = A.x*(1-t)+B.x*t
-    Y = A.y*(1-t)+B.y*t
-    path = Path([Point(X[i], Y[i]) for i in range(Nbpoints)])
+    X1 = A.x*(1-t)+B.x*t
+    Y1 = A.y*(1-t)+B.y*t
+    path = Path([Point(X1[i], Y1[i]) for i in range(Nbpoints)])
     return path
 
 

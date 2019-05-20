@@ -21,6 +21,16 @@ const int MOT1_DIR = 6;
 const int MOT2_PWM = 7;
 const int MOT2_DIR = 8;
 
+const int LID_PIN_OUT1 = 16;
+const int LID_PIN_OUT2 = 17;
+const int LID_PIN_OUT3 = 18;
+
+const int LID_PIN_IN1 = 23;
+const int LID_PIN_IN2 = 22;
+const int LID_PIN_IN3 = 21;
+const int LID_PIN_IN4 = 20;
+const int LID_PIN_IN5 = 19;
+
 const int SERVO1 = 2;
 //const int SERVO2 = 15;
 const int SERVO3 = 37;

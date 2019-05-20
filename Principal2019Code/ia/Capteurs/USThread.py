@@ -14,11 +14,11 @@ class USManager():
         self.RL_data = RL_data
         self.RR_data = RR_data
         
-    def updateRanges(self,FL_range,FR_range,RL_range,RR_range):
-        self.FL_range = FL_range
-        self.FR_range = FR_range
-        self.RL_range = RL_range
-        self.RR_range = RR_range
+    def updateRanges(self,range):
+        self.FL_range = range[0]
+        self.FR_range = range[1]
+        self.RL_range = range[2]
+        self.RR_range = range[3]
         
     def obstacleDetected(self):
         return (self.FL_data < self.FL_range or self.FR_data < self.FR_range or self.RL_data < self.RL_range or self.RR_data < self.RR_range)
