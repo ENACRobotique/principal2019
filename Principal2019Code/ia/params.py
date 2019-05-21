@@ -27,8 +27,9 @@ STOP_DELAY = 1
 MATCH_DURATION = 100
 
 #Variables de navigation et de pure pursuit
-MAX_ACCEL = 600
-SPEED_MAX = 300
+MAX_ACCEL = 800
+SPEED_MAX = 400
+ADMITTED_SPEED_ERROR = 5;
 ADMITTED_POSITION_ERROR = 5
 NAVIGATOR_TIME_PERIOD = 0.05
 #Definition of look_ahead distance : L=L0+k*speed

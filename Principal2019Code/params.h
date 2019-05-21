@@ -40,6 +40,8 @@ const int MOT_GALET_L = 35;
 const int POMPE = 15;
 const int VANN = 14;
 
+const int LED = 13;
+
 const int COLOR = 25;
 const int TIRETTE = 24;
 

@@ -82,10 +82,10 @@ Message make_lidar_message(uint8_t zone1,uint8_t zone2,uint8_t zone3){
 }
 
 void send_message(Message msg){
-	uint8_t buf[msg.length+3]; // buffer = start1 + srart2 + length + lenght_message
+	uint8_t buf[msg.length+3]; // buffer = start1 + srart2 + length + length_message
 	buf[0] = 0xFF;
 	buf[1] = 0xFF;
-	memcpy(buf+2, &msg, msg.length);  // msg.lenght - checksum + length
+	memcpy(buf+2, &msg, msg.length);  // msg.length - checksum + length
 	buf[msg.length + 2] = msg.checksum;
 
 	Serial1.write(buf, msg.length + 3);

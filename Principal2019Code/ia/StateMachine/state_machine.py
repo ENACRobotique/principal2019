@@ -1,6 +1,6 @@
 
-from PurePursuit import path_factory
-from PurePursuit import pure_pursuit
+from PurePursuit import path_factory as pf
+from PurePursuit import pure_pursuit as pp
 from PurePursuit.path_manager import Point
 
 from time import time
@@ -53,6 +53,12 @@ class FSMState:
         raise NotImplementedError("Must be inherited")
     
     
+class TestState(FSMState):
+    
+    def __init__(self,behaviour):
+        super().__init__(behaviour)
+        path_test = pf.line(5000, Point(0,0), Point(2000,0))
+        path_test.compute_speed(0.2, 0.85, p.SPEED_MAX)
     
 class StateTakeDisc(FSMState):
     

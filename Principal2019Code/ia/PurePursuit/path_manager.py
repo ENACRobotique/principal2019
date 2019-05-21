@@ -36,13 +36,15 @@ def dist(p1, p2):
 
 class Path:
 
-    def __init__(self, points):
+    def __init__(self, points, top_of_climb, top_of_descent, Vmax):
         self.points = points  #array of points from class Point
         self.length = len(self.points)
         #self.headings = self.compute_headings()
         self.compute_dist()
         #self.compute_curvature()
         self.last_passed_index = 0
+        
+        self.compute_speed(top_of_climb, top_of_descent, Vmax)
         """if len(headings) > 0:
             self.headings = headings
         else:
@@ -136,7 +138,7 @@ class Path:
             self.speed[nb_points -1 -i] = min(self.speed[nb_points -i] + p.MAX_ACCEL*p.NAVIGATOR_TIME_PERIOD, p.SPEED_MAX)
         self.speed[int(nb_points/2)] = min(self.speed[int(nb_points/2)-1] + p.MAX_ACCEL*p.NAVIGATOR_TIME_PERIOD, p.SPEED_MAX)
         
-    def troncate_path(self):
+    def troncate_path(self, top_of_climb, top_of_descent, Vmax = p.SPEED_MAX):
         print("TRONCATE")
         self.points = self.points[self.last_passed_index:]
         self.last_passed_index = 0
@@ -144,7 +146,8 @@ class Path:
         self.length = len(self.points)
         print("length : {}\n".format(self.length))
         self.compute_dist()
-        self.compute_speed(0.2,0.85,p.SPEED_MAX)
+        if self.length > 1:
+            self.compute_speed(top_of_climb,top_of_descent,Vmax)
 
     def find_closest_point(self, p0, max_index=100):
         dist_to_p0 = np.array([dist(p0, p) for p in self.points[self.last_passed_index:self.last_passed_index+max_index]])

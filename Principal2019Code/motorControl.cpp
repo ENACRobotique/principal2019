@@ -117,26 +117,26 @@ namespace MotorControl {
 		digitalWrite(MOT1_DIR, direction_sign(cmd_mot1));
 		analogWrite(MOT2_PWM, abs(cmd_mot2)-1);
 		digitalWrite(MOT2_DIR, direction_sign(cmd_mot2));
-
-		//Serial.print("cons speed :");
-		//Serial.print(cons_speed);
-		//Serial.print("\t");
-		//Serial.print("\t");
-		//Serial.print("\t speed : ");
-		//Serial.print(Odometry::get_speed());
-		//Serial.print("\t");
-		//Serial.print("\t cons omega : ");
-		//Serial.println(cons_omega);
-		//Serial.print("\t omega : ");
-		//Serial.print("\t");
-		//Serial.println(Odometry::get_omega());
-		//Serial.print("\terror_speed: ");
-		//Serial.print(error_speed);
-		//Serial.print("\terror_speed: ");
-		//Serial.print(error_omega);
-		//Serial.print("\tcmd1: ");
-		//Serial.print(cmd_mot1);
-		//Serial.print("\tcmd2: ");
-		//Serial.println(cmd_mot2);
+//
+//		Serial.print("cons speed :");
+//		Serial.print(cons_speed);
+//		Serial.print("\t");
+//		Serial.print("\t");
+//		Serial.print("\t speed : ");
+//		Serial.print(Odometry::get_speed());
+//		Serial.print("\t");
+//		Serial.print("\t cons omega : ");
+//		Serial.println(cons_omega);
+//		Serial.print("\t omega : ");
+//		Serial.print("\t");
+//		Serial.println(Odometry::get_omega());
+//		Serial.print("\terror_speed: ");
+//		Serial.print(error_speed);
+//		Serial.print("\terror_speed: ");
+//		Serial.print(error_omega);
+//		Serial.print("\tcmd1: ");
+//		Serial.print(cmd_mot1);
+//		Serial.print("\tcmd2: ");
+//		Serial.println(cmd_mot2);
 	}
 }

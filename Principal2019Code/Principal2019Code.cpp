@@ -36,8 +36,15 @@ Servo DumboEar;*/
 //The setup function is called once at startup of the sketch
 void setup()
 {
+	Serial.println("Je suis au début du setup");
 	Serial.begin(115200);
 	Serial1.begin(115200);
+
+	/*while(true) {
+		Serial1.println("plop");
+		Serial.println("plop");
+	}*/
+
 	Odometry::init();
 	MotorControl::init();
 	//fsmSupervisor.init(&tiretteState);
@@ -48,7 +55,7 @@ void setup()
 	lidar = Lidar();
 
 	pinMode(POMPE, OUTPUT);
-	pinMode(13, OUTPUT);
+	//pinMode(LED, OUTPUT);//LED intégrée à la Teensy
 	digitalWrite(POMPE, LOW);
 
 	pinMode(LID_PIN_IN1, OUTPUT);
@@ -114,15 +121,14 @@ void setup()
 		ServoLocker.write(LOCK_LOCK);
 		delay(1500);
 	}*/
-
+	Serial.println("Fin du setup");
 }
 
-int led_status = 0;
+//int led_status = 0;
 
 // The loop function is called in an endless loop
 void loop()
 {
-	return;
 /*
 	//fsmSupervisor.update();
 	if (Serial.available()){
@@ -173,76 +179,77 @@ void loop()
 //	}
 
 
+	if(receive_message()==1){
+		Serial.print("Message received !");
+		get_received_message(&downmessage);
+		Message upmessageack;
+
+		if(downmessage.id==POSITION) {
+			Serial.println("Message position");
+			float x = get_x_received(&downmessage);
+			float y = get_y_received(&downmessage);
+			float theta = get_theta_received(&downmessage);
+			Odometry::set_pos(x, y, theta);
+		}
+
+		if(downmessage.id==VELOCITY) {
+			Serial.println("Message velocity");
+			MotorControl::time_last_command = millis();
+			float omega = get_omega_received(&downmessage);
+			float speed = get_speed_received(&downmessage);
+			Serial.print("Omega and speed received : ");
+			Serial.print(omega);
+			Serial.print("\t");
+			Serial.println(speed);
+			//speed = 100;
+			MotorControl::set_cons(speed, omega);
+		}
+
+		if(downmessage.id==PUMP){
+			Serial.println("Message pump");
+			int activation = get_pump_received(&downmessage);
+			digitalWrite(POMPE, activation);
+			time_last_command_pump = millis();
+			upmessageack = make_ack_message();
+			send_message(upmessageack);
+		}
+
+		if(downmessage.id==DYN){
+			Serial.println("dyn");
+			int dyn_angle = get_dynAngle_received(&downmessage);
+			int dyn_speed = get_dynSpeed_received(&downmessage);
+			Message upmessageack = make_ack_message();
+			//Dynamixel.moveSpeed(DYNAMIXEL_ID, dyn_angle, dyn_speed);
+
+			upmessageack = make_ack_message();
+			send_message(upmessageack);
+		}
+
+		if(downmessage.id==LID_DOWN){
+			Serial.print("Lidar down\n");
+			int pin1 = get_pin1_received(&downmessage);
+			int pin2 = get_pin2_received(&downmessage);
+			int pin3 = get_pin3_received(&downmessage);
+			int pin4 = get_pin4_received(&downmessage);
+			int pin5 = get_pin5_received(&downmessage);
+			lidar.set_pin_in(pin1,pin2,pin3,pin4,pin5);
+			lidar.comm_up();
+		}
+
+
+
+
+	//MotorControl::set_cons(vitesse, 0);
+	//Serial.print(Odometry::get_speed());
+	//Serial.println(Odometry::get_omega());
+
+	}
+
 	if(navigatorTime.check()) {
 	//	navigator.update();
+		Serial.println("navigatorTime !");
 
-
-		if(receive_message()==1){
-			Serial.print("Message received !");
-			get_received_message(&downmessage);
-			Message upmessageack;
-
-			if(downmessage.id==POSITION) {
-				Serial.println("Message position");
-				float x = get_x_received(&downmessage);
-				float y = get_y_received(&downmessage);
-				float theta = get_theta_received(&downmessage);
-				Odometry::set_pos(x, y, theta);
-			}
-
-			if(downmessage.id==VELOCITY) {
-				Serial.println("Message velocity");
-				MotorControl::time_last_command = millis();
-				float omega = get_omega_received(&downmessage);
-				float speed = get_speed_received(&downmessage);
-				Serial.print("Omega and speed received : ");
-				Serial.print(omega);
-				Serial.print("\t");
-				Serial.println(speed);
-				//speed = 100;
-				MotorControl::set_cons(speed, omega);
-			}
-
-			if(downmessage.id==PUMP){
-				Serial.println("Message pump");
-				//Serial.print("pompe \n");
-				int activation = get_pump_received(&downmessage);
-				digitalWrite(POMPE, activation);
-				time_last_command_pump = millis();
-				upmessageack = make_ack_message();
-				send_message(upmessageack);
-			}
-
-			if(downmessage.id==DYN){
-				Serial.print("dyn \n");
-				int dyn_angle = get_dynAngle_received(&downmessage);
-				int dyn_speed = get_dynSpeed_received(&downmessage);
-				Message upmessageack = make_ack_message();
-				//Dynamixel.moveSpeed(DYNAMIXEL_ID, dyn_angle, dyn_speed);
-
-				upmessageack = make_ack_message();
-				send_message(upmessageack);
-			}
-
-			if(downmessage.id==LID_DOWN){
-				Serial.print("Lidar down\n");
-				int pin1 = get_pin1_received(&downmessage);
-				int pin2 = get_pin2_received(&downmessage);
-				int pin3 = get_pin3_received(&downmessage);
-				int pin4 = get_pin4_received(&downmessage);
-				int pin5 = get_pin5_received(&downmessage);
-				lidar.set_pin_in(pin1,pin2,pin3,pin4,pin5);
-				lidar.comm_up();
-			}
-
-
-
-
-		//MotorControl::set_cons(vitesse, 0);
-		//Serial.print(Odometry::get_speed());
-		//Serial.println(Odometry::get_omega());
-
-		}//fin if receive message
+		//fin if receive message
 
 
 		Message upmessage = make_pos_vel_message(Odometry::get_pos_x(), Odometry::get_pos_y(), Odometry::get_pos_theta(), Odometry::get_speed(), Odometry::get_omega());

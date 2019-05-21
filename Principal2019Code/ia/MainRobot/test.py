@@ -1,7 +1,7 @@
 import sys
 path = "../PathFinder"
 sys.path.append(path)
-path = "../Ultrason"
+path = "../Capteurs"
 sys.path.append(path)
 path = "../../ia"
 sys.path.append(path)

@@ -2,8 +2,9 @@ import serial
 
 
 import numpy as np
+from threading import Thread
 from math import sin, pi
-from time import time
+from time import time, sleep
 
 from Communication import communication as com
 from MainRobot import robot
@@ -25,8 +26,8 @@ import params as p
 class CommManager():
     def __init__(self,robot):
         self.robot = robot
-        self.upCommunication = com.CommunicationReceived()
         self.downCommunication = com.CommunicationSend()
+        self.receiveCommunication = ReceiveMessageThread(self.robot)
 
     #upCommunication = com.CommunicationReceived()
     #downCommunication = com.CommunicationSend()
@@ -37,10 +38,8 @@ class CommManager():
     
     #messagePump = com.MakePumpMessage()
         
-        self.positionReceived = com.PositionReceived()
         self.messagePosition = com.MakePositionMessage()
         self.messageZoneLidar = com.MakeLidarMessage()
-        self.ZoneLidarReceived = com.LidarZoneReceive()
         self.messageVelocity = com.MakeVelocityMessage()
         
         self.messagePump = com.MakePumpMessage()
@@ -56,7 +55,7 @@ class CommManager():
         self.downCommunication.send_message(self.messageZoneLidar.serial_encode())
     
     
-    def receive_message(self):
+    """def receive_message(self):
         
         receive_message = self.upCommunication.receive_message()
 
@@ -64,25 +63,45 @@ class CommManager():
             id_message, payload = receive_message
 
             if id_message == com.Type.POS_VEL.value:
-                positionReceived.serial_decode(payload)
-                robot.update(positionReceived.x, positionReceived.y, positionReceived.theta, positionReceived.speed, positionReceived.omega)
-                x.append(positionReceived.x)
-                y.append(positionReceived.y)
-                print("({}, {}, {}, {}, {})".format(positionReceived.x, positionReceived.y, positionReceived.theta, positionReceived.speed, positionReceived.omega))
-                #print(robot)
-
-            omega, speed = tracking.compute(robot, False)
-            #print("omega_cons = ", omega, "speed_cons = ", speed)
+                self.positionReceived.serial_decode(payload)
+                self.robot.update(self.positionReceived.x, self.positionReceived.y, self.positionReceived.theta, self.positionReceived.speed, self.positionReceived.omega)
+                print(robot)
                 
             if id_message == com.Type.LID_UP.value:
                 self.ZoneLidarReceived.serial_decode(payload);
-                self.robot.updateZones(self.ZoneLidarReceived.get_zone1,self.ZoneLidarReceived.get_zone2,self.ZoneLidarReceived.get_zone3)
+                self.robot.updateZones(self.ZoneLidarReceived.get_zone1,self.ZoneLidarReceived.get_zone2,self.ZoneLidarReceived.get_zone3)"""
             
     def sendVelocityMessage(self,speed,omega):
             self.messageVelocity.update(speed, omega)
             self.downCommunication.send_message(self.messageVelocity.serial_encode())
-            print("Message envoyé")
+            print("Message envoyé avec speed, omega = {}, {}".format(speed,omega))
+        
+    def start_receive_thread(self):
+        self.receiveCommunication.start()
             
             
-            
-    #np.savez('outfile.npz', x=np.array(x), y=np.array(y))
+class ReceiveMessageThread(Thread):
+    def __init__(self, robot):
+        Thread.__init__(self);
+        self.upCommunication = com.CommunicationReceived()
+        self.ZoneLidarReceived = com.LidarZoneReceive()
+        self.positionReceived = com.PositionReceived()
+        self.robot = robot
+        
+    def run(self):
+        while True:
+            #self.upCommunication.print_in_waiting()
+            receive_message = self.upCommunication.receive_message()
+    
+            if receive_message is not None:
+                id_message, payload = receive_message
+    
+                if id_message == com.Type.POS_VEL.value:
+                    self.positionReceived.serial_decode(payload)
+                    self.robot.update(self.positionReceived.x, self.positionReceived.y, self.positionReceived.theta, self.positionReceived.speed, self.positionReceived.omega)
+                    
+                if id_message == com.Type.LID_UP.value:
+                    self.ZoneLidarReceived.serial_decode(payload);
+                    self.robot.updateZones(self.ZoneLidarReceived.get_zone1,self.ZoneLidarReceived.get_zone2,self.ZoneLidarReceived.get_zone3)
+                
+        

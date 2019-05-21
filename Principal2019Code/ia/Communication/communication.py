@@ -59,7 +59,7 @@ class MakeVelocityMessage:
         id_message = Type.VELOCITY
         length = 6
         header = bitstring.pack('uintle:8, uintle:8', 0xFF, 0xFF)
-        print("Message pos_vel préparé avec id = {}".format(id_message.value))
+        #print("Message pos_vel préparé avec id = {}".format(id_message.value))
         
         s = bitstring.pack('uintle:8, uintle:8, uintle:16, uintle:16', length, id_message.value, self.speed, self.omega)
         checksum = bitstring.pack('uintle:8', (~sum(s.tobytes()) & 0xFF))
@@ -299,6 +299,9 @@ class CommunicationReceived:
         self.checksum = 0
         self.id_message = 0
 
+    def print_in_waiting(self):
+        print("Waiting : {}".format(self.ser.in_waiting))    
+
     def receive_message(self):
 
         if self.ser.in_waiting > self.lenght:
@@ -322,7 +325,7 @@ class CommunicationReceived:
 
             if self.state == StateReceive.READ:
                 self.id_message = bitstring.BitStream(self.ser.read()).unpack('uint:8')[0]
-                print("id_message : {}".format(self.id_message))
+                #print("id_message : {}".format(self.id_message))
                 self.checksum += self.id_message
                 payload = self.ser.read(self.lenght-2)
                 self.checksum += sum(payload) 
@@ -337,10 +340,10 @@ class CommunicationReceived:
                 calculated_checksum = ~(self.checksum) & 0xFF
                 if calculated_checksum == checksum_readed:
                     self.checksum = 0
-                    print("Message bien lu")
+                    #print("Message bien lu")
                     return idmessage, payload
                 else :
-                    print("Message PAS bien lu")
+                    #print("Message PAS bien lu")
                     self.checksum = 0
                     return None #checksum invalide
 
@@ -392,7 +395,7 @@ class CommunicationSendWithAck(Thread):
             receive_message = upCommunication.receive_message()
             
             if receive_message is not None:
-                print(receive_message)
+                #print(receive_message)
                 id_message, payload = receive_message
                 if id_message == Type.ACK.value:
                     ack = True
