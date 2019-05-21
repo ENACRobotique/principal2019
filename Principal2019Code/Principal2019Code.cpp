@@ -28,10 +28,10 @@ unsigned long time_last_command_pump;
 
 Message downmessage;
 Lidar lidar;
-
+/*
 Servo ServoLocker;
 Servo ServoHolderLocker;
-Servo DumboEar;
+Servo DumboEar;*/
 
 //The setup function is called once at startup of the sketch
 void setup()
@@ -45,7 +45,7 @@ void setup()
 	//navigatorTime.reset();
 	t0 = millis();
 
-	//lidar = Lidar();
+	lidar = Lidar();
 
 	pinMode(POMPE, OUTPUT);
 	pinMode(13, OUTPUT);
@@ -61,6 +61,9 @@ void setup()
 	pinMode(LID_PIN_OUT2, INPUT_PULLUP);
 	pinMode(LID_PIN_OUT3, INPUT_PULLUP);
 
+	Dynamixel.begin(1000000, DYNAMIXEL_CONTROL);
+	Dynamixel.setEndless(DYN_BROADCAST_ID,false);
+	/*
 	ServoLocker.attach(PIN_LOCK);
 	ServoLocker.write(LOCK_LOCK);
 
@@ -71,10 +74,8 @@ void setup()
 	DumboEar.write(DUMBO_EAR_OPEN);
 
 
-	Dynamixel.begin(1000000, DYNAMIXEL_CONTROL);
-	Dynamixel.setEndless(DYN_BROADCAST_ID,false);
 
-//	Dynamixel.setID(254,/*new id*/);
+//	Dynamixel.setID(254,1);
 //	Dynamixel.ledStatus(DYN_BROADCAST_ID, 1);
 //	delay(500);
 //	Dynamixel.ledStatus(DYN_BROADCAST_ID, 0);
@@ -112,7 +113,7 @@ void setup()
 		delay(1500);
 		ServoLocker.write(LOCK_LOCK);
 		delay(1500);
-	}
+	}*/
 
 }
 
