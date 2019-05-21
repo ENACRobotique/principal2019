@@ -31,6 +31,7 @@ Lidar lidar;
 
 Servo ServoLocker;
 Servo ServoHolderLocker;
+Servo DumboEar;
 
 //The setup function is called once at startup of the sketch
 void setup()
@@ -60,13 +61,15 @@ void setup()
 	pinMode(LID_PIN_OUT2, INPUT_PULLUP);
 	pinMode(LID_PIN_OUT3, INPUT_PULLUP);
 
-	Dynamixel.begin(1000000, DYNAMIXEL_CONTROL);
-
 	ServoLocker.attach(PIN_LOCK);
 	ServoLocker.write(LOCK_LOCK);
 
 	ServoHolderLocker.attach(PIN_HOLDER_LOCK);
 	ServoHolderLocker.write(HOLDER_LOCK_LOCK);
+
+	DumboEar.attach(PIN_DUMBO_EAR);
+	DumboEar.write(DUMBO_EAR_OPEN);
+
 
 	Dynamixel.begin(1000000, DYNAMIXEL_CONTROL);
 	Dynamixel.setEndless(DYN_BROADCAST_ID,false);
@@ -78,9 +81,16 @@ void setup()
 //	delay(500);
 //	Dynamixel.ledStatus(DYN_BROADCAST_ID, 1);
 
-	//Get 3 Atoms
 	Dynamixel.moveSpeed(DYN_HOLDER_ID,DYN_HOLDER_DOWN, DYN_MAX_SPEED);
+
+	//Get 3 Atoms
 	delay(2000);
+	for(int i=0;i<3;i++){
+		DumboEar.write(DUMBO_EAR_CLOSE);
+		delay(500);
+		DumboEar.write(DUMBO_EAR_OPEN);
+		delay(500);
+	}
 
 	//Move Up
 	Dynamixel.moveSpeed(DYN_HOLDER_ID,DYN_HOLDER_UP, DYN_MAX_SPEED);

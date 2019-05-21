@@ -60,6 +60,9 @@ const int PIN_HOLDER_LOCK = 22 ;
 const int HOLDER_LOCK_OPEN=80;
 const int HOLDER_LOCK_LOCK=107;
 
+const int PIN_DUMBO_EAR = 21 ;
+const int DUMBO_EAR_OPEN=95;
+const int DUMBO_EAR_CLOSE=125;
 
 const int PIN_LOCK=23;
 const int LOCK_OPEN=45;
