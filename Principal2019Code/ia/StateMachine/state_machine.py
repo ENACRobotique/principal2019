@@ -3,6 +3,9 @@ from PurePursuit import path_factory
 from PurePursuit import pure_pursuit
 from PurePursuit.path_manager import Point
 
+from time import time
+import params as p
+
 class Behavior():
     
     def __init__(self,robot):
@@ -14,15 +17,27 @@ class Behavior():
     
     
 class FSMMatch(Behavior):
-    def __init__(self):
+    def __init__(self,robot):
+        self.robot = robot
         self.colour = None
         self.state = None
+        self.start_match = None
+        self.time_now = None
         
     def loop(self):
-        next_state = self.state.test()
-        if next_state is not None:
-            self.state.deinit()
-            self.state = next_state(self)
+        
+        if self.start_match is not None and self.time_now - self.start_match >p.MATCH_DURATION:
+            next_state = DeadState()
+        else:
+            next_state = self.state.test()
+            
+            if next_state is not None:
+                self.state.deinit()
+                self.state = next_state(self)
+            
+            
+    def start_match(self):
+        self.start_match = time.time()
     
     
     

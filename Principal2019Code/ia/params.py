@@ -23,8 +23,10 @@ ANGULAR_SPEED_TO_MSG_ADDER = (1<<15) #split uint16 in two
 SERIAL_BAUDRATE = 115200
 SERIAL_PATH = "/dev/ttyAMA0"
 TIMEOUT = 0.01
+STOP_DELAY = 1
+MATCH_DURATION = 100
 
-#Variables de naviagtion et de pure pursuit
+#Variables de navigation et de pure pursuit
 MAX_ACCEL = 600
 SPEED_MAX = 300
 ADMITTED_POSITION_ERROR = 5

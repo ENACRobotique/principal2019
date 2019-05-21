@@ -135,7 +135,16 @@ class Path:
             self.speed[i] = min(self.speed[i-1] + p.MAX_ACCEL*p.NAVIGATOR_TIME_PERIOD, p.SPEED_MAX)
             self.speed[nb_points -1 -i] = min(self.speed[nb_points -i] + p.MAX_ACCEL*p.NAVIGATOR_TIME_PERIOD, p.SPEED_MAX)
         self.speed[int(nb_points/2)] = min(self.speed[int(nb_points/2)-1] + p.MAX_ACCEL*p.NAVIGATOR_TIME_PERIOD, p.SPEED_MAX)
-
+        
+    def troncate_path(self):
+        print("TRONCATE")
+        self.points = self.points[self.last_passed_index:]
+        self.last_passed_index = 0
+        print("length_direct : {}\n".format(len(self.points)))
+        self.length = len(self.points)
+        print("length : {}\n".format(self.length))
+        self.compute_dist()
+        self.compute_speed(0.2,0.85,p.SPEED_MAX)
 
     def find_closest_point(self, p0, max_index=100):
         dist_to_p0 = np.array([dist(p0, p) for p in self.points[self.last_passed_index:self.last_passed_index+max_index]])

@@ -37,7 +37,9 @@ enum MessagesID{
 	GATE,
 	DYN,
 
-	USD
+	USD,
+	LID_UP,
+	LID_DOWN
 };
 
 enum ReceivingState{
@@ -71,12 +73,12 @@ typedef struct __attribute__((__packed__)) Position{
 	uint16_t theta;
 }Position;
 
-typedef struct __attribute__((__packed__)) US{
+/*typedef struct __attribute__((__packed__)) US{
 	uint16_t front_left;
 	uint16_t front_right;
 	uint16_t rear_left;
 	uint16_t rear_right;
-}US;
+}US;*/
 
 typedef struct __attribute__((__packed__)) Pump{
 	uint8_t activation;
@@ -95,6 +97,20 @@ typedef struct __attribute__((__packed__)) Dyn{
 	uint16_t speed;
 }Dyn;
 
+typedef struct __attribute__((__packed__)) Lid{
+	uint8_t zone1;
+	uint8_t zone2;
+	uint8_t zone3;
+}Lid;
+
+typedef struct __attribute__((__packed__)) Lid_pins{
+	uint8_t pin1;
+	uint8_t pin2;
+	uint8_t pin3;
+	uint8_t pin4;
+	uint8_t pin5;
+}Lid_pins;
+
 
 union  __attribute__((__packed__)) Payload{
 	Pos_vel pos_vel;
@@ -107,7 +123,9 @@ union  __attribute__((__packed__)) Payload{
 	Gate gate;
 	Dyn dyn;
 
-	US us;
+	//US us;
+	Lid lid;
+	Lid_pins lid_pins;
 	uint8_t data[sizeof(Pos_vel)];
 };
 
@@ -119,7 +137,8 @@ typedef struct Message{
 }Message;
 
 Message make_pos_vel_message(float x, float y, float theta, float speed, float omega);
-Message make_US_message(void);
+//Message make_US_message(void);
+Message make_lidar_message(uint8_t zone1,uint8_t zone2,uint8_t zone3);
 Message make_ack_message(void);
 
 void send_message(Message msg);
@@ -139,6 +158,12 @@ int get_gate_received(Message* p_message);
 
 int get_dynSpeed_received(Message* p_message);
 int get_dynAngle_received(Message* p_message);
+
+int get_pin1_received(Message* p_message);
+int get_pin2_received(Message* p_message);
+int get_pin3_received(Message* p_message);
+int get_pin4_received(Message* p_message);
+int get_pin5_received(Message* p_message);
 
 extern Velocity _velocity;
 

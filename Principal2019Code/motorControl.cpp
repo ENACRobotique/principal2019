@@ -92,7 +92,7 @@ namespace MotorControl {
 		if(millis()-time_last_command > COMMAND_TIMEOUT){
 			cons_speed = 0;
 			cons_omega = 0;
-			Serial.print("[WARNING] No speed commands received for too long !!!!!!!!");
+			Serial.println("[WARNING] No speed commands received for too long !!!!!!!!");
 		}
 
 		float error_speed = cons_speed - Odometry::get_speed();
@@ -126,7 +126,7 @@ namespace MotorControl {
 		//Serial.print(Odometry::get_speed());
 		//Serial.print("\t");
 		//Serial.print("\t cons omega : ");
-		//Serial.print(cons_omega);
+		//Serial.println(cons_omega);
 		//Serial.print("\t omega : ");
 		//Serial.print("\t");
 		//Serial.println(Odometry::get_omega());
