@@ -18,6 +18,7 @@ sys.path.append(path)
 import numpy as np
 from math import sin, pi
 from time import time,sleep
+from multiprocessing import Process 
 
 from Communication import communication as com
 from Communication import main_communication
@@ -31,17 +32,15 @@ from PurePursuit.path_manager import Path, Point
 import params as p
 
 if __name__ == '__main__':
-    robot_pas_le_meme_nom_que_la_classe = robot.RobotPosition(0, 0, 0, 0, 0)
-    print(robot_pas_le_meme_nom_que_la_classe)
-    comm = main_communication.CommManager(robot_pas_le_meme_nom_que_la_classe)
-    behaviour = state_machine.FSMMatch(robot_pas_le_meme_nom_que_la_classe)
+    robot = robot.RobotPosition(0, 0, 0, 0, 0)
+    print(robot)
+    comm = main_communication.CommManager(robot)
+    behaviour = state_machine.FSMMatch(robot)
     comm.sendPositionMessage()
     comm.sendLidarMessage(1, 0, 0, 0, 0)
     
-    comm.start_receive_thread()
-    
-    Nbpoints = 10000
-    path = pf.line(Nbpoints, Point(0,0), Point(750,0))
+    Nbpoints = 2500
+    path = pf.line(Nbpoints, Point(0,0), Point(2000,0))
     #path = pf.polyline(Nbpoints, Point(0,0), Point(1500,500), Point(3000-500,0))
     #path = pf.circle(Nbpoints, Point(0,600), 600)
     
@@ -55,23 +54,40 @@ if __name__ == '__main__':
     
     
     #path = pf.polyline(Nbpoints, Point(0,0), Point(0, 500), Point(500,500), Point(500,0),Point(0,0))
+    
+    
 
-    tracking = pp.PurePursuit()
-    tracking.add_path(path)
+    tracking = pp.PurePursuit(robot)
+    tracking.add_turn(50)
+    comm.flush()
+    
+    #comm.start_receive_thread()
+    time_update = time()
     while True:#time()-t0<35:
-                
-
-        omega, speed = tracking.compute(robot_pas_le_meme_nom_que_la_classe, False)
-        print("omega_cons = ", omega, "speed_cons = ", speed)
-        print(robot_pas_le_meme_nom_que_la_classe)
-        #print("lidar : {}, {}, {}".format(robot._lidarZone.activated_zone1(),robot._lidarZone.activated_zone2(),robot._lidarZone.activated_zone3()))
-            
-        comm.sendVelocityMessage(speed, omega)
+        #d =  Process(target=comm.start_receive_thread)
         
-        sleep(0.05)
+        #d.start()
+        #print("Dans la boucle !")
+        comm.receive_message()
+        
+        
+        if time() - time_update > p.NAVIGATOR_TIME_PERIOD:
+            print("TEMPS DEBUT : {}".format(time()))
+            time_update = time()
+            omega, speed = tracking.compute(False)
+            #print("omega_cons = ", omega, "speed_cons = ", speed)
+            #print(robot)
+            #print(robot._lidarZone)
+            #print("lidar : {}, {}, {}".format(robot._lidarZone.activated_zone1(),robot._lidarZone.activated_zone2(),robot._lidarZone.activated_zone3()))
             
+            comm.sendVelocityMessage(speed, omega)
+            print("TEMPS FIN : {}".format(time()))
+            #d.join()
             
             
     #np.savez('outfile.npz', x=np.array(x), y=np.array(y))
+
     
+    
+
     

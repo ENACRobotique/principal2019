@@ -102,6 +102,7 @@ const float INCR_TO_MM = PI*WHEEL_DIAMETER/(INCR_TR*REDUCTION);
 
 const float CONTROL_PERIOD = 0.02;
 const float NAVIGATOR_TIME_PERIOD = 0.05;
+const float RECEIVE_TIME_PERIOD = 0.01;
 const float REMOTE_PERIOD = 0.02;
 const float REMOTE_THRESHOLD = 40;
 

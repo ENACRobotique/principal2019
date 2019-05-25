@@ -17,7 +17,7 @@ public:
 	int get_zone3();
 
 	void comm_up();
-	void comm_down();
+	bool comm_down();
 private:
 
 	int zone1;

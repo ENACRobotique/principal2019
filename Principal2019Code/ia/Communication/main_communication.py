@@ -27,8 +27,10 @@ class CommManager():
     def __init__(self,robot):
         self.robot = robot
         self.downCommunication = com.CommunicationSend()
-        self.receiveCommunication = ReceiveMessageThread(self.robot)
-
+        #self.receiveCommunication = ReceiveMessageThread(self.robot)
+        self.upCommunication = com.CommunicationReceived()
+        self.ZoneLidarReceived = com.LidarZoneReceive()
+        self.positionReceived = com.PositionReceived()
     #upCommunication = com.CommunicationReceived()
     #downCommunication = com.CommunicationSend()
 
@@ -55,29 +57,38 @@ class CommManager():
         self.downCommunication.send_message(self.messageZoneLidar.serial_encode())
     
     
-    """def receive_message(self):
+    def receive_message(self):
         
         receive_message = self.upCommunication.receive_message()
+        #self.upCommunication.print_in_waiting()
 
         if receive_message is not None:
             id_message, payload = receive_message
 
             if id_message == com.Type.POS_VEL.value:
+                #print("message position reçu")
                 self.positionReceived.serial_decode(payload)
                 self.robot.update(self.positionReceived.x, self.positionReceived.y, self.positionReceived.theta, self.positionReceived.speed, self.positionReceived.omega)
-                print(robot)
+                #print("Nouvelles données !")
+                #print(self.robot)
                 
             if id_message == com.Type.LID_UP.value:
+                #print("message lidar reçu")
                 self.ZoneLidarReceived.serial_decode(payload);
-                self.robot.updateZones(self.ZoneLidarReceived.get_zone1,self.ZoneLidarReceived.get_zone2,self.ZoneLidarReceived.get_zone3)"""
+                #print("1 : {}, 2 : {}, 3 : {}".format(self.ZoneLidarReceived.get_zone1,self.ZoneLidarReceived.get_zone2,self.ZoneLidarReceived.get_zone3))
+                self.robot.updateZones(self.ZoneLidarReceived.get_zone1,self.ZoneLidarReceived.get_zone2,self.ZoneLidarReceived.get_zone3)
             
     def sendVelocityMessage(self,speed,omega):
+            #print("MessageVelocity : {}, {}".format(speed,omega))
             self.messageVelocity.update(speed, omega)
             self.downCommunication.send_message(self.messageVelocity.serial_encode())
-            print("Message envoyé avec speed, omega = {}, {}".format(speed,omega))
+            #print("Message envoyé avec speed, omega = {}, {}".format(speed,omega))
         
     def start_receive_thread(self):
         self.receiveCommunication.start()
+        
+    def flush(self):
+        self.upCommunication.flush()
             
             
 class ReceiveMessageThread(Thread):
@@ -89,19 +100,27 @@ class ReceiveMessageThread(Thread):
         self.robot = robot
         
     def run(self):
+        print("-------------------- Thread de réception commencé ! ----------------")
         while True:
+            print("temps : {}".format(time()))
             #self.upCommunication.print_in_waiting()
             receive_message = self.upCommunication.receive_message()
-    
+           
             if receive_message is not None:
                 id_message, payload = receive_message
-    
+              
                 if id_message == com.Type.POS_VEL.value:
                     self.positionReceived.serial_decode(payload)
                     self.robot.update(self.positionReceived.x, self.positionReceived.y, self.positionReceived.theta, self.positionReceived.speed, self.positionReceived.omega)
+                   
+            
                     
                 if id_message == com.Type.LID_UP.value:
                     self.ZoneLidarReceived.serial_decode(payload);
                     self.robot.updateZones(self.ZoneLidarReceived.get_zone1,self.ZoneLidarReceived.get_zone2,self.ZoneLidarReceived.get_zone3)
+                    
+            sleep(0.1)
+                    
+                    
                 
         

@@ -16,6 +16,13 @@
 #include <HardwareSerial.h>
 #include "params.h"
 
+#include "communication.h"
+#include "lib/USManager.h"
+#include "lidar.h"
+#include "odometry.h"
+#include "motorControl.h"
+#include "lidar.h"
+
 const float SPEED_ADDER = (1<<15);
 const float XY_ADDER = (1<<15);
 const float RADIAN_TO_MSG_FACTOR = 1000.0;
@@ -164,6 +171,8 @@ int get_pin2_received(Message* p_message);
 int get_pin3_received(Message* p_message);
 int get_pin4_received(Message* p_message);
 int get_pin5_received(Message* p_message);
+
+void check_message(Message* msg, Lidar lidar, unsigned long time_last_command_pump);
 
 extern Velocity _velocity;
 

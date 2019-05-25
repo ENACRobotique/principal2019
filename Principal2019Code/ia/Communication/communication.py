@@ -60,7 +60,7 @@ class MakeVelocityMessage:
         length = 6
         header = bitstring.pack('uintle:8, uintle:8', 0xFF, 0xFF)
         #print("Message pos_vel préparé avec id = {}".format(id_message.value))
-        
+        #print("Valeurs = {}, {}, {}, {}".format(length, id_message.value, self.speed, self.omega))
         s = bitstring.pack('uintle:8, uintle:8, uintle:16, uintle:16', length, id_message.value, self.speed, self.omega)
         checksum = bitstring.pack('uintle:8', (~sum(s.tobytes()) & 0xFF))
         #print(checksum)
@@ -301,6 +301,9 @@ class CommunicationReceived:
 
     def print_in_waiting(self):
         print("Waiting : {}".format(self.ser.in_waiting))    
+        
+    def flush(self):
+        self.ser.reset_input_buffer()
 
     def receive_message(self):
 
@@ -366,7 +369,7 @@ class CommunicationSend():
 
     def send_message(self, message):
         self.ser.write(message.tobytes())
-        print(message.tobytes())
+        #print(message.tobytes())
         
     
     

@@ -8,8 +8,6 @@
 from math import pi
 from threading import RLock
 
-NAVIGATOR_TIME_PERIOD = 0.05
-
 VERROU = RLock()
 OBSTACLE_DETECTED = False
 
@@ -27,11 +25,17 @@ STOP_DELAY = 1
 MATCH_DURATION = 100
 
 #Variables de navigation et de pure pursuit
-MAX_ACCEL = 800
+MAX_ACCEL = 1500
+BRAKE_ACCEL = 3000
 SPEED_MAX = 400
-ADMITTED_SPEED_ERROR = 5;
+SPEED_MAX_DECER = 100
+OMEGA_MAX = 2.5
+OMEGA_MAX_DECER = 1
+MAX_ACCEL_OMEGA = 2
+ADMITTED_ANGLE_ERROR = 0.01
+ADMITTED_SPEED_ERROR = 10;
 ADMITTED_POSITION_ERROR = 5
 NAVIGATOR_TIME_PERIOD = 0.05
 #Definition of look_ahead distance : L=L0+k*speed
-L0 = 100 #100
-k = 0.7 #0.23
+L0 = 70 #100
+k = 0.4 #0.23

@@ -41,8 +41,12 @@ void Lidar::comm_up(){
 	digitalWrite(LID_PIN_IN5,pin_in5);
 }
 
-void Lidar::comm_down(){/*
+bool Lidar::comm_down(){
+	int old_1 = zone1;
+	int old_2 = zone2;
+	int old_3 = zone3;
 	zone1 = digitalRead(LID_PIN_OUT1);
 	zone2 = digitalRead(LID_PIN_OUT2);
-	zone3 = digitalRead(LID_PIN_OUT3);*/
+	zone3 = digitalRead(LID_PIN_OUT3);
+	return (old_1 != zone1 || old_2 != zone2 || old_3 != zone3);
 }

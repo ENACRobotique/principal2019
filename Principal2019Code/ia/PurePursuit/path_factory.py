@@ -12,7 +12,7 @@ def line(Nbpoints, A, B):
     t = np.linspace(0,1,Nbpoints)
     X1 = A.x*(1-t)+B.x*t
     Y1 = A.y*(1-t)+B.y*t
-    path = Path([Point(X1[i], Y1[i]) for i in range(Nbpoints)], 0.2, 0.85, p.SPEED_MAX)
+    path = Path([Point(X1[i], Y1[i]) for i in range(Nbpoints)], 0.15, 0.9, p.SPEED_MAX)
     return path
 
 

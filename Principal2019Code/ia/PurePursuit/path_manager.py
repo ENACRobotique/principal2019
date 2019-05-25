@@ -6,6 +6,7 @@ sys.path.append(path)
 
 import numpy as np
 from math import sqrt
+from time import time
 
 import params as p
 
@@ -43,6 +44,8 @@ class Path:
         self.compute_dist()
         #self.compute_curvature()
         self.last_passed_index = 0
+        
+        self.last_goal_index = 0
         
         self.compute_speed(top_of_climb, top_of_descent, Vmax)
         """if len(headings) > 0:
@@ -134,14 +137,17 @@ class Path:
         nb_points = len(self.points)
         self.speed = np.array([0]*nb_points)
         for i in range(1,int(nb_points/2)):
-            self.speed[i] = min(self.speed[i-1] + p.MAX_ACCEL*p.NAVIGATOR_TIME_PERIOD, p.SPEED_MAX)
-            self.speed[nb_points -1 -i] = min(self.speed[nb_points -i] + p.MAX_ACCEL*p.NAVIGATOR_TIME_PERIOD, p.SPEED_MAX)
-        self.speed[int(nb_points/2)] = min(self.speed[int(nb_points/2)-1] + p.MAX_ACCEL*p.NAVIGATOR_TIME_PERIOD, p.SPEED_MAX)
+            t_move_1 = dist(self.points[i], self.points[i-1])/self.speed[i-1]
+            self.speed[i] = min(self.speed[i-1] + p.MAX_ACCEL*t_move_1, p.SPEED_MAX)
+            t_move_2 = dist(self.points[nb_points -1 -i], self.points[nb_points -i])/self.speed[nb_points -i]
+            self.speed[nb_points -1 -i] = min(self.speed[nb_points -i] + p.MAX_ACCEL*t_move_2, p.SPEED_MAX)
+        self.speed[int(nb_points/2)] = self.speed[int(nb_points/2)-1]
         
     def troncate_path(self, top_of_climb, top_of_descent, Vmax = p.SPEED_MAX):
         print("TRONCATE")
         self.points = self.points[self.last_passed_index:]
         self.last_passed_index = 0
+        self.last_goal_index = 0
         print("length_direct : {}\n".format(len(self.points)))
         self.length = len(self.points)
         print("length : {}\n".format(self.length))
@@ -167,18 +173,26 @@ class Path:
 
 
     def find_goal_point(self, p0, look_ahead_distance):
-        index = self.find_closest_point(p0) #index at the start
+        #index_begin = self.find_closest_point(p0) #index at the start
+        index_begin = self.last_goal_index
+        index = index_begin
         p_start = self.points[index]
         dist_to_p0 = dist(p0, p_start)
         path_length = len(self.points)
-        while index < path_length-1 and dist_to_p0 < look_ahead_distance:
+        #print("Begin while : {}".format(time()))
+        while index < path_length-1 and dist_to_p0 < look_ahead_distance and (index - index_begin < 200):
             index += 1
             dist_to_p0 = dist(p0, self.points[index])
-        return index, self.points[index]
+        #print("indexs : begin {}, end {} ".format(index_begin,index))
+        #print("End while : {}".format(time()))
+        self.last_goal_index = index
+        return index_begin, index, self.points[index]
       
         
     def find_goal_point_loop(self, p0, look_ahead_distance):
-        index = self.find_closest_point_loop(p0) #index at the start
+        #index_begin = self.find_closest_point_loop(p0) #index at the start
+        index_begin = self.last_goal_index
+        index = index_begin
         p_start = self.points[index]
         dist_to_p0 = dist(p0, p_start)
         path_length = len(self.points)
@@ -191,4 +205,5 @@ class Path:
             while dist_to_p0 < look_ahead_distance:
                 index += 1
                 dist_to_p0 = dist(p0, self.points[index])
-        return index, self.points[index]
+        self.last_goal_index
+        return index_begin, index, self.points[index]

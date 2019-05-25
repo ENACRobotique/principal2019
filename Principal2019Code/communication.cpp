@@ -7,6 +7,10 @@
 
 #include "communication.h"
 #include "lib/USManager.h"
+#include "lidar.h"
+#include "odometry.h"
+#include "motorControl.h"
+#include "lidar.h"
 
 Velocity _velocity;
 
@@ -218,4 +222,64 @@ void get_received_message(Message* msg) {
 	msg->id = _message.id;
 	msg->length = _message.length;
 	memcpy(&msg->payload, &_message.payload, sizeof(Pos_vel));
+}
+
+void check_message(Message* msg, Lidar lidar, unsigned long time_last_command_pump) {
+	if(receive_message()==1){
+		Serial.print("Message received !");
+		get_received_message(msg);
+		Message upmessageack;
+
+		if((*msg).id==POSITION) {
+			Serial.println("Message position");
+			float x = get_x_received(msg);
+			float y = get_y_received(msg);
+			float theta = get_theta_received(msg);
+			Odometry::set_pos(x, y, theta);
+		}
+
+		if((*msg).id==VELOCITY) {
+			Serial.println("Message velocity");
+			MotorControl::time_last_command = millis();
+			float omega = get_omega_received(msg);
+			float speed = get_speed_received(msg);
+			Serial.print("Omega and speed received : ");
+			Serial.print(omega);
+			Serial.print("\t");
+			Serial.println(speed);
+			//speed = 100;
+			MotorControl::set_cons(speed, omega);
+		}
+
+		if((*msg).id==PUMP){
+			Serial.println("Message pump");
+			int activation = get_pump_received(msg);
+			digitalWrite(POMPE, activation);
+			time_last_command_pump = millis();
+			upmessageack = make_ack_message();
+			send_message(upmessageack);
+		}
+
+		if((*msg).id==DYN){
+			Serial.println("dyn");
+			int dyn_angle = get_dynAngle_received(msg);
+			int dyn_speed = get_dynSpeed_received(msg);
+			Message upmessageack = make_ack_message();
+			//Dynamixel.moveSpeed(DYNAMIXEL_ID, dyn_angle, dyn_speed);
+
+			upmessageack = make_ack_message();
+			send_message(upmessageack);
+		}
+
+		if((*msg).id==LID_DOWN){
+			Serial.print("Lidar down\n");
+			int pin1 = get_pin1_received(msg);
+			int pin2 = get_pin2_received(msg);
+			int pin3 = get_pin3_received(msg);
+			int pin4 = get_pin4_received(msg);
+			int pin5 = get_pin5_received(msg);
+			lidar.set_pin_in(pin1,pin2,pin3,pin4,pin5);
+			lidar.comm_up();
+		}
+	}
 }
