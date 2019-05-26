@@ -52,15 +52,16 @@ class PurePursuit:
         return self.move == Trajectory.STOPPED
 
 
-    def add_path(self, path):
+    def add_path(self, path, forward = False):
         self.path = path
         self.move = Trajectory.PATH
         self.look_min = p.L0
         self.move_set = MoveSet.PATH_ACCEL
+        self.forward = forward
         
         
     def add_turn(self, turn):
-        self.theta_target = turn
+        self.theta_target = pi*turn/180
         self.move = Trajectory.TURNING
         self.move_set = MoveSet.TURN_BEGIN
         if (self.center_radian(self.theta_target - self.robot.theta) > 0):
