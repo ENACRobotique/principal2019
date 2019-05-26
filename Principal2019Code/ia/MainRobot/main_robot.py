@@ -33,16 +33,21 @@ import params as p
 
 if __name__ == '__main__':
     robot = robot.RobotPosition(0, 0, 0, 0, 0)
-    print(robot)
     comm = main_communication.CommManager(robot)
     behaviour = state_machine.FSMMatch(robot)
     comm.sendPositionMessage()
     comm.sendLidarMessage(1, 0, 0, 0, 0)
     
+    sleep(2)
+    #Evite les problèmes de messages parasites après un test
+    robot.update(0,0,0,0,0)
+    comm.sendPositionMessage()
+    comm.sendLidarMessage(1, 0, 0, 0, 0)
+    
     Nbpoints = 2500
-    path = pf.line(Nbpoints, Point(0,0), Point(2000,0))
-    #path = pf.polyline(Nbpoints, Point(0,0), Point(1500,500), Point(3000-500,0))
-    #path = pf.circle(Nbpoints, Point(0,600), 600)
+    #path = pf.line(Nbpoints, Point(0,0), Point(2000,0))
+    path = pf.polyline(Nbpoints, Point(0,0), Point(800,300), Point(1600,-200))
+    #path = pf.circle(Nbpoints, Point(0,400), 400)
     
     #list = [Point(i, -350*sin(2*pi*i/2000)) for i in np.linspace(0,2000, Nbpoints)]
     #list += [Point(i, 350*sin(2*pi*i/2000)) for i in np.linspace(2000,0, Nbpoints)]
@@ -58,7 +63,8 @@ if __name__ == '__main__':
     
 
     tracking = pp.PurePursuit(robot)
-    tracking.add_turn(50)
+    #tracking.add_turn(-90)
+    tracking.add_path(path)
     comm.flush()
     
     #comm.start_receive_thread()
@@ -72,16 +78,16 @@ if __name__ == '__main__':
         
         
         if time() - time_update > p.NAVIGATOR_TIME_PERIOD:
-            print("TEMPS DEBUT : {}".format(time()))
+            #print("TEMPS DEBUT : {}".format(time()))
             time_update = time()
             omega, speed = tracking.compute(False)
             #print("omega_cons = ", omega, "speed_cons = ", speed)
-            #print(robot)
+            print(robot)
             #print(robot._lidarZone)
             #print("lidar : {}, {}, {}".format(robot._lidarZone.activated_zone1(),robot._lidarZone.activated_zone2(),robot._lidarZone.activated_zone3()))
             
             comm.sendVelocityMessage(speed, omega)
-            print("TEMPS FIN : {}".format(time()))
+            #print("TEMPS FIN : {}".format(time()))
             #d.join()
             
             

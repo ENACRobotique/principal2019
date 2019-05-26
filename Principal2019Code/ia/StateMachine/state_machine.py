@@ -23,6 +23,7 @@ class FSMMatch(Behavior):
         self.state = None
         self.start_match = None
         self.time_now = None
+        self.locomotion = pp.PurePursuit(robot)
         
     def loop(self):
         
@@ -57,8 +58,33 @@ class TestState(FSMState):
     
     def __init__(self,behaviour):
         super().__init__(behaviour)
-        path_test = pf.line(5000, Point(0,0), Point(2000,0))
-        path_test.compute_speed(0.2, 0.85, p.SPEED_MAX)
+        path = pf.polyline(2500, Point(0,0), Point(800,300), Point(1600,-200))
+        self.behaviour.locomotion.add_path(path)
+        
+        
+    def test(self):
+        if self.behaviour.locomotion.move_finished():
+            return TestState2(self.behaviour)
+        
+    def deinit(self):
+        pass
+    
+    
+class TestState2(FSMState):
+    
+    def __init__(self,behaviour):
+        super().__init__(behaviour)
+        self.behaviour.locomotion.add_turn(-90)
+        
+        
+    def test(self):
+        if self.behaviour.locomotion.move_finished():
+            return TestState2(self.behaviour)
+        
+    def deinit(self):
+        pass
+    
+    
     
 class StateTakeDisc(FSMState):
     

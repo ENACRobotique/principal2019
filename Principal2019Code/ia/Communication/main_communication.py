@@ -70,6 +70,7 @@ class CommManager():
                 self.positionReceived.serial_decode(payload)
                 self.robot.update(self.positionReceived.x, self.positionReceived.y, self.positionReceived.theta, self.positionReceived.speed, self.positionReceived.omega)
                 #print("Nouvelles données !")
+                #print("Message reçu avec speed, omega = {}, {}".format(self.positionReceived.speed, self.positionReceived.omega))
                 #print(self.robot)
                 
             if id_message == com.Type.LID_UP.value:

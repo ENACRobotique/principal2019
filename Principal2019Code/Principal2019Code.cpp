@@ -40,6 +40,7 @@ void setup()
 
 	Serial.begin(115200);
 	Serial1.begin(115200);
+	while(!Serial);
 	Serial.println("Je suis au début du setup");
 
 	/*while(true) {
@@ -131,7 +132,6 @@ void setup()
 // The loop function is called in an endless loop
 void loop()
 {
-	Serial.println("Je suis dans la loop !");
 /*
 	//fsmSupervisor.update();
 	if (Serial.available()){
@@ -141,21 +141,20 @@ void loop()
 			MotorControl::reset();
 			t0=millis();
 			Serial.println("reset de la teensy");
-			vitesse = vitesse_init;
-			//Serial.println("pompe activee");
-			//digitalWrite(POMPE, HIGH);
+			//vitesse = vitesse_init;
+			Serial.println("pompe activee");
+			digitalWrite(POMPE, HIGH);
 		}
 		if (receive == 's'){
 			Serial.println("Stop");
 			vitesse = 0;
-			//Serial.println("pompe desactivee");
-			//digitalWrite(POMPE, LOW);
+			Serial.println("pompe desactivee");
+			digitalWrite(POMPE, LOW);
 		}
 	}//fin serial available
 */
 
 	if(controlTime.check()) {
-		Serial.println("Control time !");
 		Odometry::update();
 		MotorControl::update();
 	}
@@ -314,6 +313,9 @@ void loop()
 			}*/
 		//fin if receive message
 
+
+		Serial.print("Message sent : omega = ");
+		Serial.println(Odometry::get_omega());
 
 		Message upmessage = make_pos_vel_message(Odometry::get_pos_x(), Odometry::get_pos_y(), Odometry::get_pos_theta(), Odometry::get_speed(), Odometry::get_omega());
 		send_message(upmessage);

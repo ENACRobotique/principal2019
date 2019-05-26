@@ -94,7 +94,7 @@ const float ADMITTED_ANGLE_ERROR = 0.01;
 const float MAX_DRIFT = 0.1;
 
 const float WHEEL_DIAMETER = 71.906;
-const float WHEELBASE = 248.77;
+const float WHEELBASE = 245.72;
 
 const float INCR_TR = 500.0;
 const float REDUCTION = 676/49;

@@ -10,7 +10,6 @@
 #include "lidar.h"
 #include "odometry.h"
 #include "motorControl.h"
-#include "lidar.h"
 
 Velocity _velocity;
 
@@ -171,6 +170,8 @@ int receive_message(void){
 	int retour = 0; // 0 : rien à signaler. pas d'erreur. Le message n'est pas complet ou y a rien à lire
 	uint8_t b;
 	uint8_t checksum_readed;
+	//Serial.print("Nombre de bytes qui attendent :");
+	//Serial.println(Serial1.available());
 	if(Serial1.available()>_message.length){
 		if(_receiving_state==IDLE){
 			b=Serial1.read();
@@ -193,8 +194,8 @@ int receive_message(void){
 		}
 		if(_receiving_state==READ){
 			_message.id = Serial1.read();
-			Serial.print("ID recu : ");
-			Serial.print(_message.id);
+			//Serial.print("ID recu : ");
+			//Serial.print(_message.id);
 			_message.checksum += _message.id;
 			for (int i =0; i< _message.length-2; i++){
 				(_message.payload).data[i] = Serial1.read();

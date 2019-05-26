@@ -19,12 +19,16 @@ def line(Nbpoints, A, B):
 def polyline(Nbpoints, *args):
     n_arg = len(args)
     N = floor(Nbpoints/(n_arg-1))
-    path0 = line(N, args[0], args[1])
+    t = np.linspace(0,1,N)
+    X1 = args[0].x*(1-t)+args[1].x*t
+    Y1 = args[0].y*(1-t)+args[1].y*t
+    points = [Point(X1[i], Y1[i]) for i in range(N)]
     for i in range(1, n_arg-1):
         print(i)
-        path = line(N, args[i], args[i+1])
-        path0.points = np.concatenate((path0.points, path.points))
-    return path0
+        X1 = args[i].x*(1-t)+args[i+1].x*t
+        Y1 = args[i].y*(1-t)+args[i+1].y*t
+        points += [Point(X1[i], Y1[i]) for i in range(N)]
+    return Path(points,0.15,0.9,p.SPEED_MAX)
 
 
 def plot_polyline(*args):
@@ -50,7 +54,7 @@ def circle(Nbpoints, C, r):
     t = np.linspace(0, 1, Nbpoints)
     X = r*np.cos(2*pi*t)+x_c
     Y = r*np.sin(2*pi*t)+y_c
-    path = Path([Point(X[i], Y[i]) for i in range(Nbpoints)])
+    path = Path([Point(X[i], Y[i]) for i in range(Nbpoints)], 0.15,0.9,p.SPEED_MAX)
     return path
 
 def plot_circle(path):

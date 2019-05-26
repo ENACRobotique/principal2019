@@ -16,24 +16,33 @@ from enum import Enum
 from time import time
 import params as p
 
-
+"""Classe des différentes trajectoires que le robot peut suivre"""
 class Trajectory(Enum):
     STOPPED = 0
     PATH = 1
     TURNING = 2
     ACCELERATE = 3
     DECELERATE = 4
+    PRECISE_MOVE = 5
     
+"""Différents mouvements que le robot peut effectuer
+Ces mouvements s'inscrivent dans des trajectoires"""
 class MoveSet(Enum):
     PATH_ACCEL = 0
     PATH_PURSUIT = 1
     PATH_DECEL = 2
     PATH_FINAL = 3
+    
     TURN_BEGIN = 4
-    TURN_FINISH = 5
+    TURN_TRANSITION = 5
+    TURN_FINISH = 6
+    
+    PRECISE_MOVE = 7
+    
 
 
 class PurePursuit:
+
 
     def __init__(self, robot):
         self.is_stopped = False
@@ -45,19 +54,24 @@ class PurePursuit:
         self.recalcul = False
         self.previous_cons = 0
         self.previous_omega = 0
+        self.depassement = False
         # self.must_brake = False
+
 
 
     def move_finished(self):
         return self.move == Trajectory.STOPPED
 
 
-    def add_path(self, path, forward = False):
+
+    def add_path(self, path, forward = True):
         self.path = path
         self.move = Trajectory.PATH
-        self.look_min = p.L0
+        #self.look_min = p.L0
         self.move_set = MoveSet.PATH_ACCEL
         self.forward = forward
+        self.fini = False
+        
         
         
     def add_turn(self, turn):
@@ -68,6 +82,10 @@ class PurePursuit:
             self.sgn = 1
         else:
             self.sgn = -1
+            
+    def add_precise_path(self, forward = True):
+        self.forward = forward
+        self.move = Trajectory.PRECISE_MOVE
 
 
     def compute(self, loop=False):
@@ -78,37 +96,63 @@ class PurePursuit:
         elif self.move == Trajectory.TURNING:
             if self.move_set == MoveSet.TURN_BEGIN:
                 omega_cons, speed_cons = self.begin_turn()
+            elif self.move_set == MoveSet.TURN_TRANSITION:
+                omega_cons, speed_cons = self.transition_turn()
             elif self.move_set == MoveSet.TURN_FINISH:
                 omega_cons, speed_cons = self.turn()
         elif self.move == Trajectory.PATH:
             self.lidar_check()
             if not self.is_stopped:
                 if self.move_set == MoveSet.PATH_ACCEL:
-                    omega_cons, speed_cons = self.accelerate()
+                    omega_cons, speed_cons = self.compute_pure_pursuit(loop)
                 elif self.move_set == MoveSet.PATH_DECEL:
                     omega_cons, speed_cons = self.decelerate_to_low_speed()
                 elif self.move_set == MoveSet.PATH_PURSUIT:
                     omega_cons, speed_cons = self.compute_pure_pursuit(loop)
                 elif self.move_set == MoveSet.PATH_FINAL:
-                    omega_cons, speed_cons = self.decelerate(self.path.points[-1])
+                    omega_cons, speed_cons = self.low_speed_move(self.path.points[-1])
+                if not self.forward:
+                    speed_cons = -speed_cons
+                    omega_cons = -omega_cons
             else:
                 omega_cons, speed_cons = self.brake()
+        elif self.move == Trajectory.PRECISE_MOVE:
+            omega_cons, speed_cons = self.precise_movement()
+            if not self.forward:
+                speed_cons = -speed_cons
+                omega_cons = - omega_cons
         return omega_cons, speed_cons
+    
     
     
     def begin_turn(self):
         speed_cons = 0
-        omega_cons = self.sgn*min(p.OMEGA_MAX, p.NAVIGATOR_TIME_PERIOD * p.MAX_ACCEL_OMEGA + abs(self.robot.omega))
-        if abs(self.theta_target - self.robot.theta) < 0.1:
-            self.move_turn = MoveSet.TURN_FINISH
+        omega_cons = self.sgn*min(p.OMEGA_MAX, p.NAVIGATOR_TIME_PERIOD * p.MAX_ACCEL_OMEGA + abs(self.previous_omega))
+        if abs(self.theta_target - self.robot.theta) < 0.5:
+            self.move_set = MoveSet.TURN_TRANSITION
+            print("-----------------FIN------------------------")
+        print("theta {}, theta target {}".format( self.robot.theta, self.theta_target, omega_cons))
+        #print("speed {} omega_cons {}".format(self.robot.omega, omega_cons))
+        self.previous_omega = omega_cons
+        return omega_cons, speed_cons
+    
+    def transition_turn(self):
+        print("TRANSITION")
+        speed_cons = 0
+        omega_cons = self.sgn * max(p.OMEGA_MAX_DECER, abs(self.robot.omega) - p.NAVIGATOR_TIME_PERIOD * p.MAX_ACCEL_OMEGA)
+        if abs(omega_cons) == p.OMEGA_MAX_DECER:
+            self.move_set = MoveSet.TURN_FINISH
         return omega_cons, speed_cons
     
     
+    
     def turn(self):
+        #print("---------------------TURN FINISH--------------------")
         speed_cons = 0
         t_rotation_stop = abs(self.robot.omega) / p.MAX_ACCEL_OMEGA
         angle_fore = self.center_radian(self.robot.theta + self.sgn * (abs(self.robot.omega) * t_rotation_stop - 1 / 2 * p.MAX_ACCEL_OMEGA * pow(t_rotation_stop, 2)))
         if abs(self.center_radian(angle_fore - self.theta_target)) < p.ADMITTED_ANGLE_ERROR:
+            print("On est dedans")
             omega_cons = self.sgn * max(0, abs(self.robot.omega) - p.NAVIGATOR_TIME_PERIOD * p.MAX_ACCEL_OMEGA)
         else:
             if(self.sgn * (self.center_radian(self.theta_target - angle_fore)) > 0):
@@ -118,7 +162,11 @@ class PurePursuit:
         print("theta {}, theta target {}, omega cons {}".format( self.robot.theta, self.theta_target, omega_cons))
         return omega_cons, speed_cons
         
-    
+        
+    def precise_movement(self):
+        omega_cons = 0
+        
+        return omega_cons, speed_cons
     
     def lidar_check(self):
         if self.robot._lidarZone.activated_zone3():
@@ -134,37 +182,45 @@ class PurePursuit:
                     self.is_stopped = False
     
     
+    
     def accelerate(self):
         omega_cons = 0
-        speed_cons = min(p.SPEED_MAX, self.robot.speed + p.MAX_ACCEL*p.NAVIGATOR_TIME_PERIOD)
-        if speed_cons == p.SPEED_MAX:
+        speed_cons = min(p.SPEED_MAX, abs(self.robot.speed) + p.MAX_ACCEL*p.NAVIGATOR_TIME_PERIOD)
+        if speed_cons > (p.SPEED_MAX/2):
             self.move_set = MoveSet.PATH_PURSUIT
             print("-----------------------PURSUIT------------------------")
         return omega_cons, speed_cons
     
+    
+    
     def brake(self):
         omega_cons = 0
-        speed_cons = max(0,self.robot.speed - p.BRAKE_ACCEL*p.NAVIGATOR_TIME_PERIOD)
+        speed_cons = max(0,abs(self.robot.speed) - p.BRAKE_ACCEL*p.NAVIGATOR_TIME_PERIOD)
         return omega_cons, speed_cons
+    
     
     
     def decelerate_to_low_speed(self):
         omega_cons = 0
-        speed_cons = max(p.SPEED_MAX_DECER, self.robot.speed - p.MAX_ACCEL*p.NAVIGATOR_TIME_PERIOD)
+        speed_cons = max(p.SPEED_MAX_DECER, abs(self.robot.speed) - p.MAX_ACCEL*p.NAVIGATOR_TIME_PERIOD)
         if speed_cons == p.SPEED_MAX_DECER:
             self.move_set = MoveSet.PATH_FINAL
         return omega_cons, speed_cons
     
-    def decelerate(self, target):
+    
+    
+    def low_speed_move(self, target):
         omega_cons = 0
-        t_stop = self.robot.speed/(p.MAX_ACCEL-1000);
-        dist_fore = (self.robot.speed*t_stop-1/2*(p.MAX_ACCEL-1000)*pow(t_stop,2))
+        t_stop = abs(self.robot.speed)/(p.MAX_ACCEL);
+        dist_fore = (abs(self.robot.speed)*t_stop-1/2*(p.MAX_ACCEL)*pow(t_stop,2))
         
         dist_objective = sqrt(pow(target.x - self.robot.x,2) + pow(target.y - self.robot.y,2));
         
         #print(" fore : {}, objective : {}".format(dist_fore,dist_objective))
         
         if abs( dist_fore - dist_objective ) < p.ADMITTED_POSITION_ERROR:
+            print("On y est")
+            self.fini = True
             speed_cons = max(0,-p.MAX_ACCEL*p.NAVIGATOR_TIME_PERIOD + abs(self.robot.speed))
         else:
             if(dist_fore - dist_objective > 0):
@@ -172,14 +228,15 @@ class PurePursuit:
             else:
                 speed_cons = min(p.SPEED_MAX_DECER,abs(self.robot.speed) + p.MAX_ACCEL*p.NAVIGATOR_TIME_PERIOD)
                 
-        if dist_objective < p.ADMITTED_POSITION_ERROR and self.robot.speed < p.ADMITTED_SPEED_ERROR:
+        if dist_objective < p.ADMITTED_POSITION_ERROR:
             self.move = Trajectory.STOPPED
             print("-------------------- STOPPED -------------------")
         return omega_cons, speed_cons
     
     
+    
     def compute_pure_pursuit(self, loop):
-        look_ahead_distance = p.L0 + p.k * self.robot.speed
+        look_ahead_distance = p.L0 + p.k * abs(self.robot.speed)
                 
         # Test : look_ahead_distance égale à la distance de freinage à vitesse max
         # t_stop = current_robot.speed / p.MAX_ACCEL
@@ -213,21 +270,22 @@ class PurePursuit:
             # speed_cons = max(0, self.previous_cons- p.MAX_ACCEL*p.NAVIGATOR_TIME_PERIOD)
         # else:
             # speed_cons = min(p.SPEED_MAX, self.previous_cons + p.MAX_ACCEL*p.NAVIGATOR_TIME_PERIOD)
-        speed_cons = p.SPEED_MAX
-        omega_cons = ((2 * speed_cons) / (look_ahead_distance ** 2)) * x_body
-        
-        closest_point = self.path.find_closest_point(p_robot)
+        speed_cons = min(p.SPEED_MAX, abs(self.robot.speed) + p.MAX_ACCEL*p.NAVIGATOR_TIME_PERIOD)
+        omega_cons = ((2 * abs(speed_cons)) / (look_ahead_distance ** 2)) * x_body
         
         #print("Closest : {}, total : {}".format(closest_point, self.path.length))
         
-        if(self.path.length - closest_point)/self.path.length < 0.10:
+        if dist(p_robot,self.path.points[-1]) < 300:
             self.move_set = MoveSet.PATH_DECEL
             print("---------------------DECEL-----------------------")
         
         #print("speed : {}, L : {}, x : {}, omega : {}".format(speed_cons, look_ahead_distance, x_body, omega_cons))
         return omega_cons, speed_cons
     
+    
+    
     def center_radian(self, angle):
+        #print(" angle avant {}".format(180*angle/pi))
         if abs(angle) > pi:
             if angle < 0:
                 while abs(angle) > pi:
@@ -235,5 +293,6 @@ class PurePursuit:
             else:
                 while abs(angle) > pi:
                     angle -= pi * 2
+        #print(" angle après {}".format(180*angle/pi))
         return angle
                     
