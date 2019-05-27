@@ -12,13 +12,13 @@
 const unsigned long TIME_RACE = 100000;
 
 const int ENCODEUR1_A = 3;
-const int ENCODEUR1_B = 4;
-const int ENCODEUR2_A = 29;
-const int ENCODEUR2_B = 30;
+const int ENCODEUR1_B = 2;
+const int ENCODEUR2_A = 5;
+const int ENCODEUR2_B = 4;
 
-const int MOT1_PWM = 5;
+const int MOT1_PWM = 7;
 const int MOT1_DIR = 6;
-const int MOT2_PWM = 7;
+const int MOT2_PWM = 9;
 const int MOT2_DIR = 8;
 
 const int LID_PIN_OUT1 = 16;

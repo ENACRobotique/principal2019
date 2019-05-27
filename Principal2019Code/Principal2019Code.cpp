@@ -40,7 +40,7 @@ void setup()
 
 	Serial.begin(115200);
 	Serial1.begin(115200);
-	while(!Serial);
+	//while(!Serial){}
 	Serial.println("Je suis au début du setup");
 
 	/*while(true) {
@@ -125,6 +125,7 @@ void setup()
 		delay(1500);
 	}*/
 	Serial.println("Fin du setup");
+	MotorControl::set_cons(0,0);
 }
 
 //int led_status = 0;
