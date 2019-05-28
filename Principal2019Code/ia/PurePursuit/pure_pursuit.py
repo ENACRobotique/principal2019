@@ -40,7 +40,9 @@ class MoveSet(Enum):
     PRECISE_MOVE = 7
     
 
-
+"""Classe de locomotion générale.
+Permet d'ajouter des chemins, des rotations et des parcours précis.
+Permet de calculer les consignes à envoyer à la teensy"""
 class PurePursuit:
 
 
@@ -83,9 +85,11 @@ class PurePursuit:
         else:
             self.sgn = -1
             
-    def add_precise_path(self, forward = True):
+    def add_precise_path(self, distance, forward = True):
         self.forward = forward
         self.move = Trajectory.PRECISE_MOVE
+        self.distance = distance
+        self.target = Point(self.robot.x + distance * cos(self.robot.theta), self.robot.y + distance*sin(self.robot.theta))
 
 
     def compute(self, loop=False):
@@ -110,14 +114,14 @@ class PurePursuit:
                 elif self.move_set == MoveSet.PATH_PURSUIT:
                     omega_cons, speed_cons = self.compute_pure_pursuit(loop)
                 elif self.move_set == MoveSet.PATH_FINAL:
-                    omega_cons, speed_cons = self.low_speed_move(self.path.points[-1])
+                    omega_cons, speed_cons = self.low_speed_move(self.path.points[-1], p.SPEED_MAX_DECER)
                 if not self.forward:
                     speed_cons = -speed_cons
                     omega_cons = -omega_cons
             else:
                 omega_cons, speed_cons = self.brake()
         elif self.move == Trajectory.PRECISE_MOVE:
-            omega_cons, speed_cons = self.precise_movement()
+            omega_cons, speed_cons = self.low_speed_move(self.target, p.SPEED_MAX_PRECISE)
             if not self.forward:
                 speed_cons = -speed_cons
                 omega_cons = - omega_cons
@@ -161,15 +165,11 @@ class PurePursuit:
                 omega_cons = self.sgn * max(0, abs(self.robot.omega) - p.NAVIGATOR_TIME_PERIOD * p.MAX_ACCEL_OMEGA)
         print("theta {}, theta target {}, omega cons {}".format( self.robot.theta, self.theta_target, omega_cons))
         return omega_cons, speed_cons
-        
-        
-    def precise_movement(self):
-        omega_cons = 0
-        
-        return omega_cons, speed_cons
+    
+    
     
     def lidar_check(self):
-        if self.robot._lidarZone.activated_zone3():
+        if self.robot._lidarZone.activated_zone1():
             self.time_stop = time()
             if not self.is_stopped:
                 print("Obstacle détecté")
@@ -209,7 +209,7 @@ class PurePursuit:
     
     
     
-    def low_speed_move(self, target):
+    def low_speed_move(self, target, maximum_speed):
         omega_cons = 0
         t_stop = abs(self.robot.speed)/(p.MAX_ACCEL);
         dist_fore = (abs(self.robot.speed)*t_stop-1/2*(p.MAX_ACCEL)*pow(t_stop,2))
@@ -226,7 +226,7 @@ class PurePursuit:
             if(dist_fore - dist_objective > 0):
                 speed_cons = max(0,abs(self.robot.speed) - p.MAX_ACCEL*p.NAVIGATOR_TIME_PERIOD)
             else:
-                speed_cons = min(p.SPEED_MAX_DECER,abs(self.robot.speed) + p.MAX_ACCEL*p.NAVIGATOR_TIME_PERIOD)
+                speed_cons = min(maximum_speed,abs(self.robot.speed) + p.MAX_ACCEL*p.NAVIGATOR_TIME_PERIOD)
                 
         if dist_objective < p.ADMITTED_POSITION_ERROR:
             self.move = Trajectory.STOPPED
@@ -275,7 +275,7 @@ class PurePursuit:
         
         #print("Closest : {}, total : {}".format(closest_point, self.path.length))
         
-        if dist(p_robot,self.path.points[-1]) < 300:
+        if dist(p_robot,self.path.points[-1]) < 250:
             self.move_set = MoveSet.PATH_DECEL
             print("---------------------DECEL-----------------------")
         

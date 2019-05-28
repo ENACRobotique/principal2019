@@ -54,6 +54,21 @@ class FSMState:
         raise NotImplementedError("Must be inherited")
     
     
+    
+class StateGoToPalet(FSMState):
+    def __init__(self, behaviour):
+        self.behavior = behaviour
+        self.robot = self.behavior.robot
+        
+    def test(self):
+        if(self.behavior.locomotion.move_finished()):
+            return TestState2(self.behavior)
+    
+    def deinit(self):
+        pass
+    
+    
+    
 class TestState(FSMState):
     
     def __init__(self,behaviour):
@@ -68,6 +83,7 @@ class TestState(FSMState):
         
     def deinit(self):
         pass
+    
     
     
 class TestState2(FSMState):

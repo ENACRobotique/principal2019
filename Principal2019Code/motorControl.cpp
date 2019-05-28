@@ -89,11 +89,11 @@ namespace MotorControl {
 
 	void update() {
 
-		/*if(millis()-time_last_command > COMMAND_TIMEOUT){
+		if(millis()-time_last_command > COMMAND_TIMEOUT){
 			cons_speed = 0;
 			cons_omega = 0;
 			Serial.println("[WARNING] No speed commands received for too long !!!!!!!!");
-		}*/
+		}
 
 		float error_speed = cons_speed - Odometry::get_speed();
 		error_integrale_speed += error_speed;

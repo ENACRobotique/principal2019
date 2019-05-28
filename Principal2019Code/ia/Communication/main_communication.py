@@ -23,6 +23,9 @@ from Capteurs import USThread
 from PurePursuit.path_manager import Path, Point
 import params as p
 
+
+"""Classe d'interface entre les messages et le code en lui-même
+Permet d'utiliser facilement les bons arguments des messages que l'on cherche et de masquer l'interface des messages"""
 class CommManager():
     def __init__(self,robot):
         self.robot = robot
@@ -40,6 +43,9 @@ class CommManager():
     
     #messagePump = com.MakePumpMessage()
         
+        self.messageLocker = com.MakeLockerMessage()
+        self.messageHolder = com.MakeHolderMessage()
+        self.messageEar = com.MakeEarMessage()
         self.messagePosition = com.MakePositionMessage()
         self.messageZoneLidar = com.MakeLidarMessage()
         self.messageVelocity = com.MakeVelocityMessage()
@@ -84,6 +90,37 @@ class CommManager():
             self.messageVelocity.update(speed, omega)
             self.downCommunication.send_message(self.messageVelocity.serial_encode())
             #print("Message envoyé avec speed, omega = {}, {}".format(speed,omega))
+            
+            
+    def sendEarUpMessage(self):
+        self.messageEar.update(1);
+        self.downCommunication.send_message(self.messageEar.serial_encode())
+        
+        
+    def sendEarDownMessage(self):
+        self.messageEar.update(0);
+        self.downCommunication.send_message(self.messageEar.serial_encode())
+        
+        
+    def sendLockerUpMessage(self):
+        self.messageLocker.update(1);
+        self.downCommunication.send_message(self.messageLocker.serial_encode())
+        
+        
+    def sendLockerDownMessage(self):
+        self.messageLocker.update(0);
+        self.downCommunication.send_message(self.messageLocker.serial_encode())
+        
+    
+    def sendHolderUpMessage(self):
+        self.messageHolder.update(1);
+        self.downCommunication.send_message(self.messageHolder.serial_encode())
+        
+        
+    def sendHolderDownMessage(self):
+        self.messageHolder.update(0);
+        self.downCommunication.send_message(self.messageHolder.serial_encode())
+        
         
     def start_receive_thread(self):
         self.receiveCommunication.start()
@@ -91,7 +128,10 @@ class CommManager():
     def flush(self):
         self.upCommunication.flush()
             
-            
+         
+"""Classe de thread de réception des messages
+A ne pas utiliser car les threads en python ne marchent pas très bien
+Privilégier l'utilisation de processus (module multiprocessing par exemple)"""   
 class ReceiveMessageThread(Thread):
     def __init__(self, robot):
         Thread.__init__(self);

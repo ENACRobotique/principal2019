@@ -29,10 +29,10 @@ unsigned long time_last_command_pump;
 
 Message downmessage;
 Lidar lidar;
-/*
+
 Servo ServoLocker;
 Servo ServoHolderLocker;
-Servo DumboEar;*/
+Servo DumboEar;
 
 //The setup function is called once at startup of the sketch
 void setup()
@@ -73,7 +73,6 @@ void setup()
 
 	Dynamixel.begin(1000000, DYNAMIXEL_CONTROL);
 	Dynamixel.setEndless(DYN_BROADCAST_ID,false);
-	/*
 	ServoLocker.attach(PIN_LOCK);
 	ServoLocker.write(LOCK_LOCK);
 
@@ -92,40 +91,39 @@ void setup()
 //	delay(500);
 //	Dynamixel.ledStatus(DYN_BROADCAST_ID, 1);
 
-	Dynamixel.moveSpeed(DYN_HOLDER_ID,DYN_HOLDER_DOWN, DYN_MAX_SPEED);
+	//Dynamixel.moveSpeed(DYN_HOLDER_ID,DYN_HOLDER_DOWN, DYN_MAX_SPEED);
 
 	//Get 3 Atoms
-	delay(2000);
+	/*delay(2000);
 	for(int i=0;i<3;i++){
 		DumboEar.write(DUMBO_EAR_CLOSE);
 		delay(500);
 		DumboEar.write(DUMBO_EAR_OPEN);
 		delay(500);
-	}
+	}*/
 
 	//Move Up
-	Dynamixel.moveSpeed(DYN_HOLDER_ID,DYN_HOLDER_UP, DYN_MAX_SPEED);
-	delay(2500);
+	//Dynamixel.moveSpeed(DYN_HOLDER_ID,DYN_HOLDER_UP, DYN_MAX_SPEED);
+	//delay(2500);
 
 	//Open the lock
-	ServoHolderLocker.write(HOLDER_LOCK_OPEN);
-	delay(1000);
+	//ServoHolderLocker.write(HOLDER_LOCK_OPEN);
+	//delay(1000);
 
 
 	//Go down
-	Dynamixel.moveSpeed(DYN_HOLDER_ID,DYN_HOLDER_DOWN, DYN_MAX_SPEED);
-	delay(2500);
-	ServoHolderLocker.write(HOLDER_LOCK_LOCK);
+	//Dynamixel.moveSpeed(DYN_HOLDER_ID,DYN_HOLDER_DOWN, DYN_MAX_SPEED);
+	//delay(2500);
+	//ServoHolderLocker.write(HOLDER_LOCK_LOCK);
 
 	//Handle Atom exit
-	for(int i=0;i<3;i++){
-		ServoLocker.write(LOCK_OPEN);
-		delay(1500);
-		ServoLocker.write(LOCK_LOCK);
-		delay(1500);
-	}*/
+	//for(int i=0;i<3;i++){
+		//ServoLocker.write(LOCK_OPEN);
+		//delay(1500);
+		//ServoLocker.write(LOCK_LOCK);
+		//delay(1500);
+	//}
 	Serial.println("Fin du setup");
-	MotorControl::set_cons(0,0);
 }
 
 //int led_status = 0;
@@ -133,9 +131,7 @@ void setup()
 // The loop function is called in an endless loop
 void loop()
 {
-/*
-	//fsmSupervisor.update();
-	if (Serial.available()){
+	/*if (Serial.available()){
 		char receive = Serial.read();
 		if (receive == 'r'){
 			Odometry::reset();
@@ -182,8 +178,6 @@ void loop()
 //		Serial.println(Odometry::get_pos_theta());
 //	}
 
-
-	//check_message(&downmessage, lidar, time_last_command_pump);
 
 	if(receiveTime.check()){
 		if(receive_message()==1){
@@ -233,7 +227,7 @@ void loop()
 			}
 
 			if(downmessage.id==LID_DOWN){
-				Serial.print("Lidar down\n");
+				Serial.println("Lidar down");
 				int pin1 = get_pin1_received(&downmessage);
 				int pin2 = get_pin2_received(&downmessage);
 				int pin3 = get_pin3_received(&downmessage);
@@ -242,77 +236,70 @@ void loop()
 				lidar.set_pin_in(pin1,pin2,pin3,pin4,pin5);
 				lidar.comm_up();
 			}
+
+			if(downmessage.id==EAR_DOWN){
+				Serial.println("Ear down");
+				//activation est un booleen 0 ou 1
+				int activation = get_ear_received(&downmessage);
+				if(activation){
+					DumboEar.write(DUMBO_EAR_OPEN);
+				}
+				else{
+					DumboEar.write(DUMBO_EAR_CLOSE);
+				}
+				upmessageack = make_ack_message();
+				send_message(upmessageack);
+			}
+
+			if(downmessage.id==LOCKER_DOWN){
+				Serial.println("Locker down");
+				//activation est un booleen 0 ou 1
+				int activation = get_locker_received(&downmessage);
+				if(activation){
+					ServoLocker.write(LOCK_OPEN);
+				}
+				else{
+					ServoLocker.write(LOCK_LOCK);
+				}
+				upmessageack = make_ack_message();
+				send_message(upmessageack);
+			}
+
+			if(downmessage.id==HOLDER_DOWN){
+				Serial.println("Holder down");
+				//activation est un booleen 0 ou 1
+				int activation = get_holder_received(&downmessage);
+				if(activation){
+					ServoHolderLocker.write(HOLDER_LOCK_OPEN);
+				}
+				else{
+					ServoHolderLocker.write(HOLDER_LOCK_LOCK);
+				}
+				upmessageack = make_ack_message();
+				send_message(upmessageack);
+			}
+
+			if(downmessage.id==HOLDER_DOWN){
+				Serial.println("Dynamic holder down");
+				//activation est un booleen 0 ou 1
+				int activation = get_dyn_holder_received(&downmessage);
+				if(activation){
+					Dynamixel.moveSpeed(DYN_HOLDER_ID,DYN_HOLDER_UP, DYN_MAX_SPEED);
+				}
+				else{//TODO: réparer ça
+					//Dynamixel.moveSpeed(DYN_HOLDER_ID,DYN_HOLDER_DOWN, DYN_MAX_SPEED);
+				}
+				upmessageack = make_ack_message();
+				send_message(upmessageack);
+			}
 		}
 	}
 
 
-
-	//MotorControl::set_cons(vitesse, 0);
-	//Serial.print(Odometry::get_speed());
-	//Serial.println(Odometry::get_omega());
-
 	if(navigatorTime.check()) {
-	//	navigator.update();
 		Serial.println("navigatorTime !");
 
-		/*if(receive_message()==1){
-				Serial.print("Message received !");
-				get_received_message(&downmessage);
-				Message upmessageack;
 
-				if(downmessage.id==POSITION) {
-					Serial.println("Message position");
-					float x = get_x_received(&downmessage);
-					float y = get_y_received(&downmessage);
-					float theta = get_theta_received(&downmessage);
-					Odometry::set_pos(x, y, theta);
-				}
-
-				if(downmessage.id==VELOCITY) {
-					Serial.println("Message velocity");
-					MotorControl::time_last_command = millis();
-					float omega = get_omega_received(&downmessage);
-					float speed = get_speed_received(&downmessage);
-					Serial.print("Omega and speed received : ");
-					Serial.print(omega);
-					Serial.print("\t");
-					Serial.println(speed);
-					//speed = 100;
-					MotorControl::set_cons(speed, omega);
-				}
-
-				if(downmessage.id==PUMP){
-					Serial.println("Message pump");
-					int activation = get_pump_received(&downmessage);
-					digitalWrite(POMPE, activation);
-					time_last_command_pump = millis();
-					upmessageack = make_ack_message();
-					send_message(upmessageack);
-				}
-
-				if(downmessage.id==DYN){
-					Serial.println("dyn");
-					int dyn_angle = get_dynAngle_received(&downmessage);
-					int dyn_speed = get_dynSpeed_received(&downmessage);
-					Message upmessageack = make_ack_message();
-					//Dynamixel.moveSpeed(DYNAMIXEL_ID, dyn_angle, dyn_speed);
-
-					upmessageack = make_ack_message();
-					send_message(upmessageack);
-				}
-
-				if(downmessage.id==LID_DOWN){
-					Serial.print("Lidar down\n");
-					int pin1 = get_pin1_received(&downmessage);
-					int pin2 = get_pin2_received(&downmessage);
-					int pin3 = get_pin3_received(&downmessage);
-					int pin4 = get_pin4_received(&downmessage);
-					int pin5 = get_pin5_received(&downmessage);
-					lidar.set_pin_in(pin1,pin2,pin3,pin4,pin5);
-					lidar.comm_up();
-				}
-			}*/
-		//fin if receive message
 
 
 		Serial.print("Message sent : omega = ");
@@ -336,14 +323,6 @@ void loop()
 		Serial.print("\t");
 		Serial.print("Lidar zone 3 :");
 		Serial.println(lidar.get_zone3());*/
-
-
-		/*if(millis()-time_last_command_pump > COMMAND_TIMEOUT){
-			digitalWrite(POMPE, LOW);
-		}*/
-
-
-	//remoteController.update();
 
 	}//fin navigatorTime.check()
 

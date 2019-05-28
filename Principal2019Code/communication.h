@@ -46,7 +46,11 @@ enum MessagesID{
 
 	USD,
 	LID_UP,
-	LID_DOWN
+	LID_DOWN,
+	EAR_DOWN,
+	LOCKER_DOWN,
+	HOLDER_DOWN,
+	DYN_HOLDER_DOWN
 };
 
 enum ReceivingState{
@@ -118,6 +122,21 @@ typedef struct __attribute__((__packed__)) Lid_pins{
 	uint8_t pin5;
 }Lid_pins;
 
+typedef struct __attribute__((__packed__)) Ear{
+	uint8_t activation;
+}Ear;
+
+typedef struct __attribute__((__packed__)) Locker{
+	uint8_t activation;
+}Locker;
+
+typedef struct __attribute__((__packed__)) Holder{
+	uint8_t activation;
+}Holder;
+
+typedef struct __attribute__((__packed__)) Dyn_holder{
+	uint8_t activation;
+}Dyn_holder;
 
 union  __attribute__((__packed__)) Payload{
 	Pos_vel pos_vel;
@@ -127,6 +146,10 @@ union  __attribute__((__packed__)) Payload{
 	Position position;
 
 	Pump pump;
+	Ear ear;
+	Locker locker;
+	Holder holder;
+	Dyn_holder dyn_holder;
 	Gate gate;
 	Dyn dyn;
 
@@ -162,6 +185,10 @@ float get_theta_received(Message* p_message);
 
 int get_pump_received(Message* p_message);
 int get_gate_received(Message* p_message);
+int get_ear_received(Message* p_message);
+int get_locker_received(Message* p_message);
+int get_holder_received(Message* p_message);
+int get_dyn_holder_received(Message* p_message);
 
 int get_dynSpeed_received(Message* p_message);
 int get_dynAngle_received(Message* p_message);

@@ -126,6 +126,26 @@ int get_pump_received(Message* p_message){
 	return activation;
 }
 
+int get_ear_received(Message* p_message){
+	int activation = p_message->payload.ear.activation;
+	return activation;
+}
+
+int get_locker_received(Message* p_message){
+	int activation = p_message->payload.locker.activation;
+	return activation;
+}
+
+int get_holder_received(Message* p_message){
+	int activation = p_message->payload.holder.activation;
+	return activation;
+}
+
+int get_dyn_holder_received(Message* p_message){
+	int activation = p_message->payload.dyn_holder.activation;
+	return activation;
+}
+
 int get_gate_received(Message* p_message){
 	int activation = p_message->payload.gate.activation;
 	return activation;

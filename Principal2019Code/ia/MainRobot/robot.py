@@ -20,6 +20,9 @@ class RobotPosition:
         self._theta = theta
         self._speed = speed
         self._omega = omega
+        
+    def updateLidarGPIO(self):
+        self._lidarZone.update_GPIO()
 
     def updateZones(self,zone1,zone2,zone3):
         self._lidarZone.update(zone1, zone2, zone3)

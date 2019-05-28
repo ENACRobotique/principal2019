@@ -36,17 +36,18 @@ if __name__ == '__main__':
     comm = main_communication.CommManager(robot)
     behaviour = state_machine.FSMMatch(robot)
     comm.sendPositionMessage()
-    comm.sendLidarMessage(1, 0, 0, 0, 0)
+    #comm.sendLidarMessage(1, 0, 0, 0, 0)
     
     sleep(2)
     #Evite les problèmes de messages parasites après un test
-    robot.update(0,0,0,0,0)
+    robot.update(885,223,0,0,0)
     comm.sendPositionMessage()
     comm.sendLidarMessage(1, 0, 0, 0, 0)
     
     Nbpoints = 2500
     #path = pf.line(Nbpoints, Point(0,0), Point(2000,0))
-    path = pf.polyline(Nbpoints, Point(0,0), Point(800,300), Point(1600,-200))
+    #path = pf.polyline(Nbpoints, Point(0,0), Point(800,300), Point(1600,-200))
+    path = pf.polyline(Nbpoints, Point(885,223), Point(1000,223),Point(1200,240), Point(1250,280), Point(1350,350), Point(1450,500), Point(1520,600),  Point(1520,900)) 
     #path = pf.circle(Nbpoints, Point(0,400), 400)
     
     #list = [Point(i, -350*sin(2*pi*i/2000)) for i in np.linspace(0,2000, Nbpoints)]
@@ -75,6 +76,7 @@ if __name__ == '__main__':
         #d.start()
         #print("Dans la boucle !")
         comm.receive_message()
+        robot.updateLidarGPIO()
         
         
         if time() - time_update > p.NAVIGATOR_TIME_PERIOD:

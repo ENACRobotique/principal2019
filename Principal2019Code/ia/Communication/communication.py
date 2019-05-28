@@ -34,10 +34,25 @@ class Type(Enum):
     
     LID_UP = 10
     LID_DOWN = 11
+    EAR_DOWN = 12
+    LOCKER_DOWN = 13
+    HOLDER_DOWN = 14
 
 
 #----------------------------------------------Trames down (Raspi->Teensy)----------------------------------------
-class MakeVelocityMessage:
+"""Classe abstraite de création de message quelconque.
+Tous les messages héritent et redéfinissent les méthodes de cette classe."""
+class MakeMessage:
+    
+    def __init__(self):
+        pass
+    
+    """Permet de coder un message envoyé par le serial vers la teensy"""
+    def serial_encode(self):
+        raise NotImplementedError("Must be inherited")
+
+
+class MakeVelocityMessage(MakeMessage):
 
     def __init__(self):
         self._speed = None
@@ -69,7 +84,8 @@ class MakeVelocityMessage:
         data = header+s+checksum
         return data
 
-class MakePositionMessage:
+
+class MakePositionMessage(MakeMessage):
 
     def __init__(self):
         self._x = None
@@ -102,7 +118,8 @@ class MakePositionMessage:
         data = header+s+checksum
         return data
     
-class MakePumpMessage:
+    
+class MakePumpMessage(MakeMessage):
     
     def __init__(self):
         self._pump_activated = None 
@@ -125,8 +142,77 @@ class MakePumpMessage:
         checksum = bitstring.pack('uintle:8', (~sum(s.tobytes()) & 0xFF))
         data = header+s+checksum
         return data
-
-class MakeLidarMessage:
+    
+    
+class MakeEarMessage(MakeMessage):
+    
+    def __init__(self):
+        self._ear_activated = None 
+    
+    @property
+    def ear_activated(self):
+        return self._ear_activated
+        
+    def update(self, activation):
+        self._ear_activated = activation #activation is an int. 0 if no activation. 
+        
+    def serial_encode(self):
+        id_message = Type.EAR_DOWN
+        length = 3
+        header = bitstring.pack('uintle:8, uintle:8', 0xFF, 0xFF)
+        s = bitstring.pack('uintle:8, uintle:8, uintle:8', length, id_message.value, self._ear_activated)
+        checksum = bitstring.pack('uintle:8', (~sum(s.tobytes()) & 0xFF))
+        data = header+s+checksum
+        return data
+    
+    
+class MakeLockerMessage(MakeMessage):
+    
+    def __init__(self):
+        self._locker_activated = None 
+    
+    @property
+    def locker_activated(self):
+        return self._locker_activated
+        
+    def update(self, activation):
+        self._locker_activated = activation #activation is an int. 0 if no activation. 
+        
+    def serial_encode(self):
+        id_message = Type.LOCKER_DOWN
+        length = 3
+        header = bitstring.pack('uintle:8, uintle:8', 0xFF, 0xFF)
+        s = bitstring.pack('uintle:8, uintle:8, uintle:8', length, id_message.value, self._locker_activated)
+        checksum = bitstring.pack('uintle:8', (~sum(s.tobytes()) & 0xFF))
+        data = header+s+checksum
+        return data
+    
+    
+class MakeHolderMessage(MakeMessage):
+    
+    def __init__(self):
+        self._holder_activated = None 
+    
+    @property
+    def locker_activated(self):
+        return self._holder_activated
+        
+    def update(self, activation):
+        self._holder_activated = activation #activation is an int. 0 if no activation. 
+        
+    def serial_encode(self):
+        id_message = Type.HOLDER_DOWN
+        length = 3
+        header = bitstring.pack('uintle:8, uintle:8', 0xFF, 0xFF)
+        s = bitstring.pack('uintle:8, uintle:8, uintle:8', length, id_message.value, self._holder_activated)
+        checksum = bitstring.pack('uintle:8', (~sum(s.tobytes()) & 0xFF))
+        data = header+s+checksum
+        return data
+    
+    
+"""Classe maintenant inutile.
+Servait à envoyer les pins du lidar à activer sur la teensy pour le choix de la zone"""
+class MakeLidarMessage(MakeMessage):
     
     def __init__(self):
         self.pin1 = 0
@@ -151,7 +237,8 @@ class MakeLidarMessage:
         data = header+s+checksum
         return data
 
-class MakeGateMessage:
+
+class MakeGateMessage(MakeMessage):
     
     def __init__(self):
         self._gate_activated = None
@@ -175,7 +262,8 @@ class MakeGateMessage:
         data = header+s+checksum
         return data
     
-class MakeDynamixelMessage:
+    
+class MakeDynamixelMessage(MakeMessage):
     
     def __init__(self):
         self._angle = None #a float in degrees
@@ -222,8 +310,18 @@ class MakeDynamixelMessage:
         return data
 
 #----------------------------------------------Trames up (Teensy->Raspi)----------------------------------------
-
-class PositionReceived:
+"""Classe abstraite de réception de messages"""
+class MessageReceived:
+    
+    def __init__(self):
+        pass
+    
+    """Permet de décoder un message issu de la teensy"""
+    def serial_decode(self, payload):
+        raise NotImplementedError("Must be inherited")
+    
+    
+class PositionReceived(MessageReceived):
 
     def __init__(self):
         self._x = None
@@ -258,7 +356,7 @@ class PositionReceived:
 
     
 
-class LidarZoneReceive:
+class LidarZoneReceive(MessageReceived):
     
     def __init__(self):
         self.zone1 = None
@@ -281,6 +379,7 @@ class LidarZoneReceive:
         s = bitstring.BitStream(payload)
         self.zone1, self.zone2, self.zone3= s.unpack('uintle:8, uintle:8, uintle:8')
 
+
 #--------------------------------------------Lecture des trames----------------------------------------------
 
 
@@ -290,6 +389,8 @@ class StateReceive(Enum):
     INIT2 = 2
     READ = 3
 
+
+"""Classe de réception et décodage d'un message directement sorti du serial"""
 class CommunicationReceived:
 
     def __init__(self):
@@ -360,7 +461,7 @@ class CommunicationReceived:
 #--------------------------------------------Envoie des trames----------------------------------------------
 
 
-
+"""Classe d'envoi d'un message dans le serial"""
 class CommunicationSend():
 
     def __init__(self):
@@ -372,7 +473,8 @@ class CommunicationSend():
         #print(message.tobytes())
         
     
-    
+"""Classe d'envoi d'un message de ack à la teensy
+Cette classe fonctionne avec le module Threading qui marche mal et n'est pas optimisé"""
 class CommunicationSendWithAck(Thread):
 
     def __init__(self,message):

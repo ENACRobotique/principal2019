@@ -29,6 +29,7 @@ MAX_ACCEL = 700
 BRAKE_ACCEL = 2400
 SPEED_MAX = 300
 SPEED_MAX_DECER = 100
+SPEED_MAX_PRECISE = 50
 OMEGA_MAX = 0.5
 OMEGA_MAX_DECER = 0.1
 MAX_ACCEL_OMEGA = 1
@@ -39,3 +40,7 @@ NAVIGATOR_TIME_PERIOD = 0.15
 #Definition of look_ahead distance : L=L0+k*speed
 L0 = 70 #100
 k = 0.4 #0.23
+
+#Dimensions du robot pour aider au positionnement
+ROBOT_TAILLE_X = 30
+ROBOT_TAILLE_Y = 26
