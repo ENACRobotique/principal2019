@@ -297,6 +297,20 @@ void loop()
 				upmessageack = make_ack_message();
 				send_message(upmessageack);
 			}
+
+			if(downmessage.id == TIRETTE_DOWN){
+				Serial.println("Demande de tirette");
+
+				Message upmessage;
+			}
+
+			if(downmessage.id == COLOR_DOWN){
+				Serial.println("Demande de couleur");
+
+				Message upmessage;
+			}
+
+
 		}
 	}
 

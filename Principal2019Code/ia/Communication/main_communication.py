@@ -53,6 +53,9 @@ class CommManager():
         self.messageZoneLidar = com.MakeLidarMessage()
         self.messageVelocity = com.MakeVelocityMessage()
         
+        self.tiretteReceived = com.TiretteReceived()
+        self.colorReceived = com.ColorReceived()
+        
         self.messagePump = com.MakePumpMessage()
     # messageVelocity.update(100, -1)
     # downCommunication.send_message(messageVelocity.serial_encode())
@@ -87,6 +90,18 @@ class CommManager():
                 self.ZoneLidarReceived.serial_decode(payload);
                 #print("1 : {}, 2 : {}, 3 : {}".format(self.ZoneLidarReceived.get_zone1,self.ZoneLidarReceived.get_zone2,self.ZoneLidarReceived.get_zone3))
                 self.robot.updateZones(self.ZoneLidarReceived.get_zone1,self.ZoneLidarReceived.get_zone2,self.ZoneLidarReceived.get_zone3)
+                
+            if id_message == com.Type.TIRETTE_UP.value:
+                self.tiretteReceived.serial_decode(payload)
+                
+                self.robot.setTirette(self.tiretteReceived.tirette)
+                
+            if id_message == com.Type.COLOR_UP.value:
+                self.colorReceived.serial_decode(payload)
+                
+                self.robot.setColor(self.colorReceived.color)
+                
+                
             
     def sendVelocityMessage(self,speed,omega):
             #print("MessageVelocity : {}, {}".format(speed,omega))

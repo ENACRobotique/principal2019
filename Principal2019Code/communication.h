@@ -142,6 +142,15 @@ typedef struct __attribute__((__packed__)) Dynamic_holder{
 	uint8_t activation;
 }Dynamic_holder;
 
+typedef struct __attribute__((__packed__)) Tirette_up{
+	uint8_t activation;
+}Tirette_up;
+
+typedef struct __attribute__((__packed__)) Color_up{
+	uint8_t activation;
+}Color_up;
+
+
 union  __attribute__((__packed__)) Payload{
 	Pos_vel pos_vel;
 	Buttons buttons;
@@ -149,6 +158,9 @@ union  __attribute__((__packed__)) Payload{
 	Velocity velocity;
 	Position position;
 
+
+	Color_up color_up;
+	Tirette_up tirette_up;
 	Pump pump;
 	Ear ear;
 	Locker locker;
@@ -173,6 +185,8 @@ typedef struct Message{
 Message make_pos_vel_message(float x, float y, float theta, float speed, float omega);
 //Message make_US_message(void);
 Message make_lidar_message(uint8_t zone1,uint8_t zone2,uint8_t zone3);
+Message make_color_message(int color);
+Message make_tirette_message(int tirette);
 Message make_ack_message(void);
 
 void send_message(Message msg);

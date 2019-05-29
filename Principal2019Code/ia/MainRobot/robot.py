@@ -37,8 +37,11 @@ class RobotPosition:
     def setColor(self, color):
         self._color = color
         
-    def setTiretteFalse(self):
-        self._tirette = False
+    def setTirette(self, tirette):
+        if tirette == 1:
+            self._tirette = False
+        else:
+            self._tirette = True
 
     @property
     def x(self):

@@ -84,6 +84,39 @@ Message make_lidar_message(uint8_t zone1,uint8_t zone2,uint8_t zone3){
 	return msg;
 }
 
+
+Message make_tirette_message(int tirette){
+	Message msg;
+	msg.length = 3;
+	msg.id = (uint8_t)TIRETTE_UP;
+
+	msg.payload.tirette_up.activation = (uint8_t)(tirette);
+	uint8_t checksum = msg.length + msg.id;
+	for(size_t i=0; i<sizeof(Lid);i++){
+			checksum += msg.payload.data[i];
+	}
+	checksum = ~checksum;
+	msg.checksum = checksum;
+	return msg;
+}
+
+
+Message make_color_message(int color){
+	Message msg;
+	msg.length = 3;
+	msg.id = (uint8_t)COLOR_UP;
+
+	msg.payload.color_up.activation = (uint8_t)(color);
+	uint8_t checksum = msg.length + msg.id;
+	for(size_t i=0; i<sizeof(Lid);i++){
+			checksum += msg.payload.data[i];
+	}
+	checksum = ~checksum;
+	msg.checksum = checksum;
+	return msg;
+}
+
+
 void send_message(Message msg){
 	uint8_t buf[msg.length+3]; // buffer = start1 + srart2 + length + length_message
 	buf[0] = 0xFF;

@@ -9,6 +9,7 @@ import random
 import sys
 from threading import Thread
 from time import time
+from builtins import None
 #from builtins import None
 #from builtins import import None
 
@@ -373,6 +374,34 @@ class MessageReceived:
     """Permet de décoder un message issu de la teensy"""
     def serial_decode(self, payload):
         raise NotImplementedError("Must be inherited")
+    
+    
+class ColorReceived():
+    
+    def __init__(self):
+        self._color = None
+        
+    @property
+    def color(self):
+        return self._color
+    
+    def serial_decode(self, payload):
+        s = bitstring.BitStream(payload)
+        self._color = s.unpack('uintle:8')
+        
+        
+class TiretteReceived():
+    
+    def __init__(self):
+        self._tirette = None
+        
+    @property
+    def tirette(self):
+        return self._tirette
+    
+    def serial_decode(self,payload):
+        s=bitstring.BitStream(payload)
+        self._tirette = s.unpack('uintle:8')
     
     
 class PositionReceived(MessageReceived):
