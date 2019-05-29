@@ -71,6 +71,9 @@ void setup()
 	pinMode(LID_PIN_OUT2, INPUT_PULLUP);
 	pinMode(LID_PIN_OUT3, INPUT_PULLUP);
 
+	pinMode(PIN_TROMPE_POMPE,OUTPUT);
+	digitalWrite(PIN_TROMPE_POMPE,TROMPE_POMPE_OFF);
+
 	Dynamixel.begin(1000000, DYNAMIXEL_CONTROL);
 	Dynamixel.setEndless(DYN_BROADCAST_ID,false);
 	ServoLocker.attach(PIN_LOCK);
@@ -82,6 +85,8 @@ void setup()
 	DumboEar.attach(PIN_DUMBO_EAR);
 	DumboEar.write(DUMBO_EAR_OPEN);
 
+	Dynamixel.moveSpeed(DYN_HOLDER_ID,DYN_HOLDER_DOWN, DYN_MAX_SPEED);
+	Dynamixel.moveSpeed(DYN_TROMPE_ID,DYN_TROMPE_INSIDE, DYN_MAX_SPEED);
 
 
 //	Dynamixel.setID(254,1);

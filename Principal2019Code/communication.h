@@ -50,7 +50,7 @@ enum MessagesID{
 	EAR_DOWN,
 	LOCKER_DOWN,
 	HOLDER_DOWN,
-	DYN_HOLDER_DOWN
+	//DYN_HOLDER_DOWN
 };
 
 enum ReceivingState{

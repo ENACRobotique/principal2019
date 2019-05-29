@@ -55,20 +55,28 @@ const int DYN_MAX_SPEED=750;
 const int DYN_BROADCAST_ID = 254 ;
 
 const int DYN_HOLDER_ID = 6 ;
-const int DYN_HOLDER_UP=250;
-const int DYN_HOLDER_DOWN=900;
+const int DYN_HOLDER_UP=220;
+const int DYN_HOLDER_DOWN=875;
 
 const int PIN_HOLDER_LOCK = 22 ;
 const int HOLDER_LOCK_OPEN=80;
-const int HOLDER_LOCK_LOCK=107;
+const int HOLDER_LOCK_LOCK=112;
 
 const int PIN_DUMBO_EAR = 21 ;
-const int DUMBO_EAR_OPEN=95;
-const int DUMBO_EAR_CLOSE=125;
+const int DUMBO_EAR_OPEN=75;
+const int DUMBO_EAR_CLOSE=105;
 
 const int PIN_LOCK=23;
 const int LOCK_OPEN=45;
 const int LOCK_LOCK=80;
+
+const int PIN_TROMPE_POMPE=30;
+const int TROMPE_POMPE_ON=HIGH;
+const int TROMPE_POMPE_OFF=LOW;
+
+const int DYN_TROMPE_ID = 1 ;
+const int DYN_TROMPE_OUTSIDE=215;
+const int DYN_TROMPE_INSIDE=800;
 
 
 const int EMERGENCY_BRAKE = 2500;
