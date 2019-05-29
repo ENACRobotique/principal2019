@@ -38,6 +38,10 @@ class Type(Enum):
     LOCKER_DOWN = 13
     HOLDER_DOWN = 14
     DYNAMIC_HOLDER_DOWN = 15
+    TIRETTE_DOWN = 16
+    TIRETTE_UP = 17
+    COLOR_DOWN = 18
+    COLOR_UP = 19
 
 
 #----------------------------------------------Trames down (Raspi->Teensy)----------------------------------------
@@ -84,7 +88,6 @@ class MakeVelocityMessage(MakeMessage):
         #print(length, id_message.value, self.speed, self.omega)
         data = header+s+checksum
         return data
-
 
 class MakePositionMessage(MakeMessage):
 
@@ -328,6 +331,34 @@ class MakeDynamixelMessage(MakeMessage):
         header = bitstring.pack('uintle:8, uintle:8', 0xFF, 0xFF)
         print("angle envoye :", self.angle)
         s = bitstring.pack('uintle:8, uintle:8, uintle:16, uintle:16', length, id_message.value, self.angle, self.speed)
+        checksum = bitstring.pack('uintle:8', (~sum(s.tobytes()) & 0xFF))
+        data = header+s+checksum
+        return data
+
+
+class MakeTiretteQuestion(MakeMessage):
+    def __init__(self):
+        pass
+    
+    def serial_encode(self):
+        id_message = Type.TIRETTE_DOWN
+        length = 2
+        header = bitstring.pack('uintle:8, uintle:8', 0xFF, 0xFF)
+        s = bitstring.pack('uintle:8, uintle:8', length, id_message.value)
+        checksum = bitstring.pack('uintle:8', (~sum(s.tobytes()) & 0xFF))
+        data = header+s+checksum
+        return data
+    
+    
+class MakeColorQuestion(MakeMessage):
+    def __init__(self):
+        pass
+    
+    def serial_encode(self):
+        id_message = Type.COLOR_DOWN
+        length = 2
+        header = bitstring.pack('uintle:8, uintle:8', 0xFF, 0xFF)
+        s = bitstring.pack('uintle:8, uintle:8', length, id_message.value)
         checksum = bitstring.pack('uintle:8', (~sum(s.tobytes()) & 0xFF))
         data = header+s+checksum
         return data

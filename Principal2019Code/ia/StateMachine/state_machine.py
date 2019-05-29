@@ -17,13 +17,14 @@ class Behavior():
     
     
 class FSMMatch(Behavior):
-    def __init__(self,robot):
+    def __init__(self,robot, locomotion, comm):
         self.robot = robot
         self.colour = None
         self.state = None
         self.start_match = None
         self.time_now = None
-        self.locomotion = pp.PurePursuit(robot)
+        self.locomotion = locomotion
+        self.comm = comm
         
     def loop(self):
         
@@ -56,9 +57,11 @@ class FSMState:
     
 class StateTirette(FSMState):
     def __init__(self):
-        pass7
+        pass
         
     def test(self):
+        self.behaviour.comm.sendColorQuestion()
+        self.behaviour.comm.sendTiretteQuestion()
         if not self.behavior.robot.tiretteOn():
             return StateGoToPalet(self.behaviour)
     

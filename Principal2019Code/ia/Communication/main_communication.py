@@ -43,6 +43,8 @@ class CommManager():
     
     #messagePump = com.MakePumpMessage()
         
+        self.messageTiretteDown = com.MakeTiretteQuestion()
+        self.messageColorDown = com.MakeColorQuestion()
         self.messageLocker = com.MakeLockerMessage()
         self.messageHolder = com.MakeHolderMessage()
         self.messageDynamicHolder = com.MakeDynamicHolderMessage()
@@ -130,6 +132,12 @@ class CommManager():
     def sendDynamicHolderDownMessage(self):
         self.messageDynamicHolder.update(0);
         self.downCommunication.send_message(self.messageDynamicHolder.serial_encode())
+        
+    def sendTiretteQuestion(self):
+        self.downCommunication.send_message(self.messageTiretteDown.serial_encode())
+        
+    def sendColorQuestion(self):
+        self.downCommunication.send_message(self.messageColorDown.serial_encode())
         
         
     def start_receive_thread(self):

@@ -34,7 +34,8 @@ import params as p
 if __name__ == '__main__':
     robot = robot.RobotPosition(0, 0, 0, 0, 0)
     comm = main_communication.CommManager(robot)
-    behaviour = state_machine.FSMMatch(robot)
+    tracking = pp.PurePursuit(robot)
+    behaviour = state_machine.FSMMatch(robot, tracking, comm)
     comm.sendPositionMessage()
     #comm.sendLidarMessage(1, 0, 0, 0, 0)
     
@@ -63,7 +64,6 @@ if __name__ == '__main__':
     
     
 
-    tracking = pp.PurePursuit(robot)
     #tracking.add_turn(-90)
     tracking.add_path(path)
     comm.flush()
