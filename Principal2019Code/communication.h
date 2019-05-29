@@ -50,7 +50,7 @@ enum MessagesID{
 	EAR_DOWN,
 	LOCKER_DOWN,
 	HOLDER_DOWN,
-	//DYN_HOLDER_DOWN
+	DYNAMIC_HOLDER_DOWN
 };
 
 enum ReceivingState{
@@ -134,9 +134,9 @@ typedef struct __attribute__((__packed__)) Holder{
 	uint8_t activation;
 }Holder;
 
-typedef struct __attribute__((__packed__)) Dyn_holder{
+typedef struct __attribute__((__packed__)) Dynamic_holder{
 	uint8_t activation;
-}Dyn_holder;
+}Dynamic_holder;
 
 union  __attribute__((__packed__)) Payload{
 	Pos_vel pos_vel;
@@ -149,7 +149,7 @@ union  __attribute__((__packed__)) Payload{
 	Ear ear;
 	Locker locker;
 	Holder holder;
-	Dyn_holder dyn_holder;
+	Dynamic_holder dynamic_holder;
 	Gate gate;
 	Dyn dyn;
 
@@ -188,7 +188,7 @@ int get_gate_received(Message* p_message);
 int get_ear_received(Message* p_message);
 int get_locker_received(Message* p_message);
 int get_holder_received(Message* p_message);
-int get_dyn_holder_received(Message* p_message);
+int get_dynamic_holder_received(Message* p_message);
 
 int get_dynSpeed_received(Message* p_message);
 int get_dynAngle_received(Message* p_message);

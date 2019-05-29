@@ -24,6 +24,11 @@ TIMEOUT = 0.01
 STOP_DELAY = 1
 MATCH_DURATION = 100
 
+#Couleurs des côtés du terrain
+UNDEFINED = 0
+VIOLET = 1
+JAUNE = 2
+
 #Variables de navigation et de pure pursuit
 MAX_ACCEL = 700
 BRAKE_ACCEL = 2400

@@ -1,4 +1,5 @@
 from Capteurs.lidar_zones import lidarZone
+import params as p
 
 class RobotPosition:
 
@@ -8,6 +9,9 @@ class RobotPosition:
         self._theta = theta
         self._speed = speed
         self._omega = omega
+        
+        self._tirette = True
+        self._color = p.UNDEFINED
         
         self._lidarZone = lidarZone()
 
@@ -26,6 +30,15 @@ class RobotPosition:
 
     def updateZones(self,zone1,zone2,zone3):
         self._lidarZone.update(zone1, zone2, zone3)
+
+    def tiretteOn(self):
+        return self._tirette
+        
+    def setColor(self, color):
+        self._color = color
+        
+    def setTiretteFalse(self):
+        self._tirette = False
 
     @property
     def x(self):

@@ -54,6 +54,15 @@ class FSMState:
         raise NotImplementedError("Must be inherited")
     
     
+class StateTirette(FSMState):
+    def __init__(self):
+        pass7
+        
+    def test(self):
+        if not self.behavior.robot.tiretteOn():
+            return StateGoToPalet(self.behaviour)
+    
+    
     
 class StateGoToPalet(FSMState):
     def __init__(self, behaviour):
@@ -61,7 +70,7 @@ class StateGoToPalet(FSMState):
         self.robot = self.behavior.robot
         
     def test(self):
-        if(self.behavior.locomotion.move_finished()):
+        if self.behavior.locomotion.move_finished():
             return TestState2(self.behavior)
     
     def deinit(self):

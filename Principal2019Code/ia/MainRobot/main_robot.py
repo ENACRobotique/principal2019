@@ -82,6 +82,9 @@ if __name__ == '__main__':
         if time() - time_update > p.NAVIGATOR_TIME_PERIOD:
             #print("TEMPS DEBUT : {}".format(time()))
             time_update = time()
+            
+            behaviour.loop()
+            
             omega, speed = tracking.compute(False)
             #print("omega_cons = ", omega, "speed_cons = ", speed)
             print(robot)

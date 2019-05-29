@@ -284,15 +284,15 @@ void loop()
 				send_message(upmessageack);
 			}
 
-			if(downmessage.id==HOLDER_DOWN){
+			if(downmessage.id==DYNAMIC_HOLDER_DOWN){
 				Serial.println("Dynamic holder down");
 				//activation est un booleen 0 ou 1
-				int activation = get_dyn_holder_received(&downmessage);
+				int activation = get_dynamic_holder_received(&downmessage);
 				if(activation){
 					Dynamixel.moveSpeed(DYN_HOLDER_ID,DYN_HOLDER_UP, DYN_MAX_SPEED);
 				}
-				else{//TODO: réparer ça
-					//Dynamixel.moveSpeed(DYN_HOLDER_ID,DYN_HOLDER_DOWN, DYN_MAX_SPEED);
+				else{
+					Dynamixel.moveSpeed(DYN_HOLDER_ID,DYN_HOLDER_DOWN, DYN_MAX_SPEED);
 				}
 				upmessageack = make_ack_message();
 				send_message(upmessageack);

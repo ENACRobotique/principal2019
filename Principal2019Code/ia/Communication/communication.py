@@ -37,6 +37,7 @@ class Type(Enum):
     EAR_DOWN = 12
     LOCKER_DOWN = 13
     HOLDER_DOWN = 14
+    DYNAMIC_HOLDER_DOWN = 15
 
 
 #----------------------------------------------Trames down (Raspi->Teensy)----------------------------------------
@@ -205,6 +206,28 @@ class MakeHolderMessage(MakeMessage):
         length = 3
         header = bitstring.pack('uintle:8, uintle:8', 0xFF, 0xFF)
         s = bitstring.pack('uintle:8, uintle:8, uintle:8', length, id_message.value, self._holder_activated)
+        checksum = bitstring.pack('uintle:8', (~sum(s.tobytes()) & 0xFF))
+        data = header+s+checksum
+        return data
+    
+    
+class MakeDynamicHolderMessage(MakeMessage):
+    
+    def __init__(self):
+        self._dynamic_holder_activated = None 
+    
+    @property
+    def locker_activated(self):
+        return self._dynamic_holder_activated
+        
+    def update(self, activation):
+        self._holder_dynamic_activated = activation #activation is an int. 0 if no activation. 
+        
+    def serial_encode(self):
+        id_message = Type.DYNAMIC_HOLDER_DOWN
+        length = 3
+        header = bitstring.pack('uintle:8, uintle:8', 0xFF, 0xFF)
+        s = bitstring.pack('uintle:8, uintle:8, uintle:8', length, id_message.value, self._dynamic_holder_activated)
         checksum = bitstring.pack('uintle:8', (~sum(s.tobytes()) & 0xFF))
         data = header+s+checksum
         return data

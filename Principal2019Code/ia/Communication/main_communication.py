@@ -45,6 +45,7 @@ class CommManager():
         
         self.messageLocker = com.MakeLockerMessage()
         self.messageHolder = com.MakeHolderMessage()
+        self.messageDynamicHolder = com.MakeDynamicHolderMessage()
         self.messageEar = com.MakeEarMessage()
         self.messagePosition = com.MakePositionMessage()
         self.messageZoneLidar = com.MakeLidarMessage()
@@ -120,6 +121,15 @@ class CommManager():
     def sendHolderDownMessage(self):
         self.messageHolder.update(0);
         self.downCommunication.send_message(self.messageHolder.serial_encode())
+        
+    def sendDynamicHolderUpMessage(self):
+        self.messageDynamicHolder.update(1);
+        self.downCommunication.send_message(self.messageDynamicHolder.serial_encode())
+        
+        
+    def sendDynamicHolderDownMessage(self):
+        self.messageDynamicHolder.update(0);
+        self.downCommunication.send_message(self.messageDynamicHolder.serial_encode())
         
         
     def start_receive_thread(self):
