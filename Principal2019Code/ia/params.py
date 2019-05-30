@@ -24,7 +24,7 @@ TIMEOUT = 0.01
 STOP_DELAY = 1
 MATCH_DURATION = 100
 
-#Couleurs des côtés du terrain
+#Couleurs des côtés du terrain et tirette
 UNDEFINED = 0
 VIOLET = 1
 JAUNE = 2

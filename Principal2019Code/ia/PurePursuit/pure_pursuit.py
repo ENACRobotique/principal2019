@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 import sys
-from tkinter.constants import CURRENT
-from locale import currency
 # from Communication.main_communication import look_ahead_distance
 path = "../Communication"
 sys.path.append(path)
@@ -157,6 +155,7 @@ class PurePursuit:
         angle_fore = self.center_radian(self.robot.theta + self.sgn * (abs(self.robot.omega) * t_rotation_stop - 1 / 2 * p.MAX_ACCEL_OMEGA * pow(t_rotation_stop, 2)))
         if abs(self.center_radian(angle_fore - self.theta_target)) < p.ADMITTED_ANGLE_ERROR:
             print("On est dedans")
+            self.move = Trajectory.STOPPED
             omega_cons = self.sgn * max(0, abs(self.robot.omega) - p.NAVIGATOR_TIME_PERIOD * p.MAX_ACCEL_OMEGA)
         else:
             if(self.sgn * (self.center_radian(self.theta_target - angle_fore)) > 0):
@@ -200,11 +199,55 @@ class PurePursuit:
     
     
     
-    def decelerate_to_low_speed(self):
-        omega_cons = 0
+    def decelerate_to_low_speed(self, loop  = False):
+        look_ahead_distance = p.L0 + p.k * abs(self.robot.speed)
+                
+        # Test : look_ahead_distance égale à la distance de freinage à vitesse max
+        # t_stop = current_robot.speed / p.MAX_ACCEL
+        # dist_foresee = (current_robot.speed*t_stop-0.5*p.MAX_ACCEL*t_stop**2)
+        
+        # look_ahead_distance = max(self.look_min,dist_foresee)
+        # print("L = {}, speed = {}".format(look_ahead_distance,current_robot.speed))
+        
+        p_robot = Point(self.robot.x, self.robot.y)
+        theta = self.robot.theta
+        
+        if not loop:
+            closest_point_index, p_goal_index, p_goal = self.path.find_goal_point(p_robot, look_ahead_distance)
+        else:
+            closest_point_index, p_goal_index, p_goal = self.path.find_goal_point_loop(p_robot, look_ahead_distance)
+            
+        x_body = -sin(theta) * (p_goal.x - p_robot.x) + cos(theta) * (p_goal.y - p_robot.y)
+        
+        # print(p_goal.x, p_goal.y)
+        
+        # dist_to_end = dist(p_robot, self.path.points[-1])
+        
+        # dist_to_end = dist(p_robot, self.path.points[-1])
+        # dist_to_end = self.path.dists[-1]-self.path.dists[closest_point_index]
+
+        # print("closest_index : ", closest_point_index)
+        # print("goal_point_index : ", p_goal_index)
+        # print("Goal : ({}, {})".format(p_goal.x, p_goal.y))
+        
+        # if p_goal == self.path.points[-1] :
+            # speed_cons = max(0, self.previous_cons- p.MAX_ACCEL*p.NAVIGATOR_TIME_PERIOD)
+        # else:
+            # speed_cons = min(p.SPEED_MAX, self.previous_cons + p.MAX_ACCEL*p.NAVIGATOR_TIME_PERIOD)
         speed_cons = max(p.SPEED_MAX_DECER, abs(self.robot.speed) - p.MAX_ACCEL*p.NAVIGATOR_TIME_PERIOD)
+        omega_cons = ((2 * abs(speed_cons)) / (look_ahead_distance ** 2)) * x_body
+        
+        #print("Closest : {}, total : {}".format(closest_point, self.path.length))
+        
         if speed_cons == p.SPEED_MAX_DECER:
             self.move_set = MoveSet.PATH_FINAL
+            print("-------------------FINAL----------------------")
+        
+        #print("speed : {}, L : {}, x : {}, omega : {}".format(speed_cons, look_ahead_distance, x_body, omega_cons))
+        return omega_cons, speed_cons
+    
+        
+       
         return omega_cons, speed_cons
     
     

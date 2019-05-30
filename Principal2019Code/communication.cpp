@@ -92,7 +92,7 @@ Message make_tirette_message(int tirette){
 
 	msg.payload.tirette_up.activation = (uint8_t)(tirette);
 	uint8_t checksum = msg.length + msg.id;
-	for(size_t i=0; i<sizeof(Lid);i++){
+	for(size_t i=0; i<sizeof(Tirette_up);i++){
 			checksum += msg.payload.data[i];
 	}
 	checksum = ~checksum;
@@ -108,7 +108,7 @@ Message make_color_message(int color){
 
 	msg.payload.color_up.activation = (uint8_t)(color);
 	uint8_t checksum = msg.length + msg.id;
-	for(size_t i=0; i<sizeof(Lid);i++){
+	for(size_t i=0; i<sizeof(Color_up);i++){
 			checksum += msg.payload.data[i];
 	}
 	checksum = ~checksum;
@@ -152,6 +152,11 @@ float get_y_received(Message* p_message){
 float get_theta_received(Message* p_message){
 	float theta_received = (p_message->payload.position.theta/RADIAN_TO_MSG_FACTOR - RADIAN_TO_MSG_ADDER);
 	return theta_received;
+}
+
+int get_dyn_trompe_received(Message* p_message){
+	int activation = p_message->payload.dyn_trompe.activation;
+	return activation;
 }
 
 int get_pump_received(Message* p_message){

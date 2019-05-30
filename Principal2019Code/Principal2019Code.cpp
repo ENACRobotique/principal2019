@@ -71,6 +71,9 @@ void setup()
 	pinMode(LID_PIN_OUT2, INPUT_PULLUP);
 	pinMode(LID_PIN_OUT3, INPUT_PULLUP);
 
+	pinMode(TIRETTE,INPUT_PULLUP);
+	pinMode(COLOR,INPUT_PULLUP);
+
 	pinMode(PIN_TROMPE_POMPE,OUTPUT);
 	digitalWrite(PIN_TROMPE_POMPE,TROMPE_POMPE_OFF);
 
@@ -83,10 +86,10 @@ void setup()
 	ServoHolderLocker.write(HOLDER_LOCK_LOCK);
 
 	DumboEar.attach(PIN_DUMBO_EAR);
-	DumboEar.write(DUMBO_EAR_OPEN);
+	DumboEar.write(DUMBO_EAR_CLOSE);
 
 	Dynamixel.moveSpeed(DYN_HOLDER_ID,DYN_HOLDER_DOWN, DYN_MAX_SPEED);
-	Dynamixel.moveSpeed(DYN_TROMPE_ID,DYN_TROMPE_INSIDE, DYN_MAX_SPEED);
+	Dynamixel.moveSpeed(DYN_TROMPE_ID,DYN_TROMPE_NEUTRAL, DYN_MAX_SPEED);
 
 
 //	Dynamixel.setID(254,1);
@@ -185,6 +188,7 @@ void loop()
 
 
 	if(receiveTime.check()){
+
 		if(receive_message()==1){
 			Serial.print("Message received !");
 			get_received_message(&downmessage);
@@ -214,7 +218,10 @@ void loop()
 			if(downmessage.id==PUMP){
 				Serial.println("Message pump");
 				int activation = get_pump_received(&downmessage);
-				digitalWrite(POMPE, activation);
+				if(activation)
+					digitalWrite(PIN_TROMPE_POMPE,TROMPE_POMPE_ON);
+				else
+					digitalWrite(PIN_TROMPE_POMPE,TROMPE_POMPE_OFF);
 				time_last_command_pump = millis();
 				upmessageack = make_ack_message();
 				send_message(upmessageack);
@@ -246,11 +253,31 @@ void loop()
 				Serial.println("Ear down");
 				//activation est un booleen 0 ou 1
 				int activation = get_ear_received(&downmessage);
-				if(activation){
+				if(activation == 1){
 					DumboEar.write(DUMBO_EAR_OPEN);
 				}
-				else{
+				if(activation == 0){
 					DumboEar.write(DUMBO_EAR_CLOSE);
+				}
+				if(activation == 2){
+					DumboEar.write(DUMBO_EAR_LOCK);
+				}
+				upmessageack = make_ack_message();
+				send_message(upmessageack);
+			}
+
+			if(downmessage.id==DYN_TROMPE){
+				Serial.println("Dyn trompe");
+				//activation est un booleen 0 ou 1
+				int activation = get_dyn_trompe_received(&downmessage);
+				if(activation == 1){
+					Dynamixel.moveSpeed(DYN_TROMPE_ID,DYN_TROMPE_OUTSIDE, DYN_MAX_SPEED);
+				}
+				if(activation == 0){
+					Dynamixel.moveSpeed(DYN_TROMPE_ID,DYN_TROMPE_NEUTRAL, DYN_MAX_SPEED);
+				}
+				if(activation == 2){
+					Dynamixel.moveSpeed(DYN_TROMPE_ID,DYN_TROMPE_INSIDE, DYN_MAX_SPEED);
 				}
 				upmessageack = make_ack_message();
 				send_message(upmessageack);
@@ -301,13 +328,27 @@ void loop()
 			if(downmessage.id == TIRETTE_DOWN){
 				Serial.println("Demande de tirette");
 
-				Message upmessage;
+				int tirette = digitalRead(TIRETTE);
+
+				Serial.print("Tirette :");
+				Serial.println(tirette);
+
+				Message upmessage = make_tirette_message(tirette);
+				send_message(upmessage);
 			}
 
 			if(downmessage.id == COLOR_DOWN){
 				Serial.println("Demande de couleur");
 
-				Message upmessage;
+
+
+				int color = digitalRead(COLOR);
+
+				Serial.print("Couleur :");
+				Serial.println(color);
+
+				Message upmessage = make_color_message(color);
+				send_message(upmessage);
 			}
 
 
@@ -316,13 +357,15 @@ void loop()
 
 
 	if(navigatorTime.check()) {
-		Serial.println("navigatorTime !");
+		//Serial.println(digitalRead(TIRETTE));
+		//Serial.println(digitalRead(COLOR));
+		//Serial.println("navigatorTime !");
 
 
 
 
-		Serial.print("Message sent : omega = ");
-		Serial.println(Odometry::get_omega());
+		//Serial.print("Message sent : omega = ");
+		//Serial.println(Odometry::get_omega());
 
 		Message upmessage = make_pos_vel_message(Odometry::get_pos_x(), Odometry::get_pos_y(), Odometry::get_pos_theta(), Odometry::get_speed(), Odometry::get_omega());
 		send_message(upmessage);

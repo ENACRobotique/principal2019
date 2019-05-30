@@ -42,8 +42,8 @@ const int VANN = 14;
 
 const int LED = 13;
 
-const int COLOR = 25;
-const int TIRETTE = 24;
+const int COLOR = 28;
+const int TIRETTE = 27;
 
 //const int SPARE1 = 10;
 //const int SPARE2 = 9;
@@ -63,8 +63,9 @@ const int HOLDER_LOCK_OPEN=80;
 const int HOLDER_LOCK_LOCK=112;
 
 const int PIN_DUMBO_EAR = 21 ;
-const int DUMBO_EAR_OPEN=75;
+const int DUMBO_EAR_OPEN=65;
 const int DUMBO_EAR_CLOSE=105;
+const int DUMBO_EAR_LOCK=140;
 
 const int PIN_LOCK=23;
 const int LOCK_OPEN=45;
@@ -77,6 +78,7 @@ const int TROMPE_POMPE_OFF=LOW;
 const int DYN_TROMPE_ID = 1 ;
 const int DYN_TROMPE_OUTSIDE=215;
 const int DYN_TROMPE_INSIDE=800;
+const int DYN_TROMPE_NEUTRAL=400;
 
 
 const int EMERGENCY_BRAKE = 2500;

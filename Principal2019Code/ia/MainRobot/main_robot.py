@@ -32,10 +32,11 @@ from PurePursuit.path_manager import Path, Point
 import params as p
 
 if __name__ == '__main__':
-    robot = robot.RobotPosition(0, 0, 0, 0, 0)
+    print("ALLEEEEEEEEEEEEEEEEEEEEEEEEER")
+    robot = robot.RobotPosition(885, 223, 0, 0, 0)
     comm = main_communication.CommManager(robot)
     tracking = pp.PurePursuit(robot)
-    behaviour = state_machine.FSMMatch(robot, tracking, comm)
+    behavior = state_machine.FSMMatch(robot, tracking, comm)
     comm.sendPositionMessage()
     #comm.sendLidarMessage(1, 0, 0, 0, 0)
     
@@ -43,12 +44,12 @@ if __name__ == '__main__':
     #Evite les problèmes de messages parasites après un test
     robot.update(885,223,0,0,0)
     comm.sendPositionMessage()
-    comm.sendLidarMessage(1, 0, 0, 0, 0)
+    #comm.sendLidarMessage(1, 0, 0, 0, 0)
     
-    Nbpoints = 2500
+    #Nbpoints = 2500
     #path = pf.line(Nbpoints, Point(0,0), Point(2000,0))
     #path = pf.polyline(Nbpoints, Point(0,0), Point(800,300), Point(1600,-200))
-    path = pf.polyline(Nbpoints, Point(885,223), Point(1000,223),Point(1200,240), Point(1250,280), Point(1350,350), Point(1450,500), Point(1520,600),  Point(1520,900)) 
+    #path = pf.polyline(Nbpoints, Point(885,223), Point(1000,223),Point(1200,240), Point(1250,280), Point(1350,350), Point(1450,500), Point(1520,600),  Point(1520,900)) 
     #path = pf.circle(Nbpoints, Point(0,400), 400)
     
     #list = [Point(i, -350*sin(2*pi*i/2000)) for i in np.linspace(0,2000, Nbpoints)]
@@ -65,7 +66,7 @@ if __name__ == '__main__':
     
 
     #tracking.add_turn(-90)
-    tracking.add_path(path)
+    #tracking.add_path(path)
     comm.flush()
     
     #comm.start_receive_thread()
@@ -83,7 +84,7 @@ if __name__ == '__main__':
             #print("TEMPS DEBUT : {}".format(time()))
             time_update = time()
             
-            behaviour.loop()
+            behavior.loop()
             
             omega, speed = tracking.compute(False)
             #print("omega_cons = ", omega, "speed_cons = ", speed)

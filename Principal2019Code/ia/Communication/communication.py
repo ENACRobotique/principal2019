@@ -9,9 +9,6 @@ import random
 import sys
 from threading import Thread
 from time import time
-from builtins import None
-#from builtins import None
-#from builtins import import None
 
 path = "../../ia"
 sys.path.append(path)
@@ -43,6 +40,7 @@ class Type(Enum):
     TIRETTE_UP = 17
     COLOR_DOWN = 18
     COLOR_UP = 19
+    DYN_TROMPE = 20
 
 
 #----------------------------------------------Trames down (Raspi->Teensy)----------------------------------------
@@ -159,7 +157,7 @@ class MakeEarMessage(MakeMessage):
         return self._ear_activated
         
     def update(self, activation):
-        self._ear_activated = activation #activation is an int. 0 if no activation. 
+        self._ear_activated = activation #activation is an int. 0 if no activation, 2 if second state
         
     def serial_encode(self):
         id_message = Type.EAR_DOWN
@@ -225,13 +223,35 @@ class MakeDynamicHolderMessage(MakeMessage):
         return self._dynamic_holder_activated
         
     def update(self, activation):
-        self._holder_dynamic_activated = activation #activation is an int. 0 if no activation. 
+        self._dynamic_holder_activated = activation #activation is an int. 0 if no activation. 
         
     def serial_encode(self):
         id_message = Type.DYNAMIC_HOLDER_DOWN
         length = 3
         header = bitstring.pack('uintle:8, uintle:8', 0xFF, 0xFF)
         s = bitstring.pack('uintle:8, uintle:8, uintle:8', length, id_message.value, self._dynamic_holder_activated)
+        checksum = bitstring.pack('uintle:8', (~sum(s.tobytes()) & 0xFF))
+        data = header+s+checksum
+        return data
+    
+    
+class MakeDynamicTrompeMessage(MakeMessage):
+    
+    def __init__(self):
+        self._dynamic_trompe_activated = None 
+    
+    @property
+    def locker_activated(self):
+        return self._dynamic_trompe_activated
+        
+    def update(self, activation):
+        self._dynamic_trompe_activated = activation #activation is an int. 0 if no activation. 
+        
+    def serial_encode(self):
+        id_message = Type.DYN_TROMPE
+        length = 3
+        header = bitstring.pack('uintle:8, uintle:8', 0xFF, 0xFF)
+        s = bitstring.pack('uintle:8, uintle:8, uintle:8', length, id_message.value, self._dynamic_trompe_activated)
         checksum = bitstring.pack('uintle:8', (~sum(s.tobytes()) & 0xFF))
         data = header+s+checksum
         return data
@@ -387,7 +407,7 @@ class ColorReceived():
     
     def serial_decode(self, payload):
         s = bitstring.BitStream(payload)
-        self._color = s.unpack('uintle:8')
+        self._color = s.unpack('uintle:8')[0]
         
         
 class TiretteReceived():
@@ -401,7 +421,7 @@ class TiretteReceived():
     
     def serial_decode(self,payload):
         s=bitstring.BitStream(payload)
-        self._tirette = s.unpack('uintle:8')
+        self._tirette = s.unpack('uintle:8')[0]
     
     
 class PositionReceived(MessageReceived):

@@ -10,7 +10,7 @@ class RobotPosition:
         self._speed = speed
         self._omega = omega
         
-        self._tirette = True
+        self._tirette = 1
         self._color = p.UNDEFINED
         
         self._lidarZone = lidarZone()
@@ -32,16 +32,18 @@ class RobotPosition:
         self._lidarZone.update(zone1, zone2, zone3)
 
     def tiretteOn(self):
-        return self._tirette
+        return (int)(self._tirette)
         
     def setColor(self, color):
         self._color = color
         
+    
+    def getColor(self):
+        return self._color
+    
+        
     def setTirette(self, tirette):
-        if tirette == 1:
-            self._tirette = False
-        else:
-            self._tirette = True
+            self._tirette = tirette
 
     @property
     def x(self):

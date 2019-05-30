@@ -25,7 +25,7 @@ import params as p
 
 
 """Classe d'interface entre les messages et le code en lui-même
-Permet d'utiliser facilement les bons arguments des messages que l'on cherche et de masquer l'interface des messages"""
+Permet d'utiliser facilement les bons arguments des messages que l'on cherche et de masquer leur interface"""
 class CommManager():
     def __init__(self,robot):
         self.robot = robot
@@ -42,7 +42,8 @@ class CommManager():
     #messageVelocity = com.MakeVelocityMessage()
     
     #messagePump = com.MakePumpMessage()
-        
+    
+        self.messageTrompeDown = com.MakeDynamicTrompeMessage()
         self.messageTiretteDown = com.MakeTiretteQuestion()
         self.messageColorDown = com.MakeColorQuestion()
         self.messageLocker = com.MakeLockerMessage()
@@ -92,7 +93,10 @@ class CommManager():
                 self.robot.updateZones(self.ZoneLidarReceived.get_zone1,self.ZoneLidarReceived.get_zone2,self.ZoneLidarReceived.get_zone3)
                 
             if id_message == com.Type.TIRETTE_UP.value:
+                
                 self.tiretteReceived.serial_decode(payload)
+                
+                print("Message de tirette reçu {}".format(self.tiretteReceived.tirette))
                 
                 self.robot.setTirette(self.tiretteReceived.tirette)
                 
@@ -108,6 +112,30 @@ class CommManager():
             self.messageVelocity.update(speed, omega)
             self.downCommunication.send_message(self.messageVelocity.serial_encode())
             #print("Message envoyé avec speed, omega = {}, {}".format(speed,omega))
+      
+      
+    def sendDynTrompeOutMessage(self):
+        self.messageTiretteDown.update(1)
+        self.downCommunication.send_message(self.messageTrompeDown.serial_encode())
+        
+        
+    def sendDynTrompeNeutralMessage(self):
+        self.messageTiretteDown.update(0)
+        self.downCommunication.send_message(self.messageTrompeDown.serial_encode())
+        
+        
+    def sendDynTrompeInMessage(self):
+        self.messageTiretteDown.update(2)
+        self.downCommunication.send_message(self.messageTrompeDown.serial_encode())
+           
+    def sendPumpActivateMessage(self):
+        self.messagePump.update(1)
+        self.downCommunication.send_message(self.messagePump.serial_encode())
+        
+        
+    def sendPumpCancelMessage(self):
+        self.messagePump.update(0)
+        self.downCommunication.send_message(self.messagePump.serial_encode())
             
             
     def sendEarUpMessage(self):
@@ -117,6 +145,11 @@ class CommManager():
         
     def sendEarDownMessage(self):
         self.messageEar.update(0);
+        self.downCommunication.send_message(self.messageEar.serial_encode())
+        
+        
+    def sendEarClosedMessage(self):
+        self.messageEar.update(2);
         self.downCommunication.send_message(self.messageEar.serial_encode())
         
         
@@ -139,6 +172,7 @@ class CommManager():
         self.messageHolder.update(0);
         self.downCommunication.send_message(self.messageHolder.serial_encode())
         
+        
     def sendDynamicHolderUpMessage(self):
         self.messageDynamicHolder.update(1);
         self.downCommunication.send_message(self.messageDynamicHolder.serial_encode())
@@ -148,8 +182,10 @@ class CommManager():
         self.messageDynamicHolder.update(0);
         self.downCommunication.send_message(self.messageDynamicHolder.serial_encode())
         
+        
     def sendTiretteQuestion(self):
         self.downCommunication.send_message(self.messageTiretteDown.serial_encode())
+        
         
     def sendColorQuestion(self):
         self.downCommunication.send_message(self.messageColorDown.serial_encode())

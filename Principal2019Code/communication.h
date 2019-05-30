@@ -54,7 +54,8 @@ enum MessagesID{
 	TIRETTE_DOWN,
 	TIRETTE_UP,
 	COLOR_DOWN,
-	COLOR_UP
+	COLOR_UP,
+	DYN_TROMPE
 };
 
 enum ReceivingState{
@@ -150,6 +151,9 @@ typedef struct __attribute__((__packed__)) Color_up{
 	uint8_t activation;
 }Color_up;
 
+typedef struct __attribute__((__packed__)) Dyn_trompe{
+	uint8_t activation;
+}Dyn_trompe;
 
 union  __attribute__((__packed__)) Payload{
 	Pos_vel pos_vel;
@@ -160,6 +164,7 @@ union  __attribute__((__packed__)) Payload{
 
 
 	Color_up color_up;
+	Dyn_trompe dyn_trompe;
 	Tirette_up tirette_up;
 	Pump pump;
 	Ear ear;
@@ -201,6 +206,7 @@ float get_x_received(Message* p_message);
 float get_y_received(Message* p_message);
 float get_theta_received(Message* p_message);
 
+int get_dyn_trompe_received(Message* p_message);
 int get_pump_received(Message* p_message);
 int get_gate_received(Message* p_message);
 int get_ear_received(Message* p_message);
