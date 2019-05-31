@@ -56,7 +56,7 @@ const int DYN_BROADCAST_ID = 254 ;
 
 const int DYN_HOLDER_ID = 6 ;
 const int DYN_HOLDER_UP=220;
-const int DYN_HOLDER_DOWN=875;
+const int DYN_HOLDER_DOWN=800;
 
 const int PIN_HOLDER_LOCK = 22 ;
 const int HOLDER_LOCK_OPEN=80;
@@ -65,7 +65,8 @@ const int HOLDER_LOCK_LOCK=112;
 const int PIN_DUMBO_EAR = 21 ;
 const int DUMBO_EAR_OPEN=65;
 const int DUMBO_EAR_CLOSE=105;
-const int DUMBO_EAR_LOCK=140;
+const int DUMBO_EAR_LOCK=145;
+const int DUMBO_EAR_ALMOST_LOCK = 115;
 
 const int PIN_LOCK=23;
 const int LOCK_OPEN=45;
@@ -77,7 +78,8 @@ const int TROMPE_POMPE_OFF=LOW;
 
 const int DYN_TROMPE_ID = 1 ;
 const int DYN_TROMPE_OUTSIDE=215;
-const int DYN_TROMPE_INSIDE=800;
+const int DYN_TROMPE_INSIDE=1000;
+const int DYN_TROMPE_INSIDE_TRICK = 780;
 const int DYN_TROMPE_NEUTRAL=400;
 
 

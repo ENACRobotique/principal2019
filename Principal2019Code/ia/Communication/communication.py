@@ -10,6 +10,8 @@ import sys
 from threading import Thread
 from time import time
 
+import params as p
+
 path = "../../ia"
 sys.path.append(path)
 
@@ -71,7 +73,11 @@ class MakeVelocityMessage(MakeMessage):
         return int((self._omega * params.ANGULAR_SPEED_TO_MSG_FACTOR) + params.ANGULAR_SPEED_TO_MSG_ADDER)
 
     def update(self, speed, omega):
+        if speed > p.SPEED_MAX:
+            speed = 0
         self._speed = speed
+        if omega > 4:
+            omega = 0
         self._omega = omega
 
     def serial_encode(self):
@@ -456,6 +462,7 @@ class PositionReceived(MessageReceived):
     def serial_decode(self, payload):
         s = bitstring.BitStream(payload)
         self._x, self._y, self._theta, self._speed, self._omega = s.unpack('uintle:16, uintle:16, uintle:16, uintle:16, uintle:16')
+        print("theta reçu {}".format(self._theta))
 
     
 

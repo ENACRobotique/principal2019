@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from PurePursuit.path_manager import Path, dist, delta
+from PurePursuit.path_manager import Path, Point,dist, delta
 
 from math import sin, cos, sqrt, pi, floor, atan2
 import numpy as np
 import matplotlib.pyplot as plt
-from shapely.geometry import Point
 import params as p
 
 def line(Nbpoints, A, B):

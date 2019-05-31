@@ -33,17 +33,11 @@ import params as p
 
 if __name__ == '__main__':
     print("ALLEEEEEEEEEEEEEEEEEEEEEEEEER")
-    robot = robot.RobotPosition(885, 223, 0, 0, 0)
+    robot = robot.RobotPosition(0, 0, 0, 0, 0)
     comm = main_communication.CommManager(robot)
     tracking = pp.PurePursuit(robot)
     behavior = state_machine.FSMMatch(robot, tracking, comm)
-    comm.sendPositionMessage()
     #comm.sendLidarMessage(1, 0, 0, 0, 0)
-    
-    sleep(2)
-    #Evite les problèmes de messages parasites après un test
-    robot.update(885,223,0,0,0)
-    comm.sendPositionMessage()
     #comm.sendLidarMessage(1, 0, 0, 0, 0)
     
     #Nbpoints = 2500
@@ -86,8 +80,8 @@ if __name__ == '__main__':
             
             behavior.loop()
             
-            omega, speed = tracking.compute(False)
-            #print("omega_cons = ", omega, "speed_cons = ", speed)
+            omega, speed = tracking.compute()
+            print("omega_cons = ", omega, "speed_cons = ", speed)
             print(robot)
             #print(robot._lidarZone)
             #print("lidar : {}, {}, {}".format(robot._lidarZone.activated_zone1(),robot._lidarZone.activated_zone2(),robot._lidarZone.activated_zone3()))

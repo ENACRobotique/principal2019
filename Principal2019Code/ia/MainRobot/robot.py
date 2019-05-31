@@ -1,5 +1,6 @@
 from Capteurs.lidar_zones import lidarZone
 import params as p
+from math import pi
 
 class RobotPosition:
 

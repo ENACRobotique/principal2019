@@ -262,6 +262,9 @@ void loop()
 				if(activation == 2){
 					DumboEar.write(DUMBO_EAR_LOCK);
 				}
+				if(activation == 3){
+					DumboEar.write(DUMBO_EAR_ALMOST_LOCK);
+				}
 				upmessageack = make_ack_message();
 				send_message(upmessageack);
 			}
@@ -278,6 +281,9 @@ void loop()
 				}
 				if(activation == 2){
 					Dynamixel.moveSpeed(DYN_TROMPE_ID,DYN_TROMPE_INSIDE, DYN_MAX_SPEED);
+				}
+				if(activation == 3){
+					Dynamixel.moveSpeed(DYN_TROMPE_ID,DYN_TROMPE_INSIDE_TRICK, DYN_MAX_SPEED);
 				}
 				upmessageack = make_ack_message();
 				send_message(upmessageack);

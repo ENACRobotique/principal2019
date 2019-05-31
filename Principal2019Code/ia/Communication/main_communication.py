@@ -82,6 +82,7 @@ class CommManager():
                 #print("message position reçu")
                 self.positionReceived.serial_decode(payload)
                 self.robot.update(self.positionReceived.x, self.positionReceived.y, self.positionReceived.theta, self.positionReceived.speed, self.positionReceived.omega)
+                print("Nouveau theta reçu {}".format(self.positionReceived.theta))
                 #print("Nouvelles données !")
                 #print("Message reçu avec speed, omega = {}, {}".format(self.positionReceived.speed, self.positionReceived.omega))
                 #print(self.robot)
@@ -115,17 +116,21 @@ class CommManager():
       
       
     def sendDynTrompeOutMessage(self):
-        self.messageTiretteDown.update(1)
+        self.messageTrompeDown.update(1)
         self.downCommunication.send_message(self.messageTrompeDown.serial_encode())
         
         
     def sendDynTrompeNeutralMessage(self):
-        self.messageTiretteDown.update(0)
+        self.messageTrompeDown.update(0)
         self.downCommunication.send_message(self.messageTrompeDown.serial_encode())
         
         
     def sendDynTrompeInMessage(self):
-        self.messageTiretteDown.update(2)
+        self.messageTrompeDown.update(2)
+        self.downCommunication.send_message(self.messageTrompeDown.serial_encode())
+        
+    def sendDynTrompeInTrickMessage(self):
+        self.messageTrompeDown.update(3)
         self.downCommunication.send_message(self.messageTrompeDown.serial_encode())
            
     def sendPumpActivateMessage(self):
@@ -150,6 +155,10 @@ class CommManager():
         
     def sendEarClosedMessage(self):
         self.messageEar.update(2);
+        self.downCommunication.send_message(self.messageEar.serial_encode())
+        
+    def sendEarAlmostClosedMessage(self):
+        self.messageEar.update(3);
         self.downCommunication.send_message(self.messageEar.serial_encode())
         
         

@@ -7,6 +7,7 @@ class lidarZone():
         self.zone2 = 0
         self.zone3 = 0
         
+        
         self.pins_modes=[29,31,33,35,37]
         self.pins_zones=[11,13,15]
         
@@ -15,10 +16,98 @@ class lidarZone():
         for pin in self.pins_zones: 
             GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         
-        self.set_zones_GPIO()
+        self.set_zones_forward_without_leeway_high()
+        
+    """Correspondances zones logiciel :
+    areadesigner = n ==> pins = 31-n
+    """
     
-    def set_zones_GPIO(self):
+    def set_zones_forward_left_only(self):
+        GPIO.output(self.pins_modes[0], GPIO.LOW)
+        GPIO.output(self.pins_modes[1], GPIO.LOW)
+        GPIO.output(self.pins_modes[2], GPIO.HIGH)
+        GPIO.output(self.pins_modes[3], GPIO.LOW)
+        GPIO.output(self.pins_modes[4], GPIO.HIGH)
+        
+    def set_zones_backward_left_only(self):
         GPIO.output(self.pins_modes[0], GPIO.HIGH)
+        GPIO.output(self.pins_modes[1], GPIO.LOW)
+        GPIO.output(self.pins_modes[2], GPIO.HIGH)
+        GPIO.output(self.pins_modes[3], GPIO.LOW)
+        GPIO.output(self.pins_modes[4], GPIO.HIGH)
+        
+    def set_zones_forward_right_only(self):
+        GPIO.output(self.pins_modes[0], GPIO.LOW)
+        GPIO.output(self.pins_modes[1], GPIO.HIGH)
+        GPIO.output(self.pins_modes[2], GPIO.HIGH)
+        GPIO.output(self.pins_modes[3], GPIO.LOW)
+        GPIO.output(self.pins_modes[4], GPIO.HIGH)
+        
+    def set_zones_backward_right_only(self):
+        GPIO.output(self.pins_modes[0], GPIO.HIGH)
+        GPIO.output(self.pins_modes[1], GPIO.HIGH)
+        GPIO.output(self.pins_modes[2], GPIO.LOW)
+        GPIO.output(self.pins_modes[3], GPIO.LOW)
+        GPIO.output(self.pins_modes[4], GPIO.HIGH)
+        
+    def set_zones_backward_with_leeway_high(self):
+        GPIO.output(self.pins_modes[0], GPIO.HIGH)
+        GPIO.output(self.pins_modes[1], GPIO.HIGH)
+        GPIO.output(self.pins_modes[2], GPIO.LOW)
+        GPIO.output(self.pins_modes[3], GPIO.HIGH)
+        GPIO.output(self.pins_modes[4], GPIO.HIGH)
+        
+    def set_zones_backward_with_leeway_low(self):
+        GPIO.output(self.pins_modes[0], GPIO.HIGH)
+        GPIO.output(self.pins_modes[1], GPIO.LOW)
+        GPIO.output(self.pins_modes[2], GPIO.HIGH)
+        GPIO.output(self.pins_modes[3], GPIO.HIGH)
+        GPIO.output(self.pins_modes[4], GPIO.HIGH)
+        
+    def set_zones_backward_without_leeway_low(self):
+        GPIO.output(self.pins_modes[0], GPIO.HIGH)
+        GPIO.output(self.pins_modes[1], GPIO.LOW)
+        GPIO.output(self.pins_modes[2], GPIO.LOW)
+        GPIO.output(self.pins_modes[3], GPIO.HIGH)
+        GPIO.output(self.pins_modes[4], GPIO.HIGH)
+        
+    def set_zones_backward_without_leeway_high(self):
+        GPIO.output(self.pins_modes[0], GPIO.HIGH)
+        GPIO.output(self.pins_modes[1], GPIO.HIGH)
+        GPIO.output(self.pins_modes[2], GPIO.HIGH)
+        GPIO.output(self.pins_modes[3], GPIO.LOW)
+        GPIO.output(self.pins_modes[4], GPIO.HIGH)
+        
+    def set_zones_forward_with_leeway_high(self):
+        GPIO.output(self.pins_modes[0], GPIO.LOW)
+        GPIO.output(self.pins_modes[1], GPIO.LOW)
+        GPIO.output(self.pins_modes[2], GPIO.HIGH)
+        GPIO.output(self.pins_modes[3], GPIO.HIGH)
+        GPIO.output(self.pins_modes[4], GPIO.HIGH)
+        
+    def set_zones_forward_with_leeway_low(self):
+        GPIO.output(self.pins_modes[0], GPIO.LOW)
+        GPIO.output(self.pins_modes[1], GPIO.HIGH)
+        GPIO.output(self.pins_modes[2], GPIO.HIGH)
+        GPIO.output(self.pins_modes[3], GPIO.HIGH)
+        GPIO.output(self.pins_modes[4], GPIO.HIGH)
+        
+    def set_zones_forward_without_leeway_low(self):
+        GPIO.output(self.pins_modes[0], GPIO.LOW)
+        GPIO.output(self.pins_modes[1], GPIO.HIGH)
+        GPIO.output(self.pins_modes[2], GPIO.LOW)
+        GPIO.output(self.pins_modes[3], GPIO.HIGH)
+        GPIO.output(self.pins_modes[4], GPIO.HIGH)
+        
+    def set_zones_forward_without_leeway_high(self):
+        GPIO.output(self.pins_modes[0], GPIO.LOW)
+        GPIO.output(self.pins_modes[1], GPIO.LOW)
+        GPIO.output(self.pins_modes[2], GPIO.LOW)
+        GPIO.output(self.pins_modes[3], GPIO.HIGH)
+        GPIO.output(self.pins_modes[4], GPIO.HIGH)
+        
+    def set_zones_null(self):
+        GPIO.output(self.pins_modes[0], GPIO.LOW)
         GPIO.output(self.pins_modes[1], GPIO.LOW)
         GPIO.output(self.pins_modes[2], GPIO.LOW)
         GPIO.output(self.pins_modes[3], GPIO.LOW)
@@ -44,5 +133,5 @@ class lidarZone():
         return self.zone2 == 1
         
     def activated_zone3(self):
-        print("Zone 3 : {}".format(self.zone3))
         return self.zone3 == 1
+    
